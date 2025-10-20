@@ -7,7 +7,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
  */
 export class GameScreenView implements View {
 	private group: Konva.Group;
-
+	private typedText: Konva.Text;
 
 	constructor() {
 		this.group = new Konva.Group({ visible: false });
@@ -18,12 +18,32 @@ export class GameScreenView implements View {
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#87CEEB", // Sky blue
+			fill: "#1a1a2e",
 		});
 		this.group.add(bg);
 
+		// Text display for what user types
+		this.typedText = new Konva.Text({
+			x: STAGE_WIDTH / 2,
+			y: STAGE_HEIGHT / 2,
+			text: '',
+			fontSize: 48,
+			fontFamily: 'Courier New',
+			fill: 'white',
+			align: 'center',
+		});
+		this.typedText.offsetX(this.typedText.width() / 2);
+		this.typedText.offsetY(this.typedText.height() / 2);
+		this.group.add(this.typedText);
+	}
 
-		
+	/**
+	 * Update the displayed text
+	 */
+	updateText(text: string): void {
+		this.typedText.text(text);
+		this.typedText.offsetX(this.typedText.width() / 2);
+		this.group.getLayer()?.draw();
 	}
 
 	/**

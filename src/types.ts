@@ -39,8 +39,8 @@ export interface ScreenSwitcher {
 /**
  * Object classes
  *		all the classes below are inteneded for rendering on the screen (ie backgrounds, enemies, ui etc)
- * 
- * 
+ *
+ *
  */
 
 let ID = 0;
@@ -51,7 +51,7 @@ class Object {
 	_scale: number;
 	_x: number;
 	_y: number;
-	_image: Konva.Group;	
+	_image: Konva.Group;
 
 	constructor(image: Konva.Group, rank: number = 1, x: number = STAGE_WIDTH / 2, y: number = STAGE_HEIGHT / 2) {
 		this._Id = ID++;
@@ -117,9 +117,4 @@ class Object {
 	set image(value: Konva.Group){
 		this._image = value;
 	}
-	
-	
-
-
-
 }

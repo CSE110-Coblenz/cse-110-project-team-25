@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lemon Clicker - CSE 110 Lab 3</title>
+    <title>Space Typing Adventure</title>
     <style>
       * {
         margin: 0;
@@ -18,12 +18,18 @@
         align-items: center;
         justify-content: center;
         padding: 20px;
+        background: #0a0a0a;
       }
 
       #container {
-        background: white;
-        border: 1px solid #ddd;
+        background: black;
+        border: 2px solid #333;
         overflow: hidden;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      }
+
+      #container canvas {
+        display: block;
       }
     </style>
   </head>
