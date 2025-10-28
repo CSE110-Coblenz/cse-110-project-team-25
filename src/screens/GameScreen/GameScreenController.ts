@@ -1,87 +1,87 @@
+// src/screens/GameScreen/GameScreenController.ts
 import { ScreenController } from "../../types.ts";
 import type { ScreenSwitcher } from "../../types.ts";
 import { GameScreenModel } from "./GameScreenModel.ts";
 import { GameScreenView } from "./GameScreenView.ts";
 
-/**
- * GameScreenController - Coordinates game logic between Model and View
- */
 export class GameScreenController extends ScreenController {
-	private model: GameScreenModel;
-	private view: GameScreenView;
-	private screenSwitcher: ScreenSwitcher;
-	private keyboardHandler: ((e: KeyboardEvent) => void) | null = null;
-	private typedText: string = "";
+  private model: GameScreenModel;
+  private view: GameScreenView;
+  private screenSwitcher: ScreenSwitcher;
+  private keyboardHandler: ((e: KeyboardEvent) => void) | null = null;
+  private typedText: string = "";
 
-	constructor(screenSwitcher: ScreenSwitcher) {
-		super();
-		this.screenSwitcher = screenSwitcher;
+  constructor(screenSwitcher: ScreenSwitcher) {
+    super();
+    this.screenSwitcher = screenSwitcher;
 
-		this.model = new GameScreenModel();
-		this.view = new GameScreenView();
-	}
+    this.model = new GameScreenModel();
+    this.view = new GameScreenView();
+  }
 
-	/**
-	 * Start the game
-	 */
-	startGame(): void {
-		// Reset
-		this.model.reset();
-		this.typedText = "";
+  startGame(): void {
+    // Reset and spawn first enemy
+    this.model.reset();
+    const target = "quickly";
+    this.model.setTargetWord(target);
 
-		// Set up keyboard input handler
-		this.setupKeyboardInput();
+    this.typedText = "";
+    this.view.updateText(this.typedText);
+    this.view.spawnEnemyWithPrompt(target);
+    this.view.updatePromptProgress(this.typedText);
 
-		// Show view
-		this.view.show();
-	}
+    this.setupKeyboardInput();
+    this.view.show();
+  }
 
-	/**
-	 * Setup keyboard input handling
-	 */
-	private setupKeyboardInput(): void {
-		// Remove existing handler if any
-		if (this.keyboardHandler) {
-			window.removeEventListener("keydown", this.keyboardHandler);
-		}
+  private setupKeyboardInput(): void {
+    if (this.keyboardHandler) {
+      window.removeEventListener("keydown", this.keyboardHandler);
+    }
 
-		// Create new handler
-		this.keyboardHandler = (e: KeyboardEvent) => {
-			// Handle backspace
-			if (e.key === "Backspace") {
-				this.typedText = this.typedText.slice(0, -1);
-				this.view.updateText(this.typedText);
-				return;
-			}
+    this.keyboardHandler = (e: KeyboardEvent) => {
+      // Backspace
+      if (e.key === "Backspace") {
+        this.typedText = this.typedText.slice(0, -1);
+        this.view.updateText(this.typedText);
+        this.view.updatePromptProgress(this.typedText);
+        return;
+      }
 
-			// Only accept single character keys
-			if (e.key.length !== 1) return;
+      const target = this.model.getTargetWord();
+      if (!target) return;
 
-			// Add character to typed text
-			this.typedText += e.key;
-			this.view.updateText(this.typedText);
-		};
+      // Only accept single displayable chars
+      if (e.key.length !== 1) return;
 
-		window.addEventListener("keydown", this.keyboardHandler);
-	}
+      // Only append if it keeps us as a prefix of the target
+      const next = this.typedText + e.key;
+      if (target.startsWith(next)) {
+        this.typedText = next;
+        this.view.updateText(this.typedText);
+        this.view.updatePromptProgress(this.typedText);
 
-	/**
-	 * Hide the screen and clean up
-	 */
-	hide(): void {
-		// Remove keyboard listener
-		if (this.keyboardHandler) {
-			window.removeEventListener("keydown", this.keyboardHandler);
-			this.keyboardHandler = null;
-		}
+        // Success condition
+        if (this.typedText === target) {
+          this.view.destroyEnemy();
+          this.model.setScore(this.model.getScore() + 100);
+          // Optional: spawn another, or show message, etc.
+        }
+      }
+    };
 
-		super.hide();
-	}
+    window.addEventListener("keydown", this.keyboardHandler);
+  }
 
-	/**
-	 * Get the view group
-	 */
-	getView(): GameScreenView {
-		return this.view;
-	}
+  hide(): void {
+    if (this.keyboardHandler) {
+      window.removeEventListener("keydown", this.keyboardHandler);
+      this.keyboardHandler = null;
+    }
+    super.hide();
+  }
+
+  getView(): GameScreenView {
+    return this.view;
+  }
 }
