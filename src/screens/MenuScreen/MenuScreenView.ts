@@ -1,6 +1,6 @@
 import Konva from "konva";
 import type { View } from "../../types.ts";
-import { STAGE_WIDTH } from "../../constants.ts";
+import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -10,6 +10,16 @@ export class MenuScreenView implements View {
 
 	constructor(onStartClick: () => void) {
 		this.group = new Konva.Group({ visible: true });
+
+		// Background
+		const bg = new Konva.Rect({
+			x: 0,
+			y: 0,
+			width: STAGE_WIDTH,
+			height: STAGE_HEIGHT,
+			fill: "#0f0f23",
+		});
+		this.group.add(bg);
 
 		// Title text
 		const title = new Konva.Text({
@@ -27,7 +37,6 @@ export class MenuScreenView implements View {
 		title.offsetX(title.width() / 2);
 		this.group.add(title);
 
-		const startButtonGroup = new Konva.Group();
 		const startButton = new Konva.Rect({
 			x: STAGE_WIDTH / 2 - 100,
 			y: 300,
@@ -38,6 +47,17 @@ export class MenuScreenView implements View {
 			stroke: "darkgreen",
 			strokeWidth: 3,
 		});
+		startButton.on("click", onStartClick);
+		startButton.on("mouseenter", () => {
+			startButton.fill("lightgreen");
+			this.group.getLayer()?.draw();
+		});
+		startButton.on("mouseleave", () => {
+			startButton.fill("green");
+			this.group.getLayer()?.draw();
+		});
+		this.group.add(startButton);
+
 		const startText = new Konva.Text({
 			x: STAGE_WIDTH / 2,
 			y: 315,
@@ -46,12 +66,10 @@ export class MenuScreenView implements View {
 			fontFamily: "Arial",
 			fill: "white",
 			align: "center",
+			listening: false, // Don't intercept mouse events
 		});
 		startText.offsetX(startText.width() / 2);
-		startButtonGroup.add(startButton);
-		startButtonGroup.add(startText);
-		startButtonGroup.on("click", onStartClick);
-		this.group.add(startButtonGroup);
+		this.group.add(startText);
 	}
 
 	/**
