@@ -4,15 +4,7 @@ import type { ScreenSwitcher } from "../../types.ts";
 import { GameScreenModel } from "./GameScreenModel.ts";
 import { GameScreenView } from "./GameScreenView.ts";
 import { wordBank } from "../../words/wordBank.ts";
-
-type EnemySim = {
-  id: number;
-  word: string;
-  initial: string;
-  x: number;      // world X (units, e.g., lanes -3..+3)
-  z: number;      // distance from player (units)
-  speed: number;  // units/sec toward player
-};
+import Enemy from "../../objects/Enemy.ts"
 
 export class GameScreenController extends ScreenController {
   private model: GameScreenModel;
@@ -24,9 +16,9 @@ export class GameScreenController extends ScreenController {
   private mult: number;
 
 	private getIdsSortedByDistanceClosestFirst(): number[] {
-	return Array.from(this.enemies.values())
-		.sort((a, b) => a.z - b.z) // smaller z = closer
-		.map(e => e.id);
+		return Array.from(this.enemies.values())
+			.sort((a, b) => a.distance - b.distance) 
+			.map(e => e.id);
 	}
 
 
@@ -35,7 +27,7 @@ export class GameScreenController extends ScreenController {
   private targetedId: number | null = null;
 
   // waves & enemies
-  private enemies = new Map<number, EnemySim>();
+  private enemies = new Map<number, Enemy>();
   private activeInitials = new Set<string>();      // for uniqueness constraint
   private letterToId = new Map<string, number>();  // initial -> id
 
@@ -84,41 +76,39 @@ export class GameScreenController extends ScreenController {
   // ---------- Waves ----------
 
   private spawnWave(n: number): void {
-    for (let i = 0; i < n; i++) {
-      const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, "any");
-      if (!word) break;
+	for (let i = 0; i < n; i++) {
+		const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, "any");
+		if (!word) break;
 
-      // pick a lane/worldX in [-3 .. +3] (float), and a far distance with a speed
-      const lane = (Math.random() * 6 - 3); // -3..+3
-      const z = 40 + Math.random() * 30;    // 40..70 units away
-      const speed = (5 + Math.random() * 4) * this.mult;  // 5..9 units/sec
+		const lane = Math.random() * 6 - 3; // -3..+3
+		const z = 40 + Math.random() * 30;  // 40..70
+		const speed = (5 + Math.random() * 4) * this.mult;
 
-      const id = this.view.spawnEnemyVisuals(word);
-      this.enemies.set(id, {
-        id,
-        word,
-        initial: word[0].toLowerCase(),
-        x: lane,
-        z,
-        speed,
-      });
+		const En = new Enemy("circle", word, 1, z, 0, speed);
 
-      this.activeInitials.add(word[0].toLowerCase());
-      this.letterToId.set(word[0].toLowerCase(), id);
+		// ✅ store worldX on the enemy so future frames know its lane
+		En.x = lane;
 
-      // Initial projection
-      this.view.updateEnemyTransform(id, lane, z);
-    }
+		// ✅ add to controller's map so update() can move it
+		this.enemies.set(En.id, En);
+
+		// visuals
+		this.view.spawnEnemyVisuals(En);
+		this.view.updateEnemyTransform(En.id, lane, z);
+
+		this.activeInitials.add(word[0].toLowerCase());
+		this.letterToId.set(word[0].toLowerCase(), En.id);
+	}
 	this.view.setDrawOrder(this.getIdsSortedByDistanceClosestFirst());
   }
 
   private onEnemyDefeated(id: number): void {
-    const sim = this.enemies.get(id);
-    if (!sim) return;
+    const En = this.enemies.get(id);
+    if (!En) return;
 
     // remove from sets/maps
-    this.activeInitials.delete(sim.initial);
-    this.letterToId.delete(sim.initial);
+    this.activeInitials.delete(En.initial);
+    this.letterToId.delete(En.initial);
     this.enemies.delete(id);
 
     // remove visuals
@@ -145,10 +135,10 @@ export class GameScreenController extends ScreenController {
     // Move enemies forward (reduce z), update transforms, check game over
     let anyTooClose = false;
 
-    for (const sim of this.enemies.values()) {
-      sim.z = Math.max(0, sim.z - sim.speed * dt);
-      this.view.updateEnemyTransform(sim.id, sim.x, sim.z);
-      if (sim.z <= this.NEAR_GAME_OVER) {
+    for (const En of this.enemies.values()) {
+      En.distance = Math.max(0, En.distance - En.speed * dt);
+      this.view.updateEnemyTransform(En.id, En.x, En.distance);
+      if (En.distance <= this.NEAR_GAME_OVER) {
         anyTooClose = true;
       }
     }
@@ -166,8 +156,8 @@ export class GameScreenController extends ScreenController {
     this.anim = undefined;
 
     // destroy all current enemies
-    for (const sim of Array.from(this.enemies.values())) {
-      this.view.destroyEnemy(sim.id);
+    for (const En of Array.from(this.enemies.values())) {
+      this.view.destroyEnemy(En.id);
     }
     this.enemies.clear();
     this.activeInitials.clear();

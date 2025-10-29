@@ -3,30 +3,19 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import Enemy from "../../objects/Enemy";
-import Prompt from "../../objects/Prompt";
-
-type EnemyView = {
-  id: number;
-  word: string;
-  enemy: Enemy;
-  prompt: Prompt;
-  typedNode: Konva.Text;
-  restNode: Konva.Text;
-  circle: Konva.Circle;
-};
+// import Prompt from "../../objects/Prompt";
 
 export class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
-  private seq = 1;
-  private enemyContainer: Konva.Group;
+  enemyContainer: Konva.Group;
   private hudContainer: Konva.Group; 
-  private enemies = new Map<number, EnemyView>();
+  enemies = new Map<number, Enemy>();
   private targetedId: number | null = null;
 
     // Projection constants (tweak to taste)
-    private readonly PERSPECTIVE = 450;   // bigger = more dramatic scaling
-    private readonly BASE_RISE = 220;     // how much below horizon enemies appear at z=1
+    // private readonly PERSPECTIVE = 450;   // bigger = more dramatic scaling
+    // private readonly BASE_RISE = 220;     // how much below horizon enemies appear at z=1
     private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
 	private readonly DROP_K    = 900;               // vertical drop ≈ DROP_K / z
 	private readonly UNITS_X   = 120;                // world X units → px at z reference
@@ -60,43 +49,19 @@ export class GameScreenView implements View {
   }
 
   // Spawn enemy visuals (no world coords here yet)
-  spawnEnemyVisuals(word: string): number {
-    const id = this.seq++;
-
-    const enemyGroup = new Konva.Group({ width: 80, height: 80 });
-    const circle = new Konva.Circle({
-      x: 0, y: 0, radius: 40, fill: "#2aa1ff", stroke: "#0b5ea8", strokeWidth: 4,
-    });
-    enemyGroup.add(circle);
-
-    const enemy = new Enemy(enemyGroup, word);
-
-	this.enemyContainer.add(enemy.image);
-
-
-    const typedNode = new Konva.Text({
-      x: 0, y: 0, text: "", fontSize: 28, fontFamily: "Courier New", fill: "#12d44e", listening: false,
-    });
-    const restNode = new Konva.Text({
-      x: 0, y: 0, text: word, fontSize: 28, fontFamily: "Courier New", fill: "#ffffff", listening: false,
-    });
-    const promptGroup = new Konva.Group();
-    promptGroup.add(typedNode);
-    promptGroup.add(restNode);
-
-    const prompt = new Prompt(promptGroup, restNode, false);
-    this.enemyContainer.add(prompt.image);
-
-    this.enemies.set(id, { id, word, enemy, prompt, typedNode, restNode, circle });
+  spawnEnemyVisuals(En: Enemy): number {
+	this.enemyContainer.add(En.image);
+	this.enemyContainer.add(En.prompt.image);
+	this.enemies.set(En.id, En);
     this.group.getLayer()?.draw();
-    return id;
+    return En.id;
   }
 
 
 	/** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
 	updateEnemyTransform(id: number, worldX: number, distanceZ: number): void {
-	const ev = this.enemies.get(id);
-	if (!ev) return;
+	const En = this.enemies.get(id);
+	if (!En) return;
 
 	// 1/z style perspective
 	const z = Math.max(this.NEAR_CLIP, distanceZ);
@@ -112,41 +77,41 @@ export class GameScreenView implements View {
 	const screenY = this.HORIZON_Y + this.DROP_K / z;
 
 	// Apply to enemy visual
-	ev.enemy.image.x(screenX);
-	ev.enemy.image.y(screenY);
-	ev.enemy.image.scale({ x: s, y: s });
+	En.image.x(screenX);
+	En.image.y(screenY);
+	En.image.scale({ x: s, y: s });
 
 	// Prompt directly under the circle, following scale
-	ev.restNode.x(ev.typedNode.width());
-	const width  = ev.typedNode.width() + ev.restNode.width();
-	const height = Math.max(ev.typedNode.height(), ev.restNode.height());
-	const g = ev.prompt.image;
+	En.prompt.restNode.x(En.prompt.typedNode.width());
+	const width  = En.prompt.typedNode.width() + En.prompt.restNode.width();
+	const height = Math.max(En.prompt.typedNode.height(), En.prompt.restNode.height());
+	const g = En.prompt.image;
 	g.width(width); g.height(height);
 	g.offsetX(width / 2); g.offsetY(height / 2);
 
-	ev.prompt.x = screenX;
-	ev.prompt.y = screenY + 55 * s;
+	En.prompt.x = screenX;
+	En.prompt.y = screenY + 55 * s;
 
 	this.group.getLayer()?.batchDraw();
 	}
 
 
   updateEnemyProgress(id: number, typed: string): void {
-    const ev = this.enemies.get(id);
-    if (!ev) return;
-    const target = ev.word;
+    const En = this.enemies.get(id);
+    if (!En) return;
+    const target = En.word;
     const len = Math.min(typed.length, target.length);
-    ev.typedNode.text(target.slice(0, len));
-    ev.restNode.text(target.slice(len));
-    ev.restNode.x(ev.typedNode.width());
+    En.prompt.typedNode.text(target.slice(0, len));
+    En.prompt.restNode.text(target.slice(len));
+    En.prompt.restNode.x(En.prompt.typedNode.width());
     this.group.getLayer()?.batchDraw();
   }
 
   destroyEnemy(id: number): void {
-    const ev = this.enemies.get(id);
-    if (!ev) return;
-    ev.prompt.image.destroy();
-    ev.enemy.destroy();
+    const En = this.enemies.get(id);
+    if (!En) return;
+    En.prompt.image.destroy();
+    En.destroy();
     this.enemies.delete(id);
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
@@ -156,19 +121,27 @@ export class GameScreenView implements View {
     // clear old
     if (this.targetedId && this.enemies.get(this.targetedId)) {
       const old = this.enemies.get(this.targetedId)!;
-      old.circle.shadowBlur(0);
-      old.circle.shadowColor("transparent");
-      old.circle.stroke("#0b5ea8");
-      old.circle.strokeWidth(4);
+	  if(old.type === "circle"){
+		const circle = old.image.findOne<Konva.Circle>('Circle');
+		if(circle){
+			circle.shadowBlur(0);
+			circle.shadowColor("transparent");
+			circle.stroke("#0b5ea8");
+			circle.strokeWidth(4);
+		}
+	  }
     }
     this.targetedId = id;
     // highlight new
     if (id && this.enemies.get(id)) {
-      const ev = this.enemies.get(id)!;
-    //   ev.circle.shadowColor("#ffd54a");
-    //   ev.circle.shadowBlur(20);
-      ev.circle.stroke("#ffd54a");
-      ev.circle.strokeWidth(4);
+      const En = this.enemies.get(id)!;
+	  if(En.type === "circle"){
+		const circle = En.image.findOne<Konva.Circle>('Circle');
+		if(circle){
+			circle.stroke("#ffd54a");
+      		circle.strokeWidth(4);
+	  	}
+	  }
     }
     this.group.getLayer()?.batchDraw();
   }
@@ -186,10 +159,10 @@ export class GameScreenView implements View {
 		const idsFarthestFirst = [...idsClosestFirst].reverse();
 
 		for (const id of idsFarthestFirst) {
-			const ev = this.enemies.get(id);
-			if (!ev) continue;
-			ev.enemy.image.zIndex(z++);
-			ev.prompt.image.zIndex(z++);
+			const En = this.enemies.get(id);
+			if (!En) continue;
+			En.image.zIndex(z++);
+			En.prompt.image.zIndex(z++);
 		}
 
 		this.enemyContainer.getLayer()?.batchDraw();
