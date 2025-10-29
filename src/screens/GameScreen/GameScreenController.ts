@@ -86,10 +86,8 @@ export class GameScreenController extends ScreenController {
 
 		const En = new Enemy("circle", word, 1, z, 0, speed);
 
-		// ✅ store worldX on the enemy so future frames know its lane
 		En.x = lane;
 
-		// ✅ add to controller's map so update() can move it
 		this.enemies.set(En.id, En);
 
 		// visuals

@@ -14,8 +14,6 @@ export class GameScreenView implements View {
   private targetedId: number | null = null;
 
     // Projection constants (tweak to taste)
-    // private readonly PERSPECTIVE = 450;   // bigger = more dramatic scaling
-    // private readonly BASE_RISE = 220;     // how much below horizon enemies appear at z=1
     private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
 	private readonly DROP_K    = 900;               // vertical drop ≈ DROP_K / z
 	private readonly UNITS_X   = 120;                // world X units → px at z reference
