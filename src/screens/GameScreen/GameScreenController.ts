@@ -21,6 +21,7 @@ export class GameScreenController extends ScreenController {
 
   private keyboardHandler: ((e: KeyboardEvent) => void) | null = null;
   private anim?: Konva.Animation;
+  private mult: number;
 
 	private getIdsSortedByDistanceClosestFirst(): number[] {
 	return Array.from(this.enemies.values())
@@ -46,6 +47,7 @@ export class GameScreenController extends ScreenController {
     this.screenSwitcher = screenSwitcher;
     this.model = new GameScreenModel();
     this.view = new GameScreenView();
+	this.mult = 1;
   }
 
   async startGame(): Promise<void> {
@@ -76,6 +78,7 @@ export class GameScreenController extends ScreenController {
     this.activeInitials.clear();
     this.letterToId.clear();
     this.view.setTarget(null);
+	this.mult = 1;
   }
 
   // ---------- Waves ----------
@@ -88,7 +91,7 @@ export class GameScreenController extends ScreenController {
       // pick a lane/worldX in [-3 .. +3] (float), and a far distance with a speed
       const lane = (Math.random() * 6 - 3); // -3..+3
       const z = 40 + Math.random() * 30;    // 40..70 units away
-      const speed = 5 + Math.random() * 4;  // 5..9 units/sec
+      const speed = (5 + Math.random() * 4) * this.mult;  // 5..9 units/sec
 
       const id = this.view.spawnEnemyVisuals(word);
       this.enemies.set(id, {
@@ -131,6 +134,7 @@ export class GameScreenController extends ScreenController {
 
     // wave cleared?
     if (this.enemies.size === 0) {
+	  this.mult *= 1.2;
       this.spawnWave(3);
     }
   }
