@@ -3,6 +3,8 @@ import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.
 import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 import GameRenderer from "./rendering/GameRenderer.ts";
+import { wordBank } from "./words/wordBank.ts";
+
 
 class App implements ScreenSwitcher {
   private renderer: GameRenderer;
@@ -35,6 +37,8 @@ class App implements ScreenSwitcher {
     this.menuController.getView().show();
   }
 
+  
+
   switchToScreen(screen: Screen): void {
     // Hide all screens
     this.menuController.hide();
@@ -53,4 +57,7 @@ class App implements ScreenSwitcher {
 }
 
 // Boot the app
-new App("container");
+(async () => {
+  await wordBank.load("/wordbanks.json");        // load JSON once
+  new App("container");         // then boot your app
+})();

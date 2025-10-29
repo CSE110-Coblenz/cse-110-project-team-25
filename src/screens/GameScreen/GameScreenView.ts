@@ -4,6 +4,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import Enemy from "../../objects/Enemy";
 import Prompt from "../../objects/Prompt";
 
+
 export class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
@@ -172,4 +173,85 @@ export class GameScreenView implements View {
   getGroup(): Konva.Group {
     return this.group;
   }
+
+	private randomSafePositionFor(word: string) {
+	// Measure prompt to keep it on screen
+	const measure = new Konva.Text({
+		text: word,
+		fontSize: 28,
+		fontFamily: "Courier New",
+		listening: false,
+	});
+	const textW = Math.max(140, measure.width());
+	const textH = measure.height();
+
+	const r = 40;     // circle radius
+	const gap = 70;   // distance from enemy center to prompt center (below)
+	const pad = 16;   // screen padding
+
+	// Keep both circle and full prompt visible
+	const halfNeededX = Math.max(r, textW / 2);
+	const minX = pad + halfNeededX;
+	const maxX = STAGE_WIDTH - (pad + halfNeededX);
+
+	const minY = pad + r;
+	const maxY = STAGE_HEIGHT - pad - (gap + textH / 2);
+
+	const rand = (a: number, b: number) => a + Math.random() * Math.max(0, b - a);
+	const x = rand(minX, Math.max(minX, maxX));
+	const y = rand(minY, Math.max(minY, maxY));
+
+	return { x, y };
+	}
+
+	// + New: spawn at a random safe position
+	spawnEnemyWithPromptRandom(word: string): void {
+	const { x, y } = this.randomSafePositionFor(word);
+	this.spawnEnemyWithPromptAt(word, x, y);
+	}
+
+	// + New: same as your current spawn but with explicit x,y
+	private spawnEnemyWithPromptAt(word: string, x: number, y: number): void {
+	this.destroyEnemy(); // clear any existing
+
+	// Enemy circle group
+	const enemyGroup = new Konva.Group({ width: 80, height: 80 });
+	const circle = new Konva.Circle({
+		x: 0, y: 0, radius: 40,
+		fill: "#2aa1ff",
+		stroke: "#0b5ea8",
+		strokeWidth: 4,
+	});
+	enemyGroup.add(circle);
+
+	this.enemy = new Enemy(enemyGroup, word, 1, 0, 100);
+	this.enemy.x = x;
+	this.enemy.y = y;
+	this.group.add(this.enemy.image);
+
+	// Prompt group (text)
+	const textNode = new Konva.Text({
+		x: 0, y: 0,
+		text: word,
+		fontSize: 28,
+		fontFamily: "Courier New",
+		fill: "#ffffff",
+		align: "center",
+		listening: false,
+	});
+	const promptWidth = Math.max(140, textNode.width());
+	textNode.width(promptWidth);
+	textNode.offsetX(promptWidth / 2);
+	textNode.offsetY(textNode.height() / 2);
+
+	const promptGroup = new Konva.Group({ width: promptWidth, height: textNode.height() });
+	promptGroup.add(textNode);
+
+	this.prompt = new Prompt(promptGroup, textNode, false);
+	this.prompt.x = x;
+	this.prompt.y = y + 70; // under the circle
+	this.group.add(this.prompt.image);
+
+	this.group.getLayer()?.draw();
+	}
 }

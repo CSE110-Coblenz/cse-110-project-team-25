@@ -3,6 +3,7 @@ import { ScreenController } from "../../types.ts";
 import type { ScreenSwitcher } from "../../types.ts";
 import { GameScreenModel } from "./GameScreenModel.ts";
 import { GameScreenView } from "./GameScreenView.ts";
+import { wordBank } from "../../words/wordBank.ts";
 
 export class GameScreenController extends ScreenController {
   private model: GameScreenModel;
@@ -22,12 +23,15 @@ export class GameScreenController extends ScreenController {
   startGame(): void {
     // Reset and spawn first enemy
     this.model.reset();
-    const target = "quickly";
+
+    const target = wordBank.getRandomWord("any");   // ⬅️ random word
+	console.log(target);
     this.model.setTargetWord(target);
 
     this.typedText = "";
     this.view.updateText(this.typedText);
-    this.view.spawnEnemyWithPrompt(target);
+
+    this.view.spawnEnemyWithPromptRandom(target);
     this.view.updatePromptProgress(this.typedText);
 
     this.setupKeyboardInput();
@@ -54,7 +58,6 @@ export class GameScreenController extends ScreenController {
       // Only accept single displayable chars
       if (e.key.length !== 1) return;
 
-      // Only append if it keeps us as a prefix of the target
       const next = this.typedText + e.key;
       if (target.startsWith(next)) {
         this.typedText = next;
@@ -65,7 +68,16 @@ export class GameScreenController extends ScreenController {
         if (this.typedText === target) {
           this.view.destroyEnemy();
           this.model.setScore(this.model.getScore() + 100);
-          // Optional: spawn another, or show message, etc.
+
+
+          const nextTarget = wordBank.getRandomWord("any");
+		  console.log(nextTarget);
+          this.model.setTargetWord(nextTarget);
+
+          this.typedText = "";
+          this.view.updateText(this.typedText);
+          this.view.spawnEnemyWithPromptRandom(nextTarget);
+          this.view.updatePromptProgress(this.typedText);
         }
       }
     };
