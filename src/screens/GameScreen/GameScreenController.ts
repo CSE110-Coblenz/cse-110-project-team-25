@@ -84,7 +84,13 @@ export class GameScreenController extends ScreenController {
 		const z = 40 + Math.random() * 30;  // 40..70
 		const speed = (5 + Math.random() * 4) * this.mult;
 
-		const En = new Enemy("circle", word, 1, z, 0, speed);
+    let type = ""
+    if(Math.random() > 0.5){
+      type = "meteor";
+    } else {
+      type = "ufo"
+    }
+		const En = new Enemy(type, word, 1, z, 0, speed);
 
 		En.x = lane;
 

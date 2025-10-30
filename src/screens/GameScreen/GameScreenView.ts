@@ -24,15 +24,19 @@ export class GameScreenView implements View {
     this.group = new Konva.Group({ visible: false });
 
     // Background at the very bottom
-    const bg = new Konva.Rect({
-      x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "#1a1a2e",
-    });
+    // let bg = new Konva.Rect({
+    //   x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "#1a1a2e",
+    // });
+	Konva.Image.fromURL("/space.png", (bg) => {
+		this.group.add(bg);
+		bg.moveToBottom();
+	});
 
     // Containers layered: bg (bottom) -> enemies -> hud (top)
     this.enemyContainer = new Konva.Group();
     this.hudContainer = new Konva.Group();
 
-    this.group.add(bg);
+    // this.group.add(bg);
     this.group.add(this.enemyContainer);
     this.group.add(this.hudContainer);
 
