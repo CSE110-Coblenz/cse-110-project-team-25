@@ -12,17 +12,100 @@ class Enemy extends Object {
   _type: string;
   private static seq = 1;
 
-    private static typeToImage(type: string): Konva.Group{
-        if(type === "circle"){
-            let enemyGroup = new Konva.Group({ width: 80, height: 80 });
-            let circle = new Konva.Circle({
-                x: 0, y: 0, radius: 40, fill: "#2aa1ff", stroke: "#0b5ea8", strokeWidth: 4,
-                });
+
+    private static typeToImage(type: string): Konva.Group {
+        const enemyGroup = new Konva.Group({ width: 80, height: 80 });
+
+        if (type === "circle") {
+            const circle = new Konva.Circle({
+            x: 0, y: 0, radius: 40,
+            fill: "#2aa1ff", stroke: "#0b5ea8", strokeWidth: 4,
+            });
             enemyGroup.add(circle);
             return enemyGroup;
         }
-        return new Konva.Group({ width: 80, height: 80 });
+
+        if (type === "ufo") {
+            const animations = {
+            idle: [
+              0, 0, 480, 220,    
+              480, 0, 480, 220,     
+              960, 0, 480, 220,   
+              1440, 0, 480, 220,    
+              1920, 0, 480, 220,
+            ],};
+            const imageObj = new Image();
+            imageObj.src = "/ufo.png";
+            imageObj.onload = function() {
+            const scale = Math.min(80 / 480, 80 / 220);
+            const ufo = new Konva.Sprite({
+              x: -35,
+              y: 0,
+              scale: { x: scale, y: scale},
+              offset: { x: (220 * scale) / 2, y: (480 * scale) / 2},
+              image: imageObj,
+              animation: 'idle',
+              animations: animations,
+              frameRate: 15,
+              frameIndex: Math.round(Math.random() * 5)
+            });
+            ufo.start();
+            enemyGroup.add(ufo);
+            enemyGroup.getLayer()?.batchDraw?.();
+           }
+            return enemyGroup;
+
+        }
+        if (type === "meteor") {
+            const animations = {
+            idle: [
+              0, 0, 480, 480,    
+              480, 0, 480, 480,     
+              960, 0, 480, 480,   
+              1440, 0, 480, 480,    
+              1920, 0, 480, 480,
+              2400, 0, 480, 480,
+              3360, 0, 480, 480,
+              3840, 0, 480, 480,
+              4320, 0, 480, 480,
+              4800, 0, 480, 480,
+              5280, 0, 480, 480,
+              5760, 0, 480, 480,
+              6240, 0, 480, 480,
+              6720, 0, 480, 480,
+              7200, 0, 480, 480,
+              7680, 0, 480, 480,
+              8160, 0, 480, 480,
+              8640, 0, 480, 480,
+              9120, 0, 480, 480, 
+            ],};
+            const imageObj = new Image();
+            imageObj.src = "/meteor.png";
+            imageObj.onload = function() {
+            const scale = Math.min(80 / 480, 80 / 220);
+            const ufo = new Konva.Sprite({
+              x: -35,
+              y: 0,
+              scale: { x: scale, y: scale},
+              offset: { x: (220 * scale) / 2, y: (480 * scale) / 2},
+              image: imageObj,
+              animation: 'idle',
+              animations: animations,
+              frameRate: 15,
+              frameIndex: Math.round(Math.random() * 20)
+            });
+            ufo.start();
+            enemyGroup.add(ufo);
+            enemyGroup.getLayer()?.batchDraw?.();
+           }
+            return enemyGroup;
+
+        }
+
+        // default empty group (still 80×80)
+        return enemyGroup;
     }
+
 
   constructor(
     type: string,
