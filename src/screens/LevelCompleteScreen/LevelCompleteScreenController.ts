@@ -1,0 +1,47 @@
+import { ScreenController } from "../../types.ts";
+import type { ScreenSwitcher } from "../../types.ts";
+import { LevelCompleteScreenView } from "./LevelCompleteScreenView.ts";
+
+/**
+ * LevelCompleteScreenController - Handles level completion screen interactions
+ */
+export class LevelCompleteScreenController extends ScreenController {
+	private view: LevelCompleteScreenView;
+	private screenSwitcher: ScreenSwitcher;
+	private level: number;
+
+	constructor(screenSwitcher: ScreenSwitcher, level: number, score: number) {
+		super();
+		this.screenSwitcher = screenSwitcher;
+		this.level = level;
+		this.view = new LevelCompleteScreenView(
+			level,
+			score,
+			() => this.handleNextLevelClick(),
+			() => this.handleMenuClick()
+		);
+	}
+
+	/**
+	 * Handle next level button click
+	 */
+	private handleNextLevelClick(): void {
+		console.log(`Starting level ${this.level + 1}...`);
+		this.screenSwitcher.switchToScreen({type: "game", mode: "level"});
+	}
+
+	/**
+	 * Handle main menu button click
+	 */
+	private handleMenuClick(): void {
+		console.log("Returning to main menu...");
+		this.screenSwitcher.switchToScreen({type: "menu"});
+	}
+
+	/**
+	 * Get the view
+	 */
+	getView(): LevelCompleteScreenView {
+		return this.view;
+	}
+}
