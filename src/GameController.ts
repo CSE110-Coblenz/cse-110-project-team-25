@@ -20,6 +20,7 @@ export class GameController {
     // Game state
     private mult: number = 1;
     private anim?: Konva.Animation;
+    private paused: Boolean = false;
     
     // Targeting and input
     private typedText = "";
@@ -44,7 +45,6 @@ export class GameController {
      * Initialize and start the game
      */
     async startGame(): Promise<void> {
-        await wordBank.load("/wordbanks.json");
         this.resetGameState();
         this.spawnWave(3);
         this.setupKeyboardInput();
@@ -58,6 +58,28 @@ export class GameController {
         this.stopGameLoop();
         this.cleanupKeyboardInput();
         this.clearAllEnemies();
+    }
+
+    /**
+     * pause all timely elements
+     */
+    pauseGame(): void {
+        this.stopGameLoop();
+        for (const [id, enemy] of this.enemies){
+            // enemy._image.stop()
+        }
+        this.paused = true;
+    }
+
+    /**
+     * unpause all timely elements
+     */
+    unpauseGame(): void {
+        this.startGameLoop();
+        for (const [id, enemy] of this.enemies){
+            // enemy._image.start()
+        }
+        this.paused = false;
     }
 
     /**
@@ -91,7 +113,9 @@ export class GameController {
      */
     private spawnWave(n: number): void {
         for (let i = 0; i < n; i++) {
-            const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, "any");
+            const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"], 1);
+
+            // const word = words[i]
             if (!word) break;
 
             const lane = Math.random() * 6 - 3; // -3..+3
@@ -208,13 +232,22 @@ export class GameController {
         this.cleanupKeyboardInput();
 
         this.keyboardHandler = (e: KeyboardEvent) => {
-            if (e.key === "Backspace") {
-                this.handleBackspace();
-                return;
+            if (e.key === "Escape"){
+                if(this.paused){
+                    this.unpauseGame()
+                } else {
+                    this.pauseGame()
+                }
             }
+            if(!this.paused){
+                if (e.key === "Backspace") {
+                    this.handleBackspace();
+                    return;
+                }
 
-            if (e.key.length !== 1) return;
-            this.handleCharacterInput(e.key.toLowerCase());
+                if (e.key.length !== 1) return;
+                this.handleCharacterInput(e.key.toLowerCase());
+            }
         };
 
         window.addEventListener("keydown", this.keyboardHandler);

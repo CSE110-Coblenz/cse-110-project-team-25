@@ -147,6 +147,8 @@ class Enemy extends Object {
   
   get type(): string { return this._type}
 
+  
+
   destroy(): void { this.image.destroy(); }
 }
 

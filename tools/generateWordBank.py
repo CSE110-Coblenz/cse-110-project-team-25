@@ -38,17 +38,33 @@ def dumps_multiline(obj, elements_per_line=3, indent_level=2):
 
     return format_value(obj, 0)
 
+def contains(str, chars):
+    for i in chars:
+        if i in str:
+            return True
+    return False
+
+types = ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"]
+
 data = {}
 
-with open('./tools/google-10000-english-no-swears.txt', 'r') as f:
+with open('./tools/1000MostCommon.txt', 'r') as f:
     words = f.read().splitlines()
 
 for word in words:
     length = len(word)
-    if length not in data:
-        data[length] = []
-    data[length].append(word)
+    # if length not in data:
+    #     data[length] = []
+    for type in types:
+        if contains(word, type):
+            if(type not in data):
+                data[type] = {}
+            if(length not in data[type]):
+                data[type][length] = []
+            data[type][length].append(word)
+            break
+
 
 json_str = dumps_multiline(data, elements_per_line=4, indent_level=4)
-with open('./public/wordbank.json', 'w') as f:
+with open('./public/wordbankss.json', 'w') as f:
     f.write(json_str)
