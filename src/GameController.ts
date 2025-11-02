@@ -65,8 +65,8 @@ export class GameController {
      */
     pauseGame(): void {
         this.stopGameLoop();
-        for (const [id, enemy] of this.enemies){
-            // enemy._image.stop()
+        for (const [_, enemy] of this.enemies){
+            enemy.pause();
         }
         this.paused = true;
     }
@@ -76,8 +76,8 @@ export class GameController {
      */
     unpauseGame(): void {
         this.startGameLoop();
-        for (const [id, enemy] of this.enemies){
-            // enemy._image.start()
+        for (const [_, enemy] of this.enemies){
+            enemy.unpause();
         }
         this.paused = false;
     }

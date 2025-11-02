@@ -147,7 +147,19 @@ class Enemy extends Object {
   
   get type(): string { return this._type}
 
-  
+  pause(): void {
+    var graphic: Konva.Sprite | undefined = this.image.findOne('Sprite');
+    if(graphic){
+      graphic.stop()
+    }
+  }
+
+  unpause(): void {
+    var graphic: Konva.Sprite | undefined = this.image.findOne('Sprite');
+    if(graphic){
+      graphic.start()
+    }
+  }
 
   destroy(): void { this.image.destroy(); }
 }
