@@ -113,7 +113,7 @@ export class GameController {
      */
     private spawnWave(n: number): void {
         for (let i = 0; i < n; i++) {
-            const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"], 1);
+            const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"], Math.round(Math.random() * 4 + 1));
 
             // const word = words[i]
             if (!word) break;
