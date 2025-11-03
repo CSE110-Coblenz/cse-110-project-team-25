@@ -5,6 +5,7 @@ import { wordBank } from "./words/wordBank";
 import Enemy from "./objects/Enemy";
 import type { ScreenSwitcher } from "./types";
 import { Money } from "./Money";
+import { Health } from "./Health";
 
 /**
  * GameController handles the core game logic including:
@@ -96,6 +97,8 @@ export class GameController {
         Money.getInstance().reset();
         //TODO save money earned
         this.view.updateMoney(0);
+        Health.getInstance().reset();
+        this.view.updateHealth(Health.getInstance().maxLives);
     }
 
     /**
@@ -177,6 +180,36 @@ export class GameController {
         }
     }
 
+    /**
+     * Handle enemy giving damage to player
+     */
+    private EnemyHitsPlayer(id: number): void {
+        const enemy = this.enemies.get(id);
+        if (!enemy) return;
+
+        // Remove from tracking
+        this.activeInitials.delete(enemy.initial);
+        this.letterToId.delete(enemy.initial);
+        this.enemies.delete(id);
+
+        // Remove from view
+        this.view.destroyEnemy(id);
+
+        // Reset targeting if this was the target
+        if (this.targetedId === id) {
+            this.targetedId = null;
+            this.typedText = "";
+            this.view.updateText(this.typedText);
+            this.view.setTarget(null);
+        }
+
+        // Check for wave completion
+        if (this.enemies.size === 0) {
+            this.mult *= 1.2;
+            this.spawnWave(3);
+        }
+    }
+
     // ---------- Game Loop ----------
 
     /**
@@ -203,7 +236,7 @@ export class GameController {
      * Main game update loop
      */
     private update(dt: number): void {
-        let anyTooClose = false;
+        let closeEnemy = null;
 
         // Update all enemies
         for (const enemy of this.enemies.values()) {
@@ -211,15 +244,23 @@ export class GameController {
             this.view.updateEnemyTransform(enemy.id, enemy.x, enemy.distance);
             
             if (enemy.distance <= this.NEAR_GAME_OVER) {
-                anyTooClose = true;
+                closeEnemy = enemy.id;
             }
         }
 
         this.view.setDrawOrder(this.getIdsSortedByDistanceClosestFirst());
 
         // Check game over condition
-        if (anyTooClose) {
-            this.gameOver();
+        if (closeEnemy !== null) {
+
+            this.EnemyHitsPlayer(closeEnemy);
+            Health.getInstance().loseLife();
+            this.view.updateHealth(Health.getInstance().lives);
+            closeEnemy = null;
+
+            if(Health.getInstance().lives <= 0){
+                this.gameOver();
+            }
         }
     }
 
