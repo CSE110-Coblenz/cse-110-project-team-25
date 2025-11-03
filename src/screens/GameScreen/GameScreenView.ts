@@ -3,24 +3,27 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import Enemy from "../../objects/Enemy";
+import { Health } from "../../Health.ts";
 // import Prompt from "../../objects/Prompt";
 
 export class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
+  private moneyText: Konva.Text;
+  private healthText: Konva.Text; //TODO show health with pixel hearts
   enemyContainer: Konva.Group;
   private hudContainer: Konva.Group; 
   enemies = new Map<number, Enemy>();
   private targetedId: number | null = null;
 
-    // Projection constants (tweak to taste)
-    private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
+  // Projection constants (tweak to taste)
+  private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
 	private readonly DROP_K    = 900;               // vertical drop ≈ DROP_K / z
 	private readonly UNITS_X   = 120;                // world X units → px at z reference
 	private readonly HORIZON_Y = STAGE_HEIGHT * 0.35;
 	private readonly NEAR_CLIP = 1.0;               // safety clamp
 
-   constructor() {
+  constructor() {
     this.group = new Konva.Group({ visible: false });
 
     // Background at the very bottom
@@ -47,7 +50,21 @@ export class GameScreenView implements View {
     });
     this.typedText.offsetX(this.typedText.width() / 2);
     this.typedText.offsetY(this.typedText.height() / 2);
+
+    // Money counter
+    this.moneyText = new Konva.Text({
+      x: 20, y: 20, text: "$0",
+      fontSize: 24, fontFamily: "Courier New", fill: "#ffd700", align: "left", listening: false,
+    });
+
+    this.healthText = new Konva.Text({
+      x: STAGE_WIDTH - 200, y: 20, text: "Health: ",
+      fontSize: 24, fontFamily: "Courier New", fill: "#ff0000", align: "right", listening: false,
+    });
+    
     this.hudContainer.add(this.typedText);
+    this.hudContainer.add(this.moneyText);
+    this.hudContainer.add(this.healthText);
   }
 
   // Spawn enemy visuals (no world coords here yet)
@@ -170,6 +187,17 @@ export class GameScreenView implements View {
 		this.enemyContainer.getLayer()?.batchDraw();
 	}
 
+
+  updateMoney(amount: number): void {
+    this.moneyText.text(`$${amount}`);
+    this.group.getLayer()?.batchDraw();
+  }
+
+  updateHealth(lives: number): void {
+    const hearts = "♥".repeat(lives);
+    this.healthText.text(`Health: ${hearts}`);
+    this.group.getLayer()?.batchDraw();
+  }
 
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }
   hide(): void { this.group.visible(false); this.group.getLayer()?.draw(); }
