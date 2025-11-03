@@ -1,18 +1,17 @@
-import { ScreenController } from "../../types.ts";
 import type { ScreenSwitcher } from "../../types.ts";
+import { BaseMenuController } from "../base/BaseMenuController.ts";
 import { MenuScreenView } from "./MenuScreenView.ts";
 
 /**
  * MenuScreenController - Handles menu interactions
  */
-export class MenuScreenController extends ScreenController {
-	private view: MenuScreenView;
-	private screenSwitcher: ScreenSwitcher;
-
+export class MenuScreenController extends BaseMenuController {
 	constructor(screenSwitcher: ScreenSwitcher) {
-		super();
-		this.screenSwitcher = screenSwitcher;
-		this.view = new MenuScreenView(() => this.handleStartClick());
+		super(screenSwitcher);
+		this.view = new MenuScreenView(
+			() => this.handleStartClick(),
+			() => this.handleDebugClick()
+		);
 	}
 
 	/**
@@ -24,9 +23,17 @@ export class MenuScreenController extends ScreenController {
 	}
 
 	/**
+	 * Handle debug button click
+	 */
+	private handleDebugClick(): void {
+		console.log("Debug button clicked!");
+		this.screenSwitcher.switchToScreen({type: "debug"});
+	}
+
+	/**
 	 * Get the view
 	 */
 	getView(): MenuScreenView {
-		return this.view;
+		return this.view as MenuScreenView;
 	}
 }

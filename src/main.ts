@@ -1,6 +1,7 @@
 import type { ScreenSwitcher, Screen } from "./types.ts";
 import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.ts";
 import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
+import { DebugScreenController } from "./screens/debug-screen/DebugScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 import GameRenderer from "./rendering/GameRenderer.ts";
 import { wordBank } from "./words/wordBank.ts";
@@ -11,6 +12,7 @@ class App implements ScreenSwitcher {
 
   private menuController: MenuScreenController;
   private gameController: GameScreenController;
+  private debugController: DebugScreenController;
 
   constructor(container: string) {
     // Create the renderer (owns Stage + Layer)
@@ -23,11 +25,13 @@ class App implements ScreenSwitcher {
     // Init controllers (they still return Konva.Groups via their Views)
     this.menuController = new MenuScreenController(this);
     this.gameController = new GameScreenController(this);
+    this.debugController = new DebugScreenController(this);
 
     // Add each screen's Group to the renderer's layer
     const layer = this.renderer.getLayer();
     layer.add(this.menuController.getView().getGroup());
     layer.add(this.gameController.getView().getGroup());
+    layer.add(this.debugController.getView().getGroup());
 
     // Initial draw and (optional) start the lightweight render loop
     layer.draw();
@@ -37,12 +41,13 @@ class App implements ScreenSwitcher {
     this.menuController.getView().show();
   }
 
-  
+
 
   switchToScreen(screen: Screen): void {
     // Hide all screens
     this.menuController.hide();
     this.gameController.hide();
+    this.debugController.hide();
 
     // Show the requested one
     switch (screen.type) {
@@ -51,6 +56,9 @@ class App implements ScreenSwitcher {
         break;
       case "game":
         this.gameController.startGame(); // shows game screen inside
+        break;
+      case "debug":
+        this.debugController.show();
         break;
     }
   }
