@@ -159,8 +159,7 @@ export class GameController {
         this.view.destroyEnemy(id);
 
         // Money rewward
-        const moneyReward = Math.floor((enemy.word.length * 10) * (enemy.speed / 6));
-        Money.getInstance().add(moneyReward);
+        Money.getInstance().add(Money.getInstance().calculateReward(enemy.word.length, enemy.speed));
         this.view.updateMoney(Money.getInstance().amount);
 
         // Reset targeting if this was the target

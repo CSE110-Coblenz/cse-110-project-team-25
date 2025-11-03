@@ -30,6 +30,10 @@ export class Money {
         this._amount = Math.max(0, this._amount - value);
     }
 
+    public calculateReward(wordLength: number, speed: number): number {
+        return Math.floor((wordLength * 10) * (speed / 6));
+    }
+
     public reset(): void {
         this._amount = 0;
     }
