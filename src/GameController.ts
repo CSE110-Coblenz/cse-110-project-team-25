@@ -4,6 +4,7 @@ import { GameScreenView } from "./screens/GameScreen/GameScreenView";
 import { wordBank } from "./words/wordBank";
 import Enemy from "./objects/Enemy";
 import type { ScreenSwitcher } from "./types";
+import { Money } from "./Money";
 
 /**
  * GameController handles the core game logic including:
@@ -92,6 +93,9 @@ export class GameController {
         this.clearAllEnemies();
         this.view.setTarget(null);
         this.mult = 1;
+        Money.getInstance().reset();
+        //TODO save money earned
+        this.view.updateMoney(0);
     }
 
     /**
@@ -153,6 +157,11 @@ export class GameController {
 
         // Remove from view
         this.view.destroyEnemy(id);
+
+        // Money rewward
+        const moneyReward = Math.floor((enemy.word.length * 10) * (enemy.speed / 6));
+        Money.getInstance().add(moneyReward);
+        this.view.updateMoney(Money.getInstance().amount);
 
         // Reset targeting if this was the target
         if (this.targetedId === id) {

@@ -8,6 +8,7 @@ import Enemy from "../../objects/Enemy";
 export class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
+  private moneyText: Konva.Text;
   enemyContainer: Konva.Group;
   private hudContainer: Konva.Group; 
   enemies = new Map<number, Enemy>();
@@ -47,7 +48,15 @@ export class GameScreenView implements View {
     });
     this.typedText.offsetX(this.typedText.width() / 2);
     this.typedText.offsetY(this.typedText.height() / 2);
+
+    // Money counter
+    this.moneyText = new Konva.Text({
+      x: 20, y: 20, text: "$0",
+      fontSize: 24, fontFamily: "Courier New", fill: "#ffd700", align: "left", listening: false,
+    });
+    
     this.hudContainer.add(this.typedText);
+    this.hudContainer.add(this.moneyText);
   }
 
   // Spawn enemy visuals (no world coords here yet)
@@ -170,6 +179,11 @@ export class GameScreenView implements View {
 		this.enemyContainer.getLayer()?.batchDraw();
 	}
 
+
+  updateMoney(amount: number): void {
+    this.moneyText.text(`$${amount}`);
+    this.group.getLayer()?.batchDraw();
+  }
 
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }
   hide(): void { this.group.visible(false); this.group.getLayer()?.draw(); }
