@@ -282,7 +282,7 @@ export class GameController {
      */
     private handleBackspace(): void {
         if (this.targetedId !== null) {
-            const word = this.enemies.get(this.targetedId)?.word ?? "";
+            const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
             this.typedText = this.typedText.slice(0, -1);
             this.view.updateText(this.typedText);
             const isValid = this.isTypedTextValid(word, this.typedText);
@@ -360,7 +360,7 @@ export class GameController {
         if (!currentWave) return;
 
         const id = this.targetedId;
-        const word = this.enemies.get(id)?.word ?? "";
+        const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
 
         // Only complete if length matches AND text is valid (correct)
         if (word && this.typedText.length === word.length && this.isTypedTextValid(word, this.typedText)) {
