@@ -17,7 +17,6 @@ class LevelManager {
     private enemyFactory: EnemyFactory;
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
-    private activeInitials: Set<string> = new Set();
     private letterToId: Map<string, number> = new Map();
 
 
@@ -97,7 +96,7 @@ class LevelManager {
     /**
      * Generate a new set of random waves for the current level
      */
-    private generateNewLevel(difficulty?: number): void {
+    private generateNewLevel(): void {
         const wavesPerLevel = 3; // Number of waves per level
         const baseEnemyCount = 3;
         const speedMultiplier = 1 + (this._currentLevel * 0.2);
@@ -146,7 +145,6 @@ class LevelManager {
         }
 
         // Clear tracking data
-        this.activeInitials.clear();
         this.letterToId.clear();
 
         // Iterate through all enemies in the wave
@@ -156,13 +154,17 @@ class LevelManager {
             this.view!.updateEnemyTransform(enemy.id, enemy.x, enemy.distance);
 
             // Track for targeting
-            this.activeInitials.add(enemy.initial.toLowerCase());
             this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
         });
 
         // Set draw order based on distance
         const sortedIds = this.getIdsSortedByDistance(wave);
         this.view.setDrawOrder(sortedIds);
+
+        // Update level and wave display
+        this.view.updateLevel(this._currentLevel);
+        this.view.updateWaves(this._waves.length);
+        this.view.updateEnemiesLeft(wave.getCount());
     }
 
     /**
@@ -175,10 +177,11 @@ class LevelManager {
             if (enemy) {
                 // Remove from letterToId map
                 this.letterToId.delete(enemy.initial.toLowerCase());
-                // Remove from activeInitials
-                this.activeInitials.delete(enemy.initial.toLowerCase());
                 // Remove from wave
                 this._currentWave.removeEnemy(id);
+                
+                // Update enemies left display
+                this.view.updateEnemiesLeft(this._currentWave.getCount());
             }
         }
     }
@@ -208,12 +211,7 @@ class LevelManager {
             .map(e => e.id);
     }
 
-    /**
-     * Get tracking data for targeting system
-     */
-    getActiveInitials(): Set<string> {
-        return this.activeInitials;
-    }
+
 }
 
 export default LevelManager;
