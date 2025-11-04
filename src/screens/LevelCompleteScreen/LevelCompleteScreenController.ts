@@ -27,7 +27,7 @@ export class LevelCompleteScreenController extends ScreenController {
 	 */
 	private handleNextLevelClick(): void {
 		console.log(`Starting level ${this.level + 1}...`);
-		this.screenSwitcher.switchToScreen({type: "game", mode: "level"});
+		this.screenSwitcher.switchToScreen({type: "game"});
 	}
 
 	/**
