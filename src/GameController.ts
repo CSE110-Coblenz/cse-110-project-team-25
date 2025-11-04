@@ -1,26 +1,25 @@
 import Konva from "konva";
 import { GameScreenModel } from "./screens/GameScreen/GameScreenModel";
 import { GameScreenView } from "./screens/GameScreen/GameScreenView";
-import { wordBank } from "./words/wordBank";
-import Enemy from "./objects/Enemy";
 import type { ScreenSwitcher } from "./types";
 import { Money } from "./Money";
 import { Health } from "./Health";
+import LevelManager from "./Level/LevelManager";
 
 /**
  * GameController handles the core game logic including:
- * - Enemy management and waves
  * - Typing input and targeting
  * - Game loop and collision detection
  * - Score and game over conditions
+ * - Delegates enemy/wave management to LevelManager
  */
 export class GameController {
     private model: GameScreenModel;
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
+    private levelManager: LevelManager;
     
     // Game state
-    private mult: number = 1;
     private anim?: Konva.Animation;
     private paused: Boolean = false;
     
@@ -29,11 +28,6 @@ export class GameController {
     private targetedId: number | null = null;
     private keyboardHandler: ((e: KeyboardEvent) => void) | null = null;
     
-    // Enemy management
-    private enemies = new Map<number, Enemy>();
-    private activeInitials = new Set<string>();
-    private letterToId = new Map<string, number>();
-    
     // Game parameters
     private readonly NEAR_GAME_OVER = 10;
 
@@ -41,6 +35,7 @@ export class GameController {
         this.model = model;
         this.view = view;
         this.screenSwitcher = screenSwitcher;
+        this.levelManager = new LevelManager(view, screenSwitcher);
     }
 
     /**
@@ -48,7 +43,7 @@ export class GameController {
      */
     async startGame(): Promise<void> {
         this.resetGameState();
-        this.spawnWave(3);
+        this.levelManager.initializeLevel();
         this.setupKeyboardInput();
         this.startGameLoop();
     }
@@ -67,8 +62,11 @@ export class GameController {
      */
     pauseGame(): void {
         this.stopGameLoop();
-        for (const [_, enemy] of this.enemies){
-            enemy.pause();
+        const currentWave = this.levelManager.currentWave;
+        if (currentWave) {
+            currentWave.forEach((enemy) => {
+                enemy.pause();
+            });
         }
         this.paused = true;
     }
@@ -78,8 +76,11 @@ export class GameController {
      */
     unpauseGame(): void {
         this.startGameLoop();
-        for (const [_, enemy] of this.enemies){
-            enemy.unpause();
+        const currentWave = this.levelManager.currentWave;
+        if (currentWave) {
+            currentWave.forEach((enemy) => {
+                enemy.unpause();
+            });
         }
         this.paused = false;
     }
@@ -93,7 +94,6 @@ export class GameController {
         this.targetedId = null;
         this.clearAllEnemies();
         this.view.setTarget(null);
-        this.mult = 1;
         Money.getInstance().reset();
         //TODO save money earned
         this.view.updateMoney(0);
@@ -105,63 +105,32 @@ export class GameController {
      * Clear all enemies from the game
      */
     private clearAllEnemies(): void {
-        for (const enemy of Array.from(this.enemies.values())) {
-            this.view.destroyEnemy(enemy.id);
+        const currentWave = this.levelManager.currentWave;
+        if (currentWave) {
+            currentWave.forEach((enemy) => {
+                this.view.destroyEnemy(enemy.id);
+            });
+            currentWave.clear();
         }
-        this.enemies.clear();
-        this.activeInitials.clear();
-        this.letterToId.clear();
     }
 
     // ---------- Wave Management ----------
 
     /**
-     * Spawn a wave of enemies
-     */
-    private spawnWave(n: number): void {
-        for (let i = 0; i < n; i++) {
-            const word = wordBank.getRandomWordExcludingInitials(this.activeInitials, ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"], Math.round(Math.random() * 4 + 1));
-
-            // const word = words[i]
-            if (!word) break;
-
-            const lane = Math.random() * 6 - 3; // -3..+3
-            const z = 40 + Math.random() * 30;  // 40..70
-            const speed = (5 + Math.random() * 4) * this.mult;
-
-            const type = Math.random() > 0.5 ? "meteor" : "ufo";
-            const enemy = new Enemy(type, word, 1, z, 0, speed);
-
-            enemy.x = lane;
-            this.enemies.set(enemy.id, enemy);
-
-            // Add to view
-            this.view.spawnEnemyVisuals(enemy);
-            this.view.updateEnemyTransform(enemy.id, lane, z);
-
-            // Track for targeting
-            this.activeInitials.add(word[0].toLowerCase());
-            this.letterToId.set(word[0].toLowerCase(), enemy.id);
-        }
-        this.view.setDrawOrder(this.getIdsSortedByDistanceClosestFirst());
-    }
-
-    /**
      * Handle enemy defeat
      */
     private onEnemyDefeated(id: number): void {
-        const enemy = this.enemies.get(id);
+        const currentWave = this.levelManager.currentWave;
+        if (!currentWave) return;
+
+        const enemy = currentWave.getEnemy(id);
         if (!enemy) return;
 
-        // Remove from tracking
-        this.activeInitials.delete(enemy.initial);
-        this.letterToId.delete(enemy.initial);
-        this.enemies.delete(id);
-
-        // Remove from view
+        // Remove from wave and view
+        this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
 
-        // Money rewward
+        // Money reward
         Money.getInstance().add(Money.getInstance().calculateReward(enemy.word.length, enemy.speed));
         this.view.updateMoney(Money.getInstance().amount);
 
@@ -173,26 +142,22 @@ export class GameController {
             this.view.setTarget(null);
         }
 
-        // Check for wave completion
-        if (this.enemies.size === 0) {
-            this.mult *= 1.2;
-            this.spawnWave(3);
-        }
+        // Check for wave completion and advance
+        this.levelManager.onWaveCheck();
     }
 
     /**
      * Handle enemy giving damage to player
      */
     private EnemyHitsPlayer(id: number): void {
-        const enemy = this.enemies.get(id);
+        const currentWave = this.levelManager.currentWave;
+        if (!currentWave) return;
+
+        const enemy = currentWave.getEnemy(id);
         if (!enemy) return;
 
-        // Remove from tracking
-        this.activeInitials.delete(enemy.initial);
-        this.letterToId.delete(enemy.initial);
-        this.enemies.delete(id);
-
-        // Remove from view
+        // Remove from wave and view
+        this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
 
         // Reset targeting if this was the target
@@ -203,11 +168,8 @@ export class GameController {
             this.view.setTarget(null);
         }
 
-        // Check for wave completion
-        if (this.enemies.size === 0) {
-            this.mult *= 1.2;
-            this.spawnWave(3);
-        }
+        // Check for wave completion and advance
+        this.levelManager.onWaveCheck();
     }
 
     // ---------- Game Loop ----------
@@ -237,22 +199,24 @@ export class GameController {
      */
     private update(dt: number): void {
         let closeEnemy = null;
+        const currentWave = this.levelManager.currentWave;
+        
+        if (!currentWave) return;
 
         // Update all enemies
-        for (const enemy of this.enemies.values()) {
+        currentWave.forEach((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
             this.view.updateEnemyTransform(enemy.id, enemy.x, enemy.distance);
             
             if (enemy.distance <= this.NEAR_GAME_OVER) {
                 closeEnemy = enemy.id;
             }
-        }
+        });
 
         this.view.setDrawOrder(this.getIdsSortedByDistanceClosestFirst());
 
         // Check game over condition
         if (closeEnemy !== null) {
-
             this.EnemyHitsPlayer(closeEnemy);
             Health.getInstance().loseLife();
             this.view.updateHealth(Health.getInstance().lives);
@@ -318,7 +282,7 @@ export class GameController {
      */
     private handleBackspace(): void {
         if (this.targetedId !== null) {
-            const word = this.enemies.get(this.targetedId)?.word ?? "";
+            const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
             this.typedText = this.typedText.slice(0, -1);
             this.view.updateText(this.typedText);
             const isValid = this.isTypedTextValid(word, this.typedText);
@@ -335,13 +299,18 @@ export class GameController {
      * Handle character input
      */
     private handleCharacterInput(char: string): void {
+        const currentWave = this.levelManager.currentWave;
+        console.log(currentWave);
+        if (!currentWave) return;
+
         // Acquire target if none selected
         if (this.targetedId === null) {
-            const id = this.letterToId.get(char);
+            const id = this.levelManager.getEnemyIdByInitial(char);
             if (!id) return; // No enemy with that initial
 
             this.targetedId = id;
-            const word = this.enemies.get(id)?.word ?? "";
+            const word = currentWave.getEnemy(id)?.word ?? "ERROR! NO WORD FOUND!";
+            console.log(word);
             this.model.setTargetWord(word);
 
             this.typedText = char;
@@ -355,7 +324,8 @@ export class GameController {
 
         // Progress existing target - accept ALL characters
         const id = this.targetedId;
-        const word = this.enemies.get(id)?.word ?? "";
+        const word = currentWave.getEnemy(id)?.word ?? "";
+
 
         // Add character to typed text regardless of correctness
         this.typedText += char;
@@ -385,9 +355,12 @@ export class GameController {
      */
     private checkCompletion(): void {
         if (this.targetedId === null) return;
+        
+        const currentWave = this.levelManager.currentWave;
+        if (!currentWave) return;
 
         const id = this.targetedId;
-        const word = this.enemies.get(id)?.word ?? "";
+        const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
 
         // Only complete if length matches AND text is valid (correct)
         if (word && this.typedText.length === word.length && this.isTypedTextValid(word, this.typedText)) {
@@ -402,7 +375,10 @@ export class GameController {
      * Get enemy IDs sorted by distance (closest first)
      */
     private getIdsSortedByDistanceClosestFirst(): number[] {
-        return Array.from(this.enemies.values())
+        const currentWave = this.levelManager.currentWave;
+        if (!currentWave) return [];
+        
+        return Array.from(currentWave.getAllEnemies().values())
             .sort((a, b) => a.distance - b.distance)
             .map(e => e.id);
     }
@@ -411,7 +387,8 @@ export class GameController {
      * Get current enemy count
      */
     getEnemyCount(): number {
-        return this.enemies.size;
+        const currentWave = this.levelManager.currentWave;
+        return currentWave ? currentWave.getCount() : 0;
     }
 
     /**

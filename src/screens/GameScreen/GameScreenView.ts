@@ -10,6 +10,9 @@ export class GameScreenView implements View {
   private typedText: Konva.Text;
   private moneyText: Konva.Text;
   private healthText: Konva.Text; //TODO show health with pixel hearts
+  private levelText: Konva.Text;
+  private waveText: Konva.Text;
+  private enemiesLeftText: Konva.Text;
   enemyContainer: Konva.Group;
   private hudContainer: Konva.Group; 
   enemies = new Map<number, Enemy>();
@@ -60,10 +63,31 @@ export class GameScreenView implements View {
       x: STAGE_WIDTH - 200, y: 20, text: "Health: ",
       fontSize: 24, fontFamily: "Courier New", fill: "#ff0000", align: "right", listening: false,
     });
+
+    // Level display (top left)
+    this.levelText = new Konva.Text({
+      x: 20, y: STAGE_HEIGHT - 90, text: "Level: 1",
+      fontSize: 20, fontFamily: "Courier New", fill: "white", align: "left", listening: false,
+    });
+
+    // Wave display (top right, next to level)
+    this.waveText = new Konva.Text({
+      x: 20, y: STAGE_HEIGHT - 60, text: "Waves: 0",
+      fontSize: 20, fontFamily: "Courier New", fill: "white", align: "left", listening: false,
+    });
+
+    // Enemies left display
+    this.enemiesLeftText = new Konva.Text({
+      x: 20, y: STAGE_HEIGHT - 30, text: "Enemies: 0",
+      fontSize: 20, fontFamily: "Courier New", fill: "white", align: "left", listening: false,
+    });
     
     this.hudContainer.add(this.typedText);
     this.hudContainer.add(this.moneyText);
     this.hudContainer.add(this.healthText);
+    this.hudContainer.add(this.levelText);
+    this.hudContainer.add(this.waveText);
+    this.hudContainer.add(this.enemiesLeftText);
   }
 
   // Spawn enemy visuals (no world coords here yet)
@@ -273,6 +297,21 @@ export class GameScreenView implements View {
   updateHealth(lives: number): void {
     const hearts = "♥".repeat(lives);
     this.healthText.text(`Health: ${hearts}`);
+    this.group.getLayer()?.batchDraw();
+  }
+
+  updateLevel(level: number): void {
+    this.levelText.text(`Level: ${level}`);
+    this.group.getLayer()?.batchDraw();
+  }
+
+  updateWaves(wavesRemaining: number): void {
+    this.waveText.text(`Waves: ${wavesRemaining}`);
+    this.group.getLayer()?.batchDraw();
+  }
+
+  updateEnemiesLeft(enemiesLeft: number): void {
+    this.enemiesLeftText.text(`Enemies: ${enemiesLeft}`);
     this.group.getLayer()?.batchDraw();
   }
 

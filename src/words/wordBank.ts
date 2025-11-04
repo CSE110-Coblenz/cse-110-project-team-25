@@ -1,4 +1,4 @@
-const MAX_WORD_LENGTH = 18;
+// const MAX_WORD_LENGTH = 18;
 
 export type Bank = "bnm,." | "zxcv" | "ty" | "uiop" | "qwer" | "gh" | "asdfjkl;";
 type SubBank = Record<number, string[]>;
@@ -55,9 +55,9 @@ export class WordBank {
         return list.length ? list : ["wordnotfound"];
     }
 
-    private detRandomLength(difficulty: number): number {
-        return difficulty + 1;
-    }
+    // private detRandomLength(difficulty: number): number {
+    //     return difficulty + 1;
+    // }
 }
 
 export const wordBank = new WordBank();

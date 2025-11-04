@@ -1,0 +1,14 @@
+{
+  "types": {
+    "1": "ufo",
+    "2": "meteor",
+    "3": "ufo",
+    "4": "meteor"
+  },
+  "health": [1, 2, 1, 3],
+  "speed": [5, 6, 7, 8],
+  "distance": [40, 45, 50, 55],
+  "scoreValue": [10, 20, 15, 30],
+  "words": ["hello", "world", "test", "game"],
+  "x": [-2, 0, 2, -1]
+}
