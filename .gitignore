@@ -28,3 +28,6 @@ bin64/
 *.njsproj
 *.sln
 *.sw?
+
+# Debug/test screens (not for production)
+src/screens/debug-screen/
