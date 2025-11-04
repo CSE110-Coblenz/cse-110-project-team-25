@@ -58,6 +58,6 @@ class App implements ScreenSwitcher {
 
 // Boot the app
 (async () => {
-  await wordBank.load("/wordbanks.json");        // load JSON once
+  await wordBank.load("/wordbank.json");        // load JSON once
   new App("container");         // then boot your app
 })();

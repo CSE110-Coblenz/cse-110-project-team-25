@@ -6,8 +6,8 @@ export class GameScreenModel {
   private level: number;
   private lives: number;
 
-  // simple one-enemy model for now
-  private targetWord: string | null = null;
+  // multi-enemy model
+  private targetWords: string[] = [];
 
   constructor(initialScore = 0, initialLevel = 1, initialLives = 3) {
     this.score = initialScore;
@@ -19,7 +19,7 @@ export class GameScreenModel {
     this.score = 0;
     this.level = 1;
     this.lives = 3;
-    this.targetWord = null;
+    this.targetWords = [];
   }
 
   getScore(): number { return this.score; }
@@ -31,6 +31,6 @@ export class GameScreenModel {
   getLives(): number { return this.lives; }
   setLives(newLives: number): void { this.lives = newLives; }
 
-  setTargetWord(word: string): void { this.targetWord = word; }
-  getTargetWord(): string | null { return this.targetWord; }
+  settargetWords(word: string): void { this.targetWords.push(word); }
+  getTargetWords(): string[] { return this.targetWords; }
 }
