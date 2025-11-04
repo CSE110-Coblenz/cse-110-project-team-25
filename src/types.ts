@@ -11,12 +11,11 @@ export interface View {
  *
  * - "menu": Main menu screen
  * - "game": Gameplay screen
- * - "debug": Debug/test screen
  */
 export type Screen =
 	| { type: "menu" }
-	| { type: "game" }
-	| { type: "debug" };
+	| { type: "game" };
+	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {
 	abstract getView(): View;

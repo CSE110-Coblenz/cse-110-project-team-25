@@ -9,8 +9,8 @@ export class MenuScreenController extends BaseMenuController {
 	constructor(screenSwitcher: ScreenSwitcher) {
 		super(screenSwitcher);
 		this.view = new MenuScreenView(
-			() => this.handleStartClick(),
-			() => this.handleDebugClick()
+			() => this.handleStartClick()
+			// , () => this.handleDebugClick() // DEBUG: Commented out for production
 		);
 	}
 
@@ -22,13 +22,14 @@ export class MenuScreenController extends BaseMenuController {
 		this.screenSwitcher.switchToScreen({type: "game"});
 	}
 
-	/**
-	 * Handle debug button click
-	 */
-	private handleDebugClick(): void {
-		console.log("Debug button clicked!");
-		this.screenSwitcher.switchToScreen({type: "debug"});
-	}
+	// DEBUG: Debug handler commented out for production
+	// /**
+	//  * Handle debug button click
+	//  */
+	// private handleDebugClick(): void {
+	// 	console.log("Debug button clicked!");
+	// 	this.screenSwitcher.switchToScreen({type: "debug"});
+	// }
 
 	/**
 	 * Get the view

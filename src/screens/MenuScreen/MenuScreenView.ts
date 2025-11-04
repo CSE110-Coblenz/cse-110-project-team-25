@@ -6,12 +6,12 @@ import { BaseMenuView } from "../base/BaseMenuView.ts";
  */
 export class MenuScreenView extends BaseMenuView {
   private onStartClick: () => void;
-  private onDebugClick: () => void;
+  // private onDebugClick: () => void; // DEBUG: Commented out for production
 
-  constructor(onStartClick: () => void, onDebugClick: () => void) {
+  constructor(onStartClick: () => void /* , onDebugClick: () => void */) { // debug
     super("#0f0f23", false); // Don't auto-build
     this.onStartClick = onStartClick;
-    this.onDebugClick = onDebugClick;
+    // this.onDebugClick = onDebugClick; //
     this.buildLayout(); // Build after callback is assigned
     // Make menu visible by default (main menu shows first)
     this.group.visible(true);
@@ -42,18 +42,18 @@ export class MenuScreenView extends BaseMenuView {
     });
     this.positionElement(startBtn, STAGE_WIDTH / 2, STAGE_HEIGHT / 2);
 
-    // Create debug button
-    const debugBtn = this.createButton({
-      text: "DEBUG SCREEN",
-      width: 200,
-      height: 60,
-      fill: "orange",
-      hoverFill: "lightyellow",
-      stroke: "darkorange",
-      strokeWidth: 3,
-      fontSize: 24,
-      onClick: this.onDebugClick,
-    });
-    this.positionElement(debugBtn, STAGE_WIDTH / 2, STAGE_HEIGHT / 2 + 80);
+    // debug: 
+    // const debugBtn = this.createButton({
+    //   text: "DEBUG SCREEN",
+    //   width: 200,
+    //   height: 60,
+    //   fill: "orange",
+    //   hoverFill: "lightyellow",
+    //   stroke: "darkorange",
+    //   strokeWidth: 3,
+    //   fontSize: 24,
+    //   onClick: this.onDebugClick,
+    // });
+    // this.positionElement(debugBtn, STAGE_WIDTH / 2, STAGE_HEIGHT / 2 + 80);
   }
 }
