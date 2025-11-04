@@ -290,6 +290,7 @@ export class GameController {
             }
             if(!this.paused){
                 if (e.key === "Backspace") {
+                    e.preventDefault(); // Prevent default browser backspace behavior
                     this.handleBackspace();
                     return;
                 }
@@ -317,10 +318,12 @@ export class GameController {
      */
     private handleBackspace(): void {
         if (this.targetedId !== null) {
+            const word = this.enemies.get(this.targetedId)?.word ?? "";
             this.typedText = this.typedText.slice(0, -1);
             this.view.updateText(this.typedText);
-            this.view.updateEnemyProgress(this.targetedId, this.typedText);
-            
+            const isValid = this.isTypedTextValid(word, this.typedText);
+            this.view.updateEnemyProgress(this.targetedId, this.typedText, isValid);
+
             if (this.typedText.length === 0) {
                 this.view.setTarget(null);
                 this.targetedId = null;
@@ -336,32 +339,45 @@ export class GameController {
         if (this.targetedId === null) {
             const id = this.letterToId.get(char);
             if (!id) return; // No enemy with that initial
-            
+
             this.targetedId = id;
             const word = this.enemies.get(id)?.word ?? "";
             this.model.setTargetWord(word);
-            
+
             this.typedText = char;
             this.view.setTarget(id);
             this.view.updateText(this.typedText);
-            this.view.updateEnemyProgress(id, this.typedText);
+            const isValid = this.isTypedTextValid(word, this.typedText);
+            this.view.updateEnemyProgress(id, this.typedText, isValid);
             this.checkCompletion();
             return;
         }
 
-        // Progress existing target
+        // Progress existing target - accept ALL characters
         const id = this.targetedId;
         const word = this.enemies.get(id)?.word ?? "";
-        const nextTyped = this.typedText + char;
 
-        if (!word.toLowerCase().startsWith(nextTyped.toLowerCase())) {
-            return; // Ignore wrong character
+        // Add character to typed text regardless of correctness
+        this.typedText += char;
+        this.view.updateText(this.typedText);
+
+        // Check if typed text is valid
+        const isValid = this.isTypedTextValid(word, this.typedText);
+        this.view.updateEnemyProgress(id, this.typedText, isValid);
+
+        // Show shake animation if wrong
+        if (!isValid) {
+            this.view.showTypingError(id);
         }
 
-        this.typedText = nextTyped;
-        this.view.updateText(this.typedText);
-        this.view.updateEnemyProgress(id, this.typedText);
         this.checkCompletion();
+    }
+
+    /**
+     * Check if typed text matches the target word so far
+     */
+    private isTypedTextValid(targetWord: string, typedText: string): boolean {
+        return targetWord.toLowerCase().startsWith(typedText.toLowerCase());
     }
 
     /**
@@ -369,11 +385,12 @@ export class GameController {
      */
     private checkCompletion(): void {
         if (this.targetedId === null) return;
-        
+
         const id = this.targetedId;
         const word = this.enemies.get(id)?.word ?? "";
-        
-        if (word && this.typedText.length === word.length) {
+
+        // Only complete if length matches AND text is valid (correct)
+        if (word && this.typedText.length === word.length && this.isTypedTextValid(word, this.typedText)) {
             this.model.setScore(this.model.getScore() + 100);
             this.onEnemyDefeated(id);
         }

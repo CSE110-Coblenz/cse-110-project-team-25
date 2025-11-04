@@ -3,7 +3,6 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import Enemy from "../../objects/Enemy";
-import { Health } from "../../Health.ts";
 // import Prompt from "../../objects/Prompt";
 
 export class GameScreenView implements View {
@@ -115,14 +114,24 @@ export class GameScreenView implements View {
 	}
 
 
-  updateEnemyProgress(id: number, typed: string): void {
+  updateEnemyProgress(id: number, typed: string, isValid: boolean): void {
     const En = this.enemies.get(id);
     if (!En) return;
     const target = En.word;
     const len = Math.min(typed.length, target.length);
-    En.prompt.typedNode.text(target.slice(0, len));
+
+    // Show what user actually typed
+    En.prompt.typedNode.text(typed);
     En.prompt.restNode.text(target.slice(len));
     En.prompt.restNode.x(En.prompt.typedNode.width());
+
+    // Set color based on validity: green if correct, red if any errors
+    if (isValid) {
+      En.prompt.typedNode.fill("#12d44e"); // Green for correct
+    } else {
+      En.prompt.typedNode.fill("red"); // Red for errors
+    }
+
     this.group.getLayer()?.batchDraw();
   }
 
@@ -169,6 +178,74 @@ export class GameScreenView implements View {
     this.typedText.text(text);
     this.typedText.offsetX(this.typedText.width() / 2);
     this.group.getLayer()?.draw();
+  }
+
+  /**
+   * Show error feedback when user types wrong character (shake animation)
+   */
+  showTypingError(enemyId: number): void {
+    const enemy = this.enemies.get(enemyId);
+    if (!enemy) return;
+
+    // Shake animation parameters
+    const originalTextX = this.typedText.x();
+    const originalPromptX = enemy.prompt.x;
+    const shakeAmount = 10;
+    const shakeDuration = 50; // ms per shake
+
+    // Main text shake
+    const textTween = new Konva.Tween({
+      node: this.typedText,
+      duration: shakeDuration / 1000,
+      x: originalTextX - shakeAmount,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        const textTween2 = new Konva.Tween({
+          node: this.typedText,
+          duration: shakeDuration / 1000,
+          x: originalTextX + shakeAmount,
+          easing: Konva.Easings.EaseInOut,
+          onFinish: () => {
+            const textTween3 = new Konva.Tween({
+              node: this.typedText,
+              duration: shakeDuration / 1000,
+              x: originalTextX,
+              easing: Konva.Easings.EaseInOut
+            });
+            textTween3.play();
+          }
+        });
+        textTween2.play();
+      }
+    });
+    textTween.play();
+
+    // Enemy prompt shake
+    const promptTween = new Konva.Tween({
+      node: enemy.prompt.image,
+      duration: shakeDuration / 1000,
+      x: originalPromptX - shakeAmount,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        const promptTween2 = new Konva.Tween({
+          node: enemy.prompt.image,
+          duration: shakeDuration / 1000,
+          x: originalPromptX + shakeAmount,
+          easing: Konva.Easings.EaseInOut,
+          onFinish: () => {
+            const promptTween3 = new Konva.Tween({
+              node: enemy.prompt.image,
+              duration: shakeDuration / 1000,
+              x: originalPromptX,
+              easing: Konva.Easings.EaseInOut
+            });
+            promptTween3.play();
+          }
+        });
+        promptTween2.play();
+      }
+    });
+    promptTween.play();
   }
 
 	/** Set draw order so closer enemies render on top.
