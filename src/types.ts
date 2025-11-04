@@ -1,5 +1,20 @@
 import type { Group } from "konva/lib/Group";
 
+/**
+ * Wave configuration JSON format
+ * Format: {"1": "type", "2": "type", ...}, {"health": [1, 2, ...], "speed": [...], ...}
+ * Each attribute array should match the number of enemies
+ */
+export interface WaveConfig {
+	types: Record<string, string>;  // {"1": "ufo", "2": "meteor", ...}
+	health?: number[];               // Optional health values for each enemy
+	speed?: number[];                // Optional speed values for each enemy
+	distance?: number[];             // Optional initial distance values
+	scoreValue?: number[];           // Optional score values
+	words?: string[];                // Optional word assignments
+	x?: number[];                    // Optional x positions (lanes)
+}
+
 export interface View {
 	getGroup(): Group;
 	show(): void;
