@@ -26,6 +26,7 @@ export class GameScreenView implements View {
 	private readonly NEAR_CLIP = 1.0;               // safety clamp
   private readonly UFO_PROMPT_OFFSET = 40;
   private readonly METEOR_PROMPT_OFFSET = 55;
+  private readonly DEAULT_PROMPT_OFFSET = 55;
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
@@ -137,8 +138,11 @@ export class GameScreenView implements View {
 	if (En.type === "ufo"){
     En.prompt.y = screenY + this.UFO_PROMPT_OFFSET * s;
   }
-  else{
+  else if (En.type === "meteor"){
     En.prompt.y = screenY + this.METEOR_PROMPT_OFFSET * s;
+  }
+  else {
+    En.prompt.y = screenY + this.DEAULT_PROMPT_OFFSET * s;
   }
 
 	this.group.getLayer()?.batchDraw();
