@@ -25,7 +25,7 @@ class Object {
     this._y = y;
     this._image = image;
 
-    // 🔧 Center origin based on the group's visual content, not width()/height()
+    // Center origin based on the group's visual content, not width()/height()
     this.recenterOriginToContent();
 
     // Place at initial position

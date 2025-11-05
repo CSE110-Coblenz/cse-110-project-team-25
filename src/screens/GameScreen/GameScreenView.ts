@@ -24,6 +24,8 @@ export class GameScreenView implements View {
 	private readonly UNITS_X   = 120;                // world X units → px at z reference
 	private readonly HORIZON_Y = STAGE_HEIGHT * 0.35;
 	private readonly NEAR_CLIP = 1.0;               // safety clamp
+  private readonly UFO_PROMPT_OFFSET = 40;
+  private readonly METEOR_PROMPT_OFFSET = 55;
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
@@ -132,7 +134,12 @@ export class GameScreenView implements View {
 	g.offsetX(width / 2); g.offsetY(height / 2);
 
 	En.prompt.x = screenX;
-	En.prompt.y = screenY + 55 * s;
+	if (En.type === "ufo"){
+    En.prompt.y = screenY + this.UFO_PROMPT_OFFSET * s;
+  }
+  else{
+    En.prompt.y = screenY + this.METEOR_PROMPT_OFFSET * s;
+  }
 
 	this.group.getLayer()?.batchDraw();
 	}
