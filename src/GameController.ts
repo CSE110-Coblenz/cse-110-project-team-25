@@ -202,11 +202,11 @@ export class GameController {
         const currentWave = this.levelManager.currentWave;
         
         if (!currentWave) return;
-
+    
         // Update all enemies
         currentWave.forEach((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
-            this.view.updateEnemyTransform(enemy.id, enemy.x, enemy.distance);
+            this.view.updateEnemyTransform(enemy);
             
             if (enemy.distance <= this.NEAR_GAME_OVER) {
                 closeEnemy = enemy.id;

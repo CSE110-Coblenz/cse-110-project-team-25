@@ -7,7 +7,7 @@ class Prompt extends Ui {
     _restNode: Konva.Text;
 
   
-  constructor(word: string) {
+  constructor(word: string | undefined) {
 
     const typedNode = new Konva.Text({
           x: 0, y: 0, text: "", fontSize: 28, fontFamily: "Courier New", fill: "#12d44e", listening: false,
@@ -23,7 +23,12 @@ class Prompt extends Ui {
 
     this._typedNode = typedNode;
     this._restNode = restNode;
-    this._word = word;
+    if(word === undefined){
+      this._word = "";
+    } else {
+      this._word = word;
+    }
+
   }
 
   get typedNode(): Konva.Text {

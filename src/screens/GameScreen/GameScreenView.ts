@@ -18,12 +18,7 @@ export class GameScreenView implements View {
   enemies = new Map<number, Enemy>();
   private targetedId: number | null = null;
 
-  // Projection constants (tweak to taste)
-  private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
-	private readonly DROP_K    = 900;               // vertical drop ≈ DROP_K / z
-	private readonly UNITS_X   = 120;                // world X units → px at z reference
-	private readonly HORIZON_Y = STAGE_HEIGHT * 0.35;
-	private readonly NEAR_CLIP = 1.0;               // safety clamp
+
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
@@ -92,49 +87,52 @@ export class GameScreenView implements View {
 
   // Spawn enemy visuals (no world coords here yet)
   spawnEnemyVisuals(En: Enemy): number {
-	this.enemyContainer.add(En.image);
-	this.enemyContainer.add(En.prompt.image);
-	this.enemies.set(En.id, En);
+    this.enemyContainer.add(En.image);
+    this.enemyContainer.add(En.prompt.image);
+    this.enemies.set(En.id, En);
     this.group.getLayer()?.draw();
     return En.id;
   }
 
 
 	/** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
-	updateEnemyTransform(id: number, worldX: number, distanceZ: number): void {
-	const En = this.enemies.get(id);
-	if (!En) return;
+	updateEnemyTransform(En: Enemy): void {
+    // const En = this.enemies.get(id);
+    // if (!En) return;
 
-	// 1/z style perspective
-	const z = Math.max(this.NEAR_CLIP, distanceZ);
+    // // 1/z style perspective
+    // const z = Math.max(this.NEAR_CLIP, distanceZ);
 
-	// scale grows as z shrinks; clamp so it doesn't explode near z≈0
-	const sRaw = this.SCALE_K / z;               // e.g. z=60 -> 2.0, z=40 -> 3.0, z=20 -> 6.0
-	const s = Math.min(6, Math.max(0.6, sRaw));  // clamp to [0.6, 6]
+    // // scale grows as z shrinks; clamp so it doesn't explode near z≈0
+    // const sRaw = this.SCALE_K / z;               // e.g. z=60 -> 2.0, z=40 -> 3.0, z=20 -> 6.0
+    // const s = Math.min(6, Math.max(0.6, sRaw));  // clamp to [0.6, 6]
 
-	// X spreads a bit with scale to enhance perspective
-	const screenX = STAGE_WIDTH / 2 + worldX * this.UNITS_X * (0.75 + 0.25 * s);
+    // // X spreads a bit with scale to enhance perspective
+    // const screenX = STAGE_WIDTH / 2 + worldX * this.UNITS_X * (0.75 + 0.25 * s);
 
-	// Y “drops” from the horizon as they approach (bigger when closer)
-	const screenY = this.HORIZON_Y + this.DROP_K / z;
+    // // Y “drops” from the horizon as they approach (bigger when closer)
+    // const screenY = this.HORIZON_Y + this.DROP_K / z;
 
-	// Apply to enemy visual
-	En.image.x(screenX);
-	En.image.y(screenY);
-	En.image.scale({ x: s, y: s });
+    // // Apply to enemy visual
+    // En.image.x(screenX);
+    // En.image.y(screenY);
+    // let temp = En.scale * s;
+    // En.image.scale({x: temp, y:temp });
 
-	// Prompt directly under the circle, following scale
-	En.prompt.restNode.x(En.prompt.typedNode.width());
-	const width  = En.prompt.typedNode.width() + En.prompt.restNode.width();
-	const height = Math.max(En.prompt.typedNode.height(), En.prompt.restNode.height());
-	const g = En.prompt.image;
-	g.width(width); g.height(height);
-	g.offsetX(width / 2); g.offsetY(height / 2);
+    // // Prompt directly under the circle, following scale
+    // En.prompt.restNode.x(En.prompt.typedNode.width());
+    // const width  = En.prompt.typedNode.width() + En.prompt.restNode.width();
+    // const height = Math.max(En.prompt.typedNode.height(), En.prompt.restNode.height());
+    // const g = En.prompt.image;
+    // g.width(width); g.height(height);
+    // g.offsetX(width / 2); g.offsetY(height / 2);
 
-	En.prompt.x = screenX;
-	En.prompt.y = screenY + 55 * s;
+    // En.prompt.x = screenX;
+    // En.prompt.y = screenY + 55 * s;
 
-	this.group.getLayer()?.batchDraw();
+    En.updateTransform();
+
+    this.group.getLayer()?.batchDraw();
 	}
 
 

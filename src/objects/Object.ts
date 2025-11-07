@@ -57,8 +57,8 @@ class Object {
   get scale() { return this._scale; }
   set scale(value: number) {
     this._scale = value;
-    this._image.scaleX(value);
-    this._image.scaleY(value);
+    // this._image.scaleX(value);
+    // this._image.scaleY(value);
   }
 
   get x() { return this._x; }
