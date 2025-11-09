@@ -161,7 +161,7 @@ class LevelManager {
 
         // Add to view
         this.view!.spawnEnemyVisuals(enemy);
-        this.view!.updateEnemyTransform(enemy);
+        this.view!.updateEnemyTransform(enemy, 0);
 
         // Track for targeting
         this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
@@ -225,9 +225,9 @@ class LevelManager {
             .map(e => e.id);
     }
 
-    getWord(): string {
+    getWord(length?: number): string {
         if(this._currentWave != undefined){
-            return this.enemyFactory.getRandomWord(this._currentWave.activeInitials);
+            return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
         }
         return "CANT USE GET WORD WITHOUT CURRENTWAVE"
     }

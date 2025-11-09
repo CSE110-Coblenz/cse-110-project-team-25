@@ -68,26 +68,22 @@ class Enemy extends Object {
 
   destroy(): void { this.image.destroy(); }
 
-  updateTransform(): void {
+  updateTransform(dt: number): void {
+    //scale
+    let s = this.SCALE_K * this.scale / this.distance;
+    let timeLeft = this.distance / this.speed;
+    let xDist = STAGE_WIDTH / 2 - this.x;
+    let yDist = STAGE_HEIGHT / 2 - this.y;
+    this.x += (xDist * dt * s * 2) / (timeLeft * this.distance);
+    this.y += (yDist * dt * s * 2) / (timeLeft * this.distance);
 
+    this.image.scale({x: s, y: s});
 
-    // scale grows as z shrinks; clamp so it doesn't explode near z≈0
-    const sRaw = this.SCALE_K / this.distance;               // e.g. z=60 -> 2.0, z=40 -> 3.0, z=20 -> 6.0
-    const s = Math.min(6, Math.max(0.6, sRaw));  // clamp to [0.6, 6]
+    this.placePrompt();
 
-    // X spreads a bit with scale to enhance perspective
-    const screenX = STAGE_WIDTH / 2 //+ this.x * this.UNITS_X * (0.75 + 0.25 * s);
+	}
 
-    // Y “drops” from the horizon as they approach (bigger when closer)
-    // const screenY = this.HORIZON_Y + this.DROP_K / this.distance;
-
-    // Apply to enemy visual
-    this.image.x(screenX);
-    // this.image.y(screenY);
-    let temp = this.scale * s;
-    this.image.scale({x: temp, y:temp });
-
-    // Prompt directly under the circle, following scale
+  placePrompt(): void {
     this.prompt.restNode.x(this.prompt.typedNode.width());
     const width  = this.prompt.typedNode.width() + this.prompt.restNode.width();
     const height = Math.max(this.prompt.typedNode.height(), this.prompt.restNode.height());
@@ -95,10 +91,9 @@ class Enemy extends Object {
     g.width(width); g.height(height);
     g.offsetX(width / 2); g.offsetY(height / 2);
 
-    this.prompt.x = screenX;
-    this.prompt.y = screenY + 55 * s;
-
-	}
+    this.prompt.x = this.x;
+    this.prompt.y = this.y + (g.height() * this.image.scaleX() * 2.2);
+}
 }
 
 export default Enemy;

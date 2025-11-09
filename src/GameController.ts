@@ -206,7 +206,7 @@ export class GameController {
         // Update all enemies
         currentWave.forEach((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
-            this.view.updateEnemyTransform(enemy);
+            this.view.updateEnemyTransform(enemy, dt);
             
             if (enemy.distance <= this.NEAR_GAME_OVER) {
                 closeEnemy = enemy.id;
@@ -226,7 +226,13 @@ export class GameController {
                 this.gameOver();
             }
         }
+        this.levelManager.onWaveCheck();
+
+        //update effects
+        this.view.updateEffects(dt);
     }
+
+
 
     /**
      * Handle game over
@@ -319,6 +325,7 @@ export class GameController {
             const isValid = this.isTypedTextValid(word, this.typedText);
             this.view.updateEnemyProgress(id, this.typedText, isValid);
             this.checkCompletion();
+            this.view.showTypingSuccess(id);
             return;
         }
 
@@ -338,6 +345,8 @@ export class GameController {
         // Show shake animation if wrong
         if (!isValid) {
             this.view.showTypingError(id);
+        } else {
+            this.view.showTypingSuccess(id);
         }
 
         this.checkCompletion();

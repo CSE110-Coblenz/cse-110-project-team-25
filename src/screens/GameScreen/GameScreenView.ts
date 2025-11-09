@@ -1,9 +1,10 @@
-// src/screens/GameScreen/GameScreenView.ts
 import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import Enemy from "../../objects/Enemy";
-// import Prompt from "../../objects/Prompt";
+import Effect from "../../objects/Effect.ts"
+import Shot from "../../objects/Effects/Shot.ts";
+import Explosion from "../../objects/Effects/Explosion.ts";
 
 export class GameScreenView implements View {
   private group: Konva.Group;
@@ -14,30 +15,29 @@ export class GameScreenView implements View {
   private waveText: Konva.Text;
   private enemiesLeftText: Konva.Text;
   enemyContainer: Konva.Group;
+  effectContainer: Konva.Group;
   private hudContainer: Konva.Group; 
   enemies = new Map<number, Enemy>();
+  effects = new Map<number, Effect>();
   private targetedId: number | null = null;
 
 
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
-
-    // Background at the very bottom
-    // let bg = new Konva.Rect({
-    //   x: 0, y: 0, width: STAGE_WIDTH, height: STAGE_HEIGHT, fill: "#1a1a2e",
-    // });
 	Konva.Image.fromURL("/space.png", (bg) => {
 		this.group.add(bg);
 		bg.moveToBottom();
 	});
 
-    // Containers layered: bg (bottom) -> enemies -> hud (top)
+    // Containers layered: bg (bottom) -> enemies -> effects -> hud (top)
     this.enemyContainer = new Konva.Group();
+    this.effectContainer = new Konva.Group();
     this.hudContainer = new Konva.Group();
 
     // this.group.add(bg);
     this.group.add(this.enemyContainer);
+    this.group.add(this.effectContainer);
     this.group.add(this.hudContainer);
 
     // HUD: center text
@@ -94,44 +94,25 @@ export class GameScreenView implements View {
     return En.id;
   }
 
+  spawnEffectVisuals(Ef: Effect): number {
+    this.effectContainer.add(Ef.image);
+    this.effects.set(Ef.id, Ef);
+    this.group.getLayer()?.draw();
+    return Ef.id;
+  }
+
+  updateEffects(dt: number): void {
+    this.effects.forEach((Ef, id) => {
+      Ef.update(dt);
+      if(Ef.dead == true){
+        this.effects.delete(id);
+      }
+    });
+  }
 
 	/** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
-	updateEnemyTransform(En: Enemy): void {
-    // const En = this.enemies.get(id);
-    // if (!En) return;
-
-    // // 1/z style perspective
-    // const z = Math.max(this.NEAR_CLIP, distanceZ);
-
-    // // scale grows as z shrinks; clamp so it doesn't explode near z≈0
-    // const sRaw = this.SCALE_K / z;               // e.g. z=60 -> 2.0, z=40 -> 3.0, z=20 -> 6.0
-    // const s = Math.min(6, Math.max(0.6, sRaw));  // clamp to [0.6, 6]
-
-    // // X spreads a bit with scale to enhance perspective
-    // const screenX = STAGE_WIDTH / 2 + worldX * this.UNITS_X * (0.75 + 0.25 * s);
-
-    // // Y “drops” from the horizon as they approach (bigger when closer)
-    // const screenY = this.HORIZON_Y + this.DROP_K / z;
-
-    // // Apply to enemy visual
-    // En.image.x(screenX);
-    // En.image.y(screenY);
-    // let temp = En.scale * s;
-    // En.image.scale({x: temp, y:temp });
-
-    // // Prompt directly under the circle, following scale
-    // En.prompt.restNode.x(En.prompt.typedNode.width());
-    // const width  = En.prompt.typedNode.width() + En.prompt.restNode.width();
-    // const height = Math.max(En.prompt.typedNode.height(), En.prompt.restNode.height());
-    // const g = En.prompt.image;
-    // g.width(width); g.height(height);
-    // g.offsetX(width / 2); g.offsetY(height / 2);
-
-    // En.prompt.x = screenX;
-    // En.prompt.y = screenY + 55 * s;
-
-    En.updateTransform();
-
+	updateEnemyTransform(En: Enemy, dt: number): void {
+    En.updateTransform(dt);
     this.group.getLayer()?.batchDraw();
 	}
 
@@ -165,6 +146,7 @@ export class GameScreenView implements View {
     this.enemies.delete(id);
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
+    this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
   }
 
   setTarget(id: number | null): void {
@@ -200,6 +182,52 @@ export class GameScreenView implements View {
     this.typedText.text(text);
     this.typedText.offsetX(this.typedText.width() / 2);
     this.group.getLayer()?.draw();
+  }
+
+    /**
+   * Show feedback when user types correct character (shake animation)
+   */
+  showTypingSuccess(enemyId: number): void {
+    const enemy = this.enemies.get(enemyId);
+    if (!enemy) return;
+
+
+    // Create Shot Effect
+    // this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
+    this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
+
+
+    // Shake animation parameters
+    const originalX = enemy.x;
+    const shakeAmount = 10;
+    const shakeDuration = 50; // ms per shake
+
+    // Enemy shake
+    const Tween = new Konva.Tween({
+      node: enemy.image,
+      duration: shakeDuration / 1000,
+      x: originalX - shakeAmount,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        const Tween2 = new Konva.Tween({
+          node: enemy.image,
+          duration: shakeDuration / 1000,
+          x: originalX + shakeAmount,
+          easing: Konva.Easings.EaseInOut,
+          onFinish: () => {
+            const Tween3 = new Konva.Tween({
+              node: enemy.image,
+              duration: shakeDuration / 1000,
+              x: originalX,
+              easing: Konva.Easings.EaseInOut
+            });
+            Tween3.play();
+          }
+        });
+        Tween2.play();
+      }
+    });
+    Tween.play();
   }
 
   /**

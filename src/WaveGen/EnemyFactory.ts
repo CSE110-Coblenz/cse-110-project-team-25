@@ -7,6 +7,10 @@ import Circle from "../objects/Enemies/Circle";
 import Meteor from "../objects/Enemies/Meteor";
 import Amiiba from "../objects/Enemies/Amiiba";
 import type LevelManager from "../Level/LevelManager";
+import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
+import Shooter from "../objects/Enemies/Shooter";
+import Comet from "../objects/Enemies/Comet";
+import Dummy from "../objects/Enemies/Dummy";
 
 /**
  * Factory class for creating enemies and waves
@@ -21,10 +25,10 @@ class EnemyFactory {
         word: string[],
         distance: number = 40,
         speed: number = 6,
-        x: number = 0,
-        y: number = 720 /2,
+        x: number = STAGE_WIDTH / 2,
+        y: number = STAGE_HEIGHT / 2,
         split?: number,
-        manager?: LevelManager
+        manager?: LevelManager,
 
     ): Enemy {
         if(type === "ufo"){
@@ -33,6 +37,12 @@ class EnemyFactory {
             return new Meteor(word, distance, speed, x, y);
         } else if(type === "amiiba" && manager != undefined){
             return new Amiiba(word, distance, speed, manager, x, y, split)
+        } else if(type === "shooter" && manager != undefined){
+            return new Shooter(word, distance, speed, manager, x, y);
+        } else if(type === "comet" && manager != undefined){
+            return new Comet(word, x, y, manager, 10);
+        } else if(type === "dummy"){
+            return new Dummy(word, distance, x, y);
         }
         return new Circle(word, distance, speed, x, y)
     }
@@ -194,17 +204,22 @@ class EnemyFactory {
         manager: LevelManager
     ): Wave {
         const wave = new Wave();
-        
+        n = 1
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
-            const word = this.getRandomWord(activeInitials);
-            const lane = Math.random() * 6 - 3; 
-            const z = 40 + Math.random() * 30; 
-            const speed = (2.5 + Math.random() * 2) * speedMultiplier;
-            // const type = Math.random() > 0.5 ? "meteor" : "ufo";
+            const length = Math.round(Math.random() * 2 + 8);
+            const word = this.getRandomWord(activeInitials, length);
+            const x = STAGE_WIDTH / 2;
+            const y = STAGE_HEIGHT / 2;
             const type = "amiiba";
+            const speed = 2;
+            const distance = 40 + Math.random() * 30; 
+            // const lane = Math.random() * 6 - 3; 
+            
+            // const speed = (2.5 + Math.random() * 2) * speedMultiplier;
+            // const type = Math.random() > 0.5 ? "meteor" : "ufo";
 
-            const enemy = this.createEnemy(type, [word], z, speed, lane, undefined, 3, manager);
+            const enemy = this.createEnemy(type, [word], distance, speed * (i+1), x, y, 3, manager);
             activeInitials.add(enemy.word[0]);
             wave.addEnemy(enemy);
         }
@@ -215,11 +230,15 @@ class EnemyFactory {
     /**
      * Get a random word that doesn't conflict with active initials
      */
-    getRandomWord(activeInitials: Set<string>): string {
+    getRandomWord(activeInitials: Set<string>, length?: number): string {
+        let len = Math.round(Math.random() * 4 + 1);
+        if(length != undefined){
+            len = length;
+        }
         const word = wordBank.getRandomWordExcludingInitials(
             activeInitials,
             ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
-            Math.round(Math.random() * 4 + 1)
+            len
         );
         return word || "default";
     }
