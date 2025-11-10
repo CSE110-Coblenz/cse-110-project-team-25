@@ -214,7 +214,8 @@ class EnemyFactory {
             const lane = Math.random() * 6 - 3; // -3..+3
             const z = 40 + Math.random() * 30;  // 40..70
             const speed = (5 + Math.random() * 4) * speedMultiplier;
-            const type = Math.random() > 0.5 ? "meteor" : "ufo";
+            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"]
+            const type = types[Math.round(Math.random()* (types.length-1))]
             const health = 2
 
             const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);

@@ -157,7 +157,7 @@ class Enemy extends Object {
     En.healthBarUpdate();
     En.healthBarFill.x(En.healthBar.x());
     En.healthBarFill.y(En.y - 20 * s);
-    En.healthBarFill.scale({ x: s, y: s });
+    En.healthBarFill.scale({ x: s * 50, y: s });
   }
 }
 
