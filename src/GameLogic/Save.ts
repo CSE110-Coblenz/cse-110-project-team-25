@@ -1,32 +1,42 @@
 
 export class Save {
-    static level: number = 1;
-    static money: number = 0;
+    static levelComplete: number;
+    static money: number;
     static items: string[];
 
-    static save(){
-        localStorage.setItem("Level", JSON.stringify(Save.level));
+    public static save(){
+        localStorage.setItem("LevelComplete", JSON.stringify(Save.levelComplete));
         localStorage.setItem("Money", JSON.stringify(Save.money));
-        localStorage.setItem("items", JSON.stringify(Save.items));
+        localStorage.setItem("Items", JSON.stringify(Save.items));
+        console.log("Game Saved");
     }
 
-    static load(){
-        const Level = localStorage.getItem("Level");
-        if (Level !== null) Save.level = JSON.parse(Level);
-
-        const Money = localStorage.getItem("Money");
-        if (Money !== null) Save.money = JSON.parse(Money);;
-
-        const Items = localStorage.getItem("Items");
-        if (Items !== null) Save.items = JSON.parse(Items);
-    }
-
-    static initialize(){
-        const Money = localStorage.getItem("Money");
-        if (Money == null){
-            Save.save();
+    public static load(){
+        const level = localStorage.getItem("LevelComplete");
+        try {
+            this.levelComplete = JSON.parse(level!);
+        } catch (e) {
+            console.log("No level data found");
         }
-    }
 
+        const money = localStorage.getItem("Money");
+        try {
+            this.money = JSON.parse(money!);
+            console.log("money:" + this.money);
+        } catch (e) {
+            console.log("No money data found");
+        
+        }
+
+        const items = localStorage.getItem("Items");
+        try {
+            this.items = JSON.parse(items!);
+        } catch (e) {
+            console.log("No items data found");
+        
+        }
+
+        console.log("Game Loaded");
+    }
 
 }

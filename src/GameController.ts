@@ -5,6 +5,7 @@ import type { ScreenSwitcher } from "./types";
 import { Money } from "./Money";
 import { Health } from "./Health";
 import LevelManager from "./Level/LevelManager";
+import { Save } from "./GameLogic/Save";
 
 /**
  * GameController handles the core game logic including:
@@ -42,6 +43,9 @@ export class GameController {
      * Initialize and start the game
      */
     async startGame(): Promise<void> {
+        Save.load();
+        Money.getInstance().amount = Save.money;
+        console.log("Loaded money:" + Money.getInstance().amount);
         this.resetGameState();
         this.levelManager.initializeLevel();
         this.setupKeyboardInput();
@@ -52,6 +56,8 @@ export class GameController {
      * Stop the game and clean up resources
      */
     stopGame(): void {
+        Save.money = Money.getInstance().amount;
+        Save.save();
         this.stopGameLoop();
         this.cleanupKeyboardInput();
         this.clearAllEnemies();
@@ -94,9 +100,7 @@ export class GameController {
         this.targetedId = null;
         this.clearAllEnemies();
         this.view.setTarget(null);
-        Money.getInstance().reset();
-        //TODO save money earned
-        this.view.updateMoney(0);
+        this.view.updateMoney(Money.getInstance().amount);
         Health.getInstance().reset();
         this.view.updateHealth(Health.getInstance().maxLives);
     }
