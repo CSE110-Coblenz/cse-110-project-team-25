@@ -2,10 +2,10 @@ import Ui from "./Ui";
 import Konva from "konva";
 
 class Prompt extends Ui {
-    _word: string;
-    _typedNode: Konva.Text;
-    _restNode: Konva.Text;
-
+  _word: string;
+  _typedNode: Konva.Text;
+  _restNode: Konva.Text;
+  _background: Konva.Rect
   
   constructor(word: string | undefined) {
 
@@ -15,7 +15,23 @@ class Prompt extends Ui {
     const restNode = new Konva.Text({
         x: 0, y: 0, text: word, fontSize: 28, fontFamily: "Courier New", fill: "#ffffff", listening: false,
     });
+
+    // Padding inside the background so text doesn't touch the rect edges
+    const padding = 1;
+
+    const background = new Konva.Rect({
+      x: -padding,
+      y: 0,
+      width: typedNode.width() + restNode.width() + padding * 2,
+      height: Math.max(typedNode.height(), restNode.height()) + padding * 2,
+      fill: 'grey',
+      cornerRadius: 5,
+      listening: false,
+      opacity: 0.4
+    });
+
     const promptGroup = new Konva.Group();
+    promptGroup.add(background);
     promptGroup.add(typedNode);
     promptGroup.add(restNode);
 
@@ -30,6 +46,7 @@ class Prompt extends Ui {
       console.log("this word was constructed to prompt:", this._word);
     }
 
+    this._background = background;
   }
 
   get typedNode(): Konva.Text {
@@ -47,6 +64,10 @@ class Prompt extends Ui {
     this._typedNode.text("")
     this._restNode.text(word)
     this._word = word;
+  }
+
+  get background(): Konva.Rect {
+    return this._background;
   }
 }
 

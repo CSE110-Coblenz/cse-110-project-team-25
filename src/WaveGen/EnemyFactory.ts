@@ -23,6 +23,7 @@ class EnemyFactory {
     createEnemy(
         type: string,
         word: string,
+        health: number = 1,
         distance: number = 40,
         speed: number = 6,
         x: number = STAGE_WIDTH / 2,
@@ -187,6 +188,7 @@ class EnemyFactory {
         return {
             count,
             types,
+            health: expandArray(config.health, 1),
             speed: expandArray(config.speed, 6),
             distance: expandArray(config.distance, 40),
             words: expandArray(config.words, ""),
@@ -207,21 +209,14 @@ class EnemyFactory {
         n = 1
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
-            const length = Math.round(Math.random() * 2 + 8);
-            const word = this.getRandomWord(activeInitials, length);
-            const x = STAGE_WIDTH / 2;
-            const y = STAGE_HEIGHT / 2;
-            const type = "amiiba";
-            const speed = 2;
-            const distance = 40 + Math.random() * 30; 
-            // const lane = Math.random() * 6 - 3; 
-            
-            // const speed = (2.5 + Math.random() * 2) * speedMultiplier;
-            // const type = Math.random() > 0.5 ? "meteor" : "ufo";
+            const word = this.getRandomWord(activeInitials);
+            const lane = Math.random() * 6 - 3; // -3..+3
+            const z = 40 + Math.random() * 30;  // 40..70
+            const speed = (5 + Math.random() * 4) * speedMultiplier;
+            const type = Math.random() > 0.5 ? "meteor" : "ufo";
 
-            const enemy = this.createEnemy(type, word, distance, speed * (i+1), x, y, 3, manager);
-            enemy.health = 2;
-            activeInitials.add(enemy.word[0]);
+            const enemy = this.createEnemy(type, word, 100, z, 0, speed, lane);
+            activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }
 

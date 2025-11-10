@@ -10,6 +10,13 @@ class Enemy extends Object {
   _word: string;
   private _type: string;
   private _health: number;
+  _maxHealth: number = 100;
+  _healthBar: Konva.Rect;
+  _healthBarFill: Konva.Rect;
+  _healthBarWidth: number = 50;
+  _healthBarHeight: number = 6;
+  _scoreValue: number;
+  _type: string;
   private static seq = 1;
 
   // Projection constants (tweak to taste)
@@ -23,6 +30,7 @@ class Enemy extends Object {
     type: string,
     word: string,
     image: Konva.Group,
+    health: number = 100,
     distance: number = 40, // spawn far by default
     speed: number = 6,      // default speed
     x: number = 0,
@@ -37,6 +45,16 @@ class Enemy extends Object {
     this._speed = speed;
     this._id = Enemy.seq++;
     this._health = health;
+    this._healthBar = new Konva.Rect({
+      width: this._healthBarWidth,
+      height: this._healthBarHeight,
+      fill: 'grey',
+    });
+    this._healthBarFill = new Konva.Rect({
+      width: this._healthBarWidth,
+      height: this._healthBarHeight,
+      fill: 'green',
+    });
   }
 
   get distance(): number { return this._distance; }
@@ -45,8 +63,28 @@ class Enemy extends Object {
   get speed(): number { return this._speed; }
   set speed(value: number) { this._speed = value; }
 
+  get health(): number { return this._health; }
+  set health(value: number) { value > this.maxHealth? this._health = this._maxHealth : this._health = value; }
+
+  get maxHealth(): number { return this._maxHealth; }
+  set maxHealth(value: number) { this._maxHealth = value; }
+
+  get scoreValue(): number { return this._scoreValue; }
+  set scoreValue(value: number) { this._scoreValue = value; }
+
   get prompt(): Prompt { return this._prompt; }
   set prompt(value: Prompt){ this._prompt = value; }
+
+  get healthBar(): Konva.Rect { return this._healthBar; }
+  set healthBar(value: Konva.Rect) { this._healthBar = value; }
+
+  get healthBarFill(): Konva.Rect { return this._healthBarFill; }
+  set healthBarFill(value: Konva.Rect) { this._healthBarFill = value; }
+
+  healthBarUpdate(): void {
+    const ratio = this._health / this._maxHealth;
+    this._healthBarFill.width(this._healthBarWidth * ratio);
+  }
 
   get word(): string { return this._prompt.word; }
   set word(word: string){
