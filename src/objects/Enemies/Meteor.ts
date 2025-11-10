@@ -3,7 +3,7 @@ import Konva from "konva";
 
 class Meteor extends Enemy {
     constructor(
-        word: string[],
+        word: string,
         distance: number = 40, // spawn far by default
         speed: number = 6,      // default speed
         x: number = 0,

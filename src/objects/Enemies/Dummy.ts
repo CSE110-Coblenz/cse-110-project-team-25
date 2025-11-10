@@ -3,7 +3,7 @@ import Konva from "konva";
 
 class Dummy extends Enemy {
     constructor(
-        word: string[],
+        word: string,
         distance: number = 40, // spawn far by default
         x: number = 0,
         y: number = 0

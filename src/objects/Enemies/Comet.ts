@@ -8,7 +8,7 @@ class Comet extends Enemy {
     private _manager: LevelManager;
 
     constructor(
-        word: string[],
+        word: string,
         x: number = 0,
         y: number = 0,
         manager: LevelManager,

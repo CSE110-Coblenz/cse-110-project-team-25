@@ -306,8 +306,9 @@ export class GameController {
      */
     private handleCharacterInput(char: string): void {
         const currentWave = this.levelManager.currentWave;
-        console.log(currentWave);
+        // console.log(currentWave);
         if (!currentWave) return;
+        console.log(this.targetedId);
 
         // Acquire target if none selected
         if (this.targetedId === null) {
@@ -317,6 +318,7 @@ export class GameController {
             this.targetedId = id;
             const word = currentWave.getEnemy(id)?.word ?? "ERROR! NO WORD FOUND!";
             console.log(word);
+            console.log("Hello")
             this.model.setTargetWord(word);
 
             this.typedText = char;
@@ -369,12 +371,26 @@ export class GameController {
         if (!currentWave) return;
 
         const id = this.targetedId;
-        const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
+        const enemy = this.levelManager.currentWave?.getEnemy(this.targetedId)
+        if(enemy === undefined) return;
+        const word = enemy.word ?? "";
 
         // Only complete if length matches AND text is valid (correct)
         if (word && this.typedText.length === word.length && this.isTypedTextValid(word, this.typedText)) {
-            this.model.setScore(this.model.getScore() + 100);
-            this.onEnemyDefeated(id);
+            enemy.health -= 1;
+            if(enemy.health > 0){
+                // Reset targeting if this was the target
+                if (this.targetedId === id) {
+                    this.targetedId = null;
+                    this.typedText = "";
+                    this.view.updateText(this.typedText);
+                    this.view.setTarget(null);
+                    this.levelManager.changeWord(enemy, this.levelManager.getWord(word.length))
+                }
+            } else {
+                this.model.setScore(this.model.getScore() + 100);
+                this.onEnemyDefeated(id);
+            }
         }
     }
 

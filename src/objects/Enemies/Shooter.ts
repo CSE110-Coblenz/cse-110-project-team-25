@@ -11,7 +11,7 @@ class Shooter extends Enemy {
     private readonly spawnRate = 3;   
 
     constructor(
-        word: string[],
+        word: string,
         distance: number = 40, // spawn far by default
         speed: number = 6,      // default speed
         manager: LevelManager,
@@ -35,7 +35,7 @@ class Shooter extends Enemy {
 
         if(this._timer <= 0){
             this._timer = this.spawnRate;
-            this._manager.spawnAdditionalEnemy(new Circle([this._manager.getWord()], this._distance,this._bullet_speed, this.x, this.y + (this.scale * 40)));
+            this._manager.spawnAdditionalEnemy(new Circle(this._manager.getWord(), this.distance,this._bullet_speed, this.x, this.y + (this.scale * 40)));
         }
 
         this.placePrompt();

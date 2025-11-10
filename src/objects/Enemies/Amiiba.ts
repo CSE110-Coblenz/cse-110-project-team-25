@@ -8,7 +8,7 @@ class Amiiba extends Enemy {
     private _split: number;
     private _manager: LevelManager;
     constructor(
-        word: string[],
+        word: string,
         distance: number = 40, // spawn far by default
         speed: number = 6,      // default speed
         manager: LevelManager,
@@ -78,8 +78,8 @@ class Amiiba extends Enemy {
     override destroy(): void {
         let length = Math.round(this.word.length / 2);
         if(this._split > 1){
-            this._manager.spawnAdditionalEnemy(new Amiiba([this._manager.getWord(length)], this._distance,this._speed * 1.5, this._manager, this.x - (32 * this._split), this.y, this._split - 1));
-            this._manager.spawnAdditionalEnemy(new Amiiba([this._manager.getWord(length)], this._distance,this._speed * 1.5, this._manager, this.x + (32 * this._split), this.y, this._split - 1));
+            this._manager.spawnAdditionalEnemy(new Amiiba(this._manager.getWord(length), this.distance,this.speed * 1.5, this._manager, this.x - (32 * this._split), this.y, this._split - 1));
+            this._manager.spawnAdditionalEnemy(new Amiiba(this._manager.getWord(length), this.distance,this.speed * 1.5, this._manager, this.x + (32 * this._split), this.y, this._split - 1));
 
         }
         this.image.destroy();

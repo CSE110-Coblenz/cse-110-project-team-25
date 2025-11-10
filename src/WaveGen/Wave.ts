@@ -6,9 +6,11 @@ import Enemy from "../objects/Enemy";
  */
 class Wave {
     private enemies: Map<number, Enemy>;
+    private objects: Map<number, Object>;
     private _activeInitials: Set<string>;
     constructor() {
         this.enemies = new Map<number, Enemy>();
+        this.objects = new Map<number, Object>();
         this._activeInitials = new Set<string>;
     }
 

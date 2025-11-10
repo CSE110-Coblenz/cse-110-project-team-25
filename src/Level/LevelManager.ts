@@ -232,6 +232,12 @@ class LevelManager {
         return "CANT USE GET WORD WITHOUT CURRENTWAVE"
     }
 
+    changeWord(En: Enemy, word: string): void {
+        this.letterToId.delete(En.word[0]);
+        En.word = word;
+        this.letterToId.set(word[0], En.id);
+    }
+
 
 }
 

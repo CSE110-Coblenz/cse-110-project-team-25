@@ -22,7 +22,7 @@ class EnemyFactory {
      */
     createEnemy(
         type: string,
-        word: string[],
+        word: string,
         distance: number = 40,
         speed: number = 6,
         x: number = STAGE_WIDTH / 2,
@@ -77,7 +77,7 @@ class EnemyFactory {
         for (let i = 0; i < length; i++) {
             const enemy = this.createEnemy(
                 types[i],
-                [words[i]],
+                words[i],
                 distances[i],
                 speeds[i],
                 xPositions[i],
@@ -138,7 +138,7 @@ class EnemyFactory {
             const x = decodedConfig.x[i];
             const y = decodedConfig.y[i];
 
-            const enemy = this.createEnemy(type, [word], distance, speed, x, y);
+            const enemy = this.createEnemy(type, word, distance, speed, x, y);
             wave.addEnemy(enemy);
         }
 
@@ -219,7 +219,8 @@ class EnemyFactory {
             // const speed = (2.5 + Math.random() * 2) * speedMultiplier;
             // const type = Math.random() > 0.5 ? "meteor" : "ufo";
 
-            const enemy = this.createEnemy(type, [word], distance, speed * (i+1), x, y, 3, manager);
+            const enemy = this.createEnemy(type, word, distance, speed * (i+1), x, y, 3, manager);
+            enemy.health = 2;
             activeInitials.add(enemy.word[0]);
             wave.addEnemy(enemy);
         }

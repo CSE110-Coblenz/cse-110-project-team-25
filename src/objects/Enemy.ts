@@ -4,12 +4,12 @@ import Prompt from "./Prompt"
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../constants.ts";
 
 class Enemy extends Object {
-  _distance: number;   // "z" (units from camera)
-  _speed: number;      // units/sec toward the player
-  _prompt: Prompt;
-  _words: string[];
-  _id: number;
-  _type: string;
+  private _distance: number;   // "z" (units from camera)
+  private _speed: number;      // units/sec toward the player
+  private _prompt: Prompt;
+  _word: string;
+  private _type: string;
+  private _health: number;
   private static seq = 1;
 
   // Projection constants (tweak to taste)
@@ -21,20 +21,22 @@ class Enemy extends Object {
 
   constructor(
     type: string,
-    words: string[],
+    word: string,
     image: Konva.Group,
     distance: number = 40, // spawn far by default
     speed: number = 6,      // default speed
     x: number = 0,
-    y: number = 0
+    y: number = 0,
+    health: number = 1
   ) {
     super(image, 0, x, y);
     this._type = type;
-    this._words = words;
-    this._prompt = new Prompt(words.shift());
+    this._word = word;
+    this._prompt = new Prompt(word);
     this._distance = distance;
     this._speed = speed;
     this._id = Enemy.seq++;
+    this._health = health;
   }
 
   get distance(): number { return this._distance; }
@@ -47,10 +49,17 @@ class Enemy extends Object {
   set prompt(value: Prompt){ this._prompt = value; }
 
   get word(): string { return this._prompt.word; }
+  set word(word: string){
+    this._prompt.word = word
+    this._word = word;
+  }
 
-  get initial(): string {return this._prompt.word[0]}
+  get initial(): string {console.log("this:", this.prompt.word); return this._prompt.word[0]}
   
   get type(): string { return this._type}
+
+  get health(): number { return this._health}
+  set health(value: number){ this._health = value}
 
   pause(): void {
     var graphic: Konva.Sprite | undefined = this.image.findOne('Sprite');
@@ -66,7 +75,9 @@ class Enemy extends Object {
     }
   }
 
-  destroy(): void { this.image.destroy(); }
+  destroy(): void { 
+    this.image.destroy();
+  }
 
   updateTransform(dt: number): void {
     //scale

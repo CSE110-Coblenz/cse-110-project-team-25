@@ -27,6 +27,7 @@ class Prompt extends Ui {
       this._word = "";
     } else {
       this._word = word;
+      console.log("this word was constructed to prompt:", this._word);
     }
 
   }
@@ -41,6 +42,11 @@ class Prompt extends Ui {
 
   get word(): string {
     return this._word;
+  }
+  set word(word: string){
+    this._typedNode.text("")
+    this._restNode.text(word)
+    this._word = word;
   }
 }
 
