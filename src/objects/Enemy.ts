@@ -7,6 +7,9 @@ class Enemy extends Object {
   private _distance: number;   // "z" (units from camera)
   private _speed: number;      // units/sec toward the player
   private _prompt: Prompt;
+  private readonly UFO_PROMPT_OFFSET = 40;
+  private readonly METEOR_PROMPT_OFFSET = 65;
+  private readonly DEAULT_PROMPT_OFFSET = 55;
   _word: string;
   private _type: string;
   private _health: number;
@@ -15,8 +18,6 @@ class Enemy extends Object {
   _healthBarFill: Konva.Rect;
   _healthBarWidth: number = 50;
   _healthBarHeight: number = 6;
-  _scoreValue: number;
-  _type: string;
   private static seq = 1;
 
   // Projection constants (tweak to taste)
@@ -30,7 +31,6 @@ class Enemy extends Object {
     type: string,
     word: string,
     image: Konva.Group,
-    health: number = 100,
     distance: number = 40, // spawn far by default
     speed: number = 6,      // default speed
     x: number = 0,
@@ -69,8 +69,6 @@ class Enemy extends Object {
   get maxHealth(): number { return this._maxHealth; }
   set maxHealth(value: number) { this._maxHealth = value; }
 
-  get scoreValue(): number { return this._scoreValue; }
-  set scoreValue(value: number) { this._scoreValue = value; }
 
   get prompt(): Prompt { return this._prompt; }
   set prompt(value: Prompt){ this._prompt = value; }
@@ -96,8 +94,6 @@ class Enemy extends Object {
   
   get type(): string { return this._type}
 
-  get health(): number { return this._health}
-  set health(value: number){ this._health = value}
 
   pause(): void {
     var graphic: Konva.Sprite | undefined = this.image.findOne('Sprite');
@@ -129,20 +125,40 @@ class Enemy extends Object {
     this.image.scale({x: s, y: s});
 
     this.placePrompt();
-
 	}
 
   placePrompt(): void {
-    this.prompt.restNode.x(this.prompt.typedNode.width());
-    const width  = this.prompt.typedNode.width() + this.prompt.restNode.width();
-    const height = Math.max(this.prompt.typedNode.height(), this.prompt.restNode.height());
-    const g = this.prompt.image;
+    let En = this;
+    let s = this.image.scaleX();
+    En.prompt.restNode.x(En.prompt.typedNode.width());
+    const width  = En.prompt.typedNode.width() + En.prompt.restNode.width();
+    const height = Math.max(En.prompt.typedNode.height(), En.prompt.restNode.height());
+    const g = En.prompt.image;
     g.width(width); g.height(height);
     g.offsetX(width / 2); g.offsetY(height / 2);
 
-    this.prompt.x = this.x;
-    this.prompt.y = this.y + (g.height() * this.image.scaleX() * 2.2);
-}
+    En.prompt.x = En.x;
+    if (En.type === "ufo"){
+      En.prompt.y = En.y + this.UFO_PROMPT_OFFSET * s;
+    }
+    else if (En.type === "meteor"){
+      En.prompt.y = En.y + this.METEOR_PROMPT_OFFSET * s;
+    }
+    else {
+      En.prompt.y = En.y + this.DEAULT_PROMPT_OFFSET * s;
+    }
+    
+    g.scale({ x: s, y: s });
+
+    En.healthBar.x(En.x - (En.healthBar.width() * s) / 2);
+    En.healthBar.y(En.y - 20 * s);
+    En.healthBar.scale({ x: s, y: s });
+
+    En.healthBarUpdate();
+    En.healthBarFill.x(En.healthBar.x());
+    En.healthBarFill.y(En.y - 20 * s);
+    En.healthBarFill.scale({ x: s, y: s });
+  }
 }
 
 export default Enemy;

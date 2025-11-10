@@ -12,7 +12,8 @@ class Comet extends Enemy {
         x: number = 0,
         y: number = 0,
         manager: LevelManager,
-        timeWindow: number = 5
+        timeWindow: number = 5,
+        health: number = 1,
     ) {
         const enemyGroup = new Konva.Group({ width: 80, height: 80 });
         const animations = {
@@ -42,7 +43,7 @@ class Comet extends Enemy {
             enemyGroup.add(comet);
             enemyGroup.getLayer()?.batchDraw?.();
         }
-        super("comet", word, enemyGroup, 40, 0, x, y);
+        super("comet", word, enemyGroup, 40, 0, x, y, health);
         this._timer = timeWindow;
         this._manager = manager;
     }

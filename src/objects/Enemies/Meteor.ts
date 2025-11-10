@@ -7,7 +7,8 @@ class Meteor extends Enemy {
         distance: number = 40, // spawn far by default
         speed: number = 6,      // default speed
         x: number = 0,
-        y: number = 0
+        y: number = 0,
+        health: number = 1
     ) {
         const enemyGroup = new Konva.Group({ width: 80, height: 80 });
         const animations = {
@@ -54,7 +55,7 @@ class Meteor extends Enemy {
             enemyGroup.getLayer()?.batchDraw?.();
         }
         
-        super("meteor", word, enemyGroup, distance, speed, x, y);
+        super("meteor", word, enemyGroup, distance, speed, x, y, health);
 
     }
 }

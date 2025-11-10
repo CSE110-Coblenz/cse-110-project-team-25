@@ -7,7 +7,8 @@ class Circle extends Enemy {
         distance: number = 40, // spawn far by default
         speed: number = 6,      // default speed
         x: number = 0,
-        y: number = 0
+        y: number = 0,
+        health: number = 1
     ) {
         const enemyGroup = new Konva.Group({ width: 80, height: 80 });
         const circle = new Konva.Circle({
@@ -15,7 +16,7 @@ class Circle extends Enemy {
             fill: "#2aa1ff", stroke: "#0b5ea8", strokeWidth: 4,
         });
         enemyGroup.add(circle);
-        super("circle", word, enemyGroup, distance, speed, x, y);
+        super("circle", word, enemyGroup, distance, speed, x, y, health);
     }
 }
 

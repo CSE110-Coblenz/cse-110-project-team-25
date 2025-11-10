@@ -33,19 +33,19 @@ class EnemyFactory {
 
     ): Enemy {
         if(type === "ufo"){
-            return new Ufo(word, distance, speed, x, y);
+            return new Ufo(word, distance, speed, x, y, health);
         } else if(type === "meteor"){
-            return new Meteor(word, distance, speed, x, y);
+            return new Meteor(word, distance, speed, x, y, health);
         } else if(type === "amiiba" && manager != undefined){
-            return new Amiiba(word, distance, speed, manager, x, y, split)
+            return new Amiiba(word, distance, speed, manager, x, y, split, health)
         } else if(type === "shooter" && manager != undefined){
-            return new Shooter(word, distance, speed, manager, x, y);
+            return new Shooter(word, distance, speed, manager, x, y, health);
         } else if(type === "comet" && manager != undefined){
-            return new Comet(word, x, y, manager, 10);
+            return new Comet(word, x, y, manager, 10, health);
         } else if(type === "dummy"){
-            return new Dummy(word, distance, x, y);
+            return new Dummy(word, distance, x, y, health);
         }
-        return new Circle(word, distance, speed, x, y)
+        return new Circle(word, distance, speed, x, y, health)
     }
 
     /**
@@ -153,6 +153,7 @@ class EnemyFactory {
     private decodeJSON(config: WaveConfig): {
         count: number;
         types: string[];
+        health: number[];
         speed: number[];
         distance: number[];
         words: string[];
@@ -214,8 +215,9 @@ class EnemyFactory {
             const z = 40 + Math.random() * 30;  // 40..70
             const speed = (5 + Math.random() * 4) * speedMultiplier;
             const type = Math.random() > 0.5 ? "meteor" : "ufo";
+            const health = 2
 
-            const enemy = this.createEnemy(type, word, 100, z, 0, speed, lane);
+            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }

@@ -17,6 +17,7 @@ class Shooter extends Enemy {
         manager: LevelManager,
         x: number = 0,
         y: number = 0,
+        health: number = 1,
     ) {
         const enemyGroup = new Konva.Group({ width: 160, height: 160 });
         const circle = new Konva.Circle({
@@ -24,7 +25,7 @@ class Shooter extends Enemy {
             fill: "#ffc32aff", stroke: "#5a470dff", strokeWidth: 4,
         });
         enemyGroup.add(circle);
-        super("shooter", word, enemyGroup, distance, 0, x, y);
+        super("shooter", word, enemyGroup, distance, 0, x, y, health);
         this._manager = manager;
         this._bullet_speed = speed;
         this._timer = this.spawnRate;

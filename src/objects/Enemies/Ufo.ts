@@ -7,7 +7,8 @@ class Ufo extends Enemy {
         distance: number = 40, // spawn far by default
         speed: number = 6,      // default speed
         x: number = 0,
-        y: number = 0
+        y: number = 0,
+        health: number = 1
     ){
         const animations = {
             idle: [
@@ -38,7 +39,7 @@ class Ufo extends Enemy {
         enemyGroup.add(ufo);
         enemyGroup.getLayer()?.batchDraw?.();
         }
-        super("ufo", word, enemyGroup, distance, speed, x, y);
+        super("ufo", word, enemyGroup, distance, speed, x, y, health);
     }
 }
 

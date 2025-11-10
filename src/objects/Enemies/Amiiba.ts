@@ -15,6 +15,7 @@ class Amiiba extends Enemy {
         x: number = 0,
         y: number = 0,
         split: number = 3,
+        health: number = 1,
     ) {
         const enemyGroup = new Konva.Group({ width: 160, height: 160 });
         const animations = {
@@ -69,7 +70,7 @@ class Amiiba extends Enemy {
             enemyGroup.add(meteor);
             enemyGroup.getLayer()?.batchDraw?.();
         }
-        super("amiiba", word, enemyGroup, distance, speed, x, y);
+        super("amiiba", word, enemyGroup, distance, speed, x, y, health);
         this._manager = manager;
         this._split = split;
         if(split == 2) this.scale = 0.5;

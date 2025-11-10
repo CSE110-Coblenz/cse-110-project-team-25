@@ -7,6 +7,7 @@ import type { Group } from "konva/lib/Group";
  */
 export interface WaveConfig {
 	types: Record<string, string>;  // {"1": "ufo", "2": "meteor", ...}
+	health?: number[];
 	speed?: number[];                // Optional speed values for each enemy
 	distance?: number[];             // Optional initial distance values
 	words?: string[];                // Optional word assignments

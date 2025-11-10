@@ -6,7 +6,8 @@ class Dummy extends Enemy {
         word: string,
         distance: number = 40, // spawn far by default
         x: number = 0,
-        y: number = 0
+        y: number = 0,
+        health: number = 1,
     ) {
         const enemyGroup = new Konva.Group({ width: 80, height: 80 });
         const animations = {
@@ -41,7 +42,7 @@ class Dummy extends Enemy {
             enemyGroup.getLayer()?.batchDraw?.();
         }
         
-        super("dummy", word, enemyGroup, distance, 0, x, y);
+        super("dummy", word, enemyGroup, distance, 0, x, y, health);
 
     }
 }
