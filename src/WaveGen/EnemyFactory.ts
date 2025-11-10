@@ -14,7 +14,7 @@ class EnemyFactory {
     createEnemy(
         type: string,
         word: string,
-        health: number = 1,
+        health: number = 100,
         distance: number = 40,
         scoreValue: number = 0,
         speed: number = 6,
@@ -169,7 +169,7 @@ class EnemyFactory {
         return {
             count,
             types,
-            health: expandArray(config.health, 1),
+            health: expandArray(config.health, 100),
             speed: expandArray(config.speed, 6),
             distance: expandArray(config.distance, 40),
             scoreValue: expandArray(config.scoreValue, 0),
@@ -195,7 +195,7 @@ const activeInitials: Set<string> = new Set();
             const speed = (5 + Math.random() * 4) * speedMultiplier;
             const type = Math.random() > 0.5 ? "meteor" : "ufo";
 
-            const enemy = this.createEnemy(type, word, 1, z, 0, speed, lane);
+            const enemy = this.createEnemy(type, word, 100, z, 0, speed, lane);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }

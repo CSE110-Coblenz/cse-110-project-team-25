@@ -6,6 +6,11 @@ class Enemy extends Object {
   _distance: number;   // "z" (units from camera)
   _speed: number;      // units/sec toward the player
   _health: number;
+  _maxHealth: number = 100;
+  _healthBar: Konva.Rect;
+  _healthBarFill: Konva.Rect;
+  _healthBarWidth: number = 50;
+  _healthBarHeight: number = 6;
   _scoreValue: number;
   _prompt: Prompt;
   _id: number;
@@ -110,7 +115,7 @@ class Enemy extends Object {
   constructor(
     type: string,
     word: string,
-    health: number = 1,
+    health: number = 100,
     distance: number = 40, // spawn far by default
     scoreValue: number = 0,
     speed: number = 6      // default speed
@@ -124,6 +129,16 @@ class Enemy extends Object {
     this._scoreValue = scoreValue;
     this._speed = speed;
     this._id = Enemy.seq++;
+    this._healthBar = new Konva.Rect({
+      width: this._healthBarWidth,
+      height: this._healthBarHeight,
+      fill: 'grey',
+    });
+    this._healthBarFill = new Konva.Rect({
+      width: this._healthBarWidth,
+      height: this._healthBarHeight,
+      fill: 'green',
+    });
   }
 
   get distance(): number { return this._distance; }
@@ -133,13 +148,27 @@ class Enemy extends Object {
   set speed(value: number) { this._speed = value; }
 
   get health(): number { return this._health; }
-  set health(value: number) { this._health = value; }
+  set health(value: number) { value > this.maxHealth? this._health = this._maxHealth : this._health = value; }
+
+  get maxHealth(): number { return this._maxHealth; }
+  set maxHealth(value: number) { this._maxHealth = value; }
 
   get scoreValue(): number { return this._scoreValue; }
   set scoreValue(value: number) { this._scoreValue = value; }
 
   get prompt(): Prompt { return this._prompt; }
   set prompt(value: Prompt){ this._prompt = value; }
+
+  get healthBar(): Konva.Rect { return this._healthBar; }
+  set healthBar(value: Konva.Rect) { this._healthBar = value; }
+
+  get healthBarFill(): Konva.Rect { return this._healthBarFill; }
+  set healthBarFill(value: Konva.Rect) { this._healthBarFill = value; }
+
+  healthBarUpdate(): void {
+    const ratio = this._health / this._maxHealth;
+    this._healthBarFill.width(this._healthBarWidth * ratio);
+  }
 
   get word(): string { return this._prompt.word; }
 
