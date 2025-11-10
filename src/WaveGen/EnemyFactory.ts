@@ -2,6 +2,15 @@ import Enemy from "../objects/Enemy";
 import Wave from "./Wave";
 import { wordBank } from "../words/wordBank";
 import type { WaveConfig } from "../types";
+import Ufo from "../objects/Enemies/Ufo";
+import Circle from "../objects/Enemies/Circle";
+import Meteor from "../objects/Enemies/Meteor";
+import Amiiba from "../objects/Enemies/Amiiba";
+import type LevelManager from "../Level/LevelManager";
+import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
+import Shooter from "../objects/Enemies/Shooter";
+import Comet from "../objects/Enemies/Comet";
+import Dummy from "../objects/Enemies/Dummy";
 
 /**
  * Factory class for creating enemies and waves
@@ -14,15 +23,29 @@ class EnemyFactory {
     createEnemy(
         type: string,
         word: string,
-        health: number = 100,
+        health: number = 1,
         distance: number = 40,
-        scoreValue: number = 0,
         speed: number = 6,
-        x: number = 0
+        x: number = STAGE_WIDTH / 2,
+        y: number = STAGE_HEIGHT / 2,
+        split?: number,
+        manager?: LevelManager,
+
     ): Enemy {
-        const enemy = new Enemy(type, word, health, distance, scoreValue, speed);
-        enemy.x = x;
-        return enemy;
+        if(type === "ufo"){
+            return new Ufo(word, distance, speed, x, y);
+        } else if(type === "meteor"){
+            return new Meteor(word, distance, speed, x, y);
+        } else if(type === "amiiba" && manager != undefined){
+            return new Amiiba(word, distance, speed, manager, x, y, split)
+        } else if(type === "shooter" && manager != undefined){
+            return new Shooter(word, distance, speed, manager, x, y);
+        } else if(type === "comet" && manager != undefined){
+            return new Comet(word, x, y, manager, 10);
+        } else if(type === "dummy"){
+            return new Dummy(word, distance, x, y);
+        }
+        return new Circle(word, distance, speed, x, y)
     }
 
     /**
@@ -32,16 +55,15 @@ class EnemyFactory {
     createMultipleEnemies(
         types: string[],
         words: string[],
-        health: number[],
         distances: number[],
-        scoreValues: number[],
         speeds: number[],
-        xPositions: number[]
+        xPositions: number[],
+        yPositions: number[]
     ): Wave {
         // Validate all lists are equal length
         const length = types.length;
-        const lists = [words, health, distances, scoreValues, speeds, xPositions];
-        const listNames = ['words', 'health', 'distances', 'scoreValues', 'speeds', 'xPositions'];
+        const lists = [words, distances, speeds, xPositions];
+        const listNames = ['words', 'distances', 'speeds', 'xPositions', 'yPositions'];
         
         for (let i = 0; i < lists.length; i++) {
             if (lists[i].length !== length) {
@@ -57,11 +79,10 @@ class EnemyFactory {
             const enemy = this.createEnemy(
                 types[i],
                 words[i],
-                health[i],
                 distances[i],
-                scoreValues[i],
                 speeds[i],
-                xPositions[i]
+                xPositions[i],
+                yPositions[i]
             );
             wave.addEnemy(enemy);
         }
@@ -113,13 +134,12 @@ class EnemyFactory {
         for (let i = 0; i < decodedConfig.count; i++) {
             const type = decodedConfig.types[i];
             const word = decodedConfig.words[i] || this.getRandomWord(activeInitials);
-            const health = decodedConfig.health[i];
             const speed = decodedConfig.speed[i];
             const distance = decodedConfig.distance[i];
-            const scoreValue = decodedConfig.scoreValue[i];
             const x = decodedConfig.x[i];
+            const y = decodedConfig.y[i];
 
-            const enemy = this.createEnemy(type, word, health, distance, scoreValue, speed, x);
+            const enemy = this.createEnemy(type, word, distance, speed, x, y);
             wave.addEnemy(enemy);
         }
 
@@ -133,12 +153,11 @@ class EnemyFactory {
     private decodeJSON(config: WaveConfig): {
         count: number;
         types: string[];
-        health: number[];
         speed: number[];
         distance: number[];
-        scoreValue: number[];
         words: string[];
         x: number[];
+        y: number[];
     } {
         // Get enemy count from types object
         const typeKeys = Object.keys(config.types);
@@ -169,12 +188,12 @@ class EnemyFactory {
         return {
             count,
             types,
-            health: expandArray(config.health, 100),
+            health: expandArray(config.health, 1),
             speed: expandArray(config.speed, 6),
             distance: expandArray(config.distance, 40),
-            scoreValue: expandArray(config.scoreValue, 0),
             words: expandArray(config.words, ""),
-            x: expandArray(config.x, 0)
+            x: expandArray(config.x, 0),
+            y: expandArray(config.y, 0)
         };
     }
 
@@ -183,11 +202,12 @@ class EnemyFactory {
      */
     generateRandomWave(
         n: number,
-        speedMultiplier: number = 1
+        speedMultiplier: number = 1,
+        manager: LevelManager
     ): Wave {
         const wave = new Wave();
-        
-const activeInitials: Set<string> = new Set();
+        n = 1
+        const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
             const word = this.getRandomWord(activeInitials);
             const lane = Math.random() * 6 - 3; // -3..+3
@@ -206,11 +226,15 @@ const activeInitials: Set<string> = new Set();
     /**
      * Get a random word that doesn't conflict with active initials
      */
-    private getRandomWord(activeInitials: Set<string>): string {
+    getRandomWord(activeInitials: Set<string>, length?: number): string {
+        let len = Math.round(Math.random() * 4 + 1);
+        if(length != undefined){
+            len = length;
+        }
         const word = wordBank.getRandomWordExcludingInitials(
             activeInitials,
             ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
-            Math.round(Math.random() * 4 + 1)
+            len
         );
         return word || "default";
     }

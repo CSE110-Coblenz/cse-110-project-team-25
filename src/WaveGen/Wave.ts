@@ -6,9 +6,12 @@ import Enemy from "../objects/Enemy";
  */
 class Wave {
     private enemies: Map<number, Enemy>;
-
+    private objects: Map<number, Object>;
+    private _activeInitials: Set<string>;
     constructor() {
         this.enemies = new Map<number, Enemy>();
+        this.objects = new Map<number, Object>();
+        this._activeInitials = new Set<string>;
     }
 
     /**
@@ -16,13 +19,18 @@ class Wave {
      */
     addEnemy(enemy: Enemy): void {
         this.enemies.set(enemy.id, enemy);
+        this.activeInitials.add(enemy.word[0]);
     }
 
     /**
      * Remove an enemy from the wave by ID
      */
     removeEnemy(id: number): void {
-        this.enemies.delete(id);
+        let temp = this.getEnemy(id);
+        if(temp != undefined){
+            this.activeInitials.delete(temp.word[0]);
+            this.enemies.delete(id);
+        }
     }
 
     /**
@@ -73,6 +81,8 @@ class Wave {
     forEach(callback: (enemy: Enemy, id: number) => void): void {
         this.enemies.forEach(callback);
     }
+
+    get activeInitials(): Set<string> { return this._activeInitials; }
 }
 
 export { Wave };

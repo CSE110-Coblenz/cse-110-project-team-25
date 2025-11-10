@@ -1,134 +1,50 @@
 import Object from "./Object";
 import Konva from "konva";
 import Prompt from "./Prompt"
+import { STAGE_WIDTH, STAGE_HEIGHT } from "../constants.ts";
 
 class Enemy extends Object {
-  _distance: number;   // "z" (units from camera)
-  _speed: number;      // units/sec toward the player
-  _health: number;
+  private _distance: number;   // "z" (units from camera)
+  private _speed: number;      // units/sec toward the player
+  private _prompt: Prompt;
+  _word: string;
+  private _type: string;
+  private _health: number;
   _maxHealth: number = 100;
   _healthBar: Konva.Rect;
   _healthBarFill: Konva.Rect;
   _healthBarWidth: number = 50;
   _healthBarHeight: number = 6;
   _scoreValue: number;
-  _prompt: Prompt;
-  _id: number;
   _type: string;
   private static seq = 1;
 
-
-    private static typeToImage(type: string): Konva.Group {
-        const enemyGroup = new Konva.Group({ width: 80, height: 80 });
-
-        if (type === "circle") {
-            const circle = new Konva.Circle({
-            x: 0, y: 0, radius: 40,
-            fill: "#2aa1ff", stroke: "#0b5ea8", strokeWidth: 4,
-            });
-            enemyGroup.add(circle);
-            return enemyGroup;
-        }
-
-        if (type === "ufo") {
-            const animations = {
-            idle: [
-              0, 0, 480, 220,    
-              480, 0, 480, 220,     
-              960, 0, 480, 220,   
-              1440, 0, 480, 220,    
-              1920, 0, 480, 220,
-            ],};
-            const imageObj = new Image();
-            imageObj.src = "/ufo.png";
-            imageObj.onload = function() {
-            const scale = Math.min(80 / 480, 80 / 220);
-            const ufo = new Konva.Sprite({
-              x: -35,
-              y: 0,
-              scale: { x: scale, y: scale},
-              offset: { x: (220 * scale) / 2, y: (480 * scale) / 2},
-              image: imageObj,
-              animation: 'idle',
-              animations: animations,
-              frameRate: 15,
-              frameIndex: Math.round(Math.random() * 5)
-            });
-            ufo.start();
-            enemyGroup.add(ufo);
-            enemyGroup.getLayer()?.batchDraw?.();
-           }
-            return enemyGroup;
-
-        }
-        if (type === "meteor") {
-            const animations = {
-            idle: [
-              0, 0, 480, 480,    
-              480, 0, 480, 480,     
-              960, 0, 480, 480,   
-              1440, 0, 480, 480,    
-              1920, 0, 480, 480,
-              2400, 0, 480, 480,
-              3360, 0, 480, 480,
-              3840, 0, 480, 480,
-              4320, 0, 480, 480,
-              4800, 0, 480, 480,
-              5280, 0, 480, 480,
-              5760, 0, 480, 480,
-              6240, 0, 480, 480,
-              6720, 0, 480, 480,
-              7200, 0, 480, 480,
-              7680, 0, 480, 480,
-              8160, 0, 480, 480,
-              8640, 0, 480, 480,
-              9120, 0, 480, 480, 
-            ],};
-            const imageObj = new Image();
-            imageObj.src = "/meteor.png";
-            imageObj.onload = function() {
-            const scale = Math.min(80 / 480, 80 / 220);
-            const ufo = new Konva.Sprite({
-              x: -35,
-              y: 0,
-              scale: { x: scale, y: scale},
-              offset: { x: (220 * scale) / 2, y: (480 * scale) / 2},
-              image: imageObj,
-              animation: 'idle',
-              animations: animations,
-              frameRate: 15,
-              frameIndex: Math.round(Math.random() * 20)
-            });
-            ufo.start();
-            enemyGroup.add(ufo);
-            enemyGroup.getLayer()?.batchDraw?.();
-           }
-            return enemyGroup;
-
-        }
-
-        // default empty group (still 80×80)
-        return enemyGroup;
-    }
-
+  // Projection constants (tweak to taste)
+  private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
+  private readonly DROP_K    = 900;               // vertical drop ≈ DROP_K / z
+  private readonly UNITS_X   = 120;                // world X units → px at z reference
+  private readonly HORIZON_Y = STAGE_HEIGHT * 0.35;
+  private readonly NEAR_CLIP = 1.0;               // safety clamp
 
   constructor(
     type: string,
     word: string,
+    image: Konva.Group,
     health: number = 100,
     distance: number = 40, // spawn far by default
-    scoreValue: number = 0,
-    speed: number = 6      // default speed
+    speed: number = 6,      // default speed
+    x: number = 0,
+    y: number = 0,
+    health: number = 1
   ) {
-    let image = Enemy.typeToImage(type);
-    super(image);
+    super(image, 0, x, y);
     this._type = type;
+    this._word = word;
     this._prompt = new Prompt(word);
-    this._health = health;
     this._distance = distance;
-    this._scoreValue = scoreValue;
     this._speed = speed;
     this._id = Enemy.seq++;
+    this._health = health;
     this._healthBar = new Konva.Rect({
       width: this._healthBarWidth,
       height: this._healthBarHeight,
@@ -171,10 +87,17 @@ class Enemy extends Object {
   }
 
   get word(): string { return this._prompt.word; }
+  set word(word: string){
+    this._prompt.word = word
+    this._word = word;
+  }
 
-  get initial(): string {return this._prompt.word[0]}
+  get initial(): string {console.log("this:", this.prompt.word); return this._prompt.word[0]}
   
   get type(): string { return this._type}
+
+  get health(): number { return this._health}
+  set health(value: number){ this._health = value}
 
   pause(): void {
     var graphic: Konva.Sprite | undefined = this.image.findOne('Sprite');
@@ -190,7 +113,36 @@ class Enemy extends Object {
     }
   }
 
-  destroy(): void { this.image.destroy(); }
+  destroy(): void { 
+    this.image.destroy();
+  }
+
+  updateTransform(dt: number): void {
+    //scale
+    let s = this.SCALE_K * this.scale / this.distance;
+    let timeLeft = this.distance / this.speed;
+    let xDist = STAGE_WIDTH / 2 - this.x;
+    let yDist = STAGE_HEIGHT / 2 - this.y;
+    this.x += (xDist * dt * s * 2) / (timeLeft * this.distance);
+    this.y += (yDist * dt * s * 2) / (timeLeft * this.distance);
+
+    this.image.scale({x: s, y: s});
+
+    this.placePrompt();
+
+	}
+
+  placePrompt(): void {
+    this.prompt.restNode.x(this.prompt.typedNode.width());
+    const width  = this.prompt.typedNode.width() + this.prompt.restNode.width();
+    const height = Math.max(this.prompt.typedNode.height(), this.prompt.restNode.height());
+    const g = this.prompt.image;
+    g.width(width); g.height(height);
+    g.offsetX(width / 2); g.offsetY(height / 2);
+
+    this.prompt.x = this.x;
+    this.prompt.y = this.y + (g.height() * this.image.scaleX() * 2.2);
+}
 }
 
 export default Enemy;

@@ -7,7 +7,7 @@ class Prompt extends Ui {
   _restNode: Konva.Text;
   _background: Konva.Rect
   
-  constructor(word: string) {
+  constructor(word: string | undefined) {
 
     const typedNode = new Konva.Text({
           x: 0, y: 0, text: "", fontSize: 28, fontFamily: "Courier New", fill: "#12d44e", listening: false,
@@ -39,7 +39,13 @@ class Prompt extends Ui {
 
     this._typedNode = typedNode;
     this._restNode = restNode;
-    this._word = word;
+    if(word === undefined){
+      this._word = "";
+    } else {
+      this._word = word;
+      console.log("this word was constructed to prompt:", this._word);
+    }
+
     this._background = background;
   }
 
@@ -53,6 +59,11 @@ class Prompt extends Ui {
 
   get word(): string {
     return this._word;
+  }
+  set word(word: string){
+    this._typedNode.text("")
+    this._restNode.text(word)
+    this._word = word;
   }
 
   get background(): Konva.Rect {

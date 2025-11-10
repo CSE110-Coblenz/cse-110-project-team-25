@@ -2,6 +2,7 @@ import { Wave } from "../WaveGen/Wave";
 import EnemyFactory from "../WaveGen/EnemyFactory";
 import type { GameScreenView } from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
+import Enemy from "../objects/Enemy"
 
 /**
  * LevelManager manages game progression through levels
@@ -105,7 +106,8 @@ class LevelManager {
             const enemyCount = baseEnemyCount + this._currentLevel + i;
             const wave = this.enemyFactory.generateRandomWave(
                 enemyCount,
-                speedMultiplier
+                speedMultiplier,
+                this
             );
             this._waves.push(wave);
         }
@@ -119,7 +121,7 @@ class LevelManager {
         if (this._currentWave && this._currentWave.isEmpty()) {
             this.popNextWave();
             if (this._currentWave) {
-                this.spawnEnemies(this._currentWave);
+                this.spawnNewWave();
             }
         }
     }
@@ -131,40 +133,52 @@ class LevelManager {
         this.generateNewLevel();
         this.popNextWave();
         if (this._currentWave) {
-            this.spawnEnemies(this._currentWave);
+            this.spawnNewWave();
         }
     }
 
     /**
-     * Spawn enemies from a wave onto the player's screen
+     * Spawn enemies from currentWave onto the player's screen
      * Iterates through all entries in the Wave and renders them to the view
      */
-    spawnEnemies(wave: Wave): void {
-        if (!this.view) {
-            throw new Error("View not set. Call setView() before spawning enemies.");
-        }
-
+    spawnNewWave(): void {
+        if(this._currentWave == undefined) return
         // Clear tracking data
         this.letterToId.clear();
 
         // Iterate through all enemies in the wave
-        wave.forEach((enemy) => {
-            // Add to view
-            this.view!.spawnEnemyVisuals(enemy);
-            this.view!.updateEnemyTransform(enemy.id, enemy.x, enemy.distance);
-
-            // Track for targeting
-            this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
+        this._currentWave.forEach((enemy) => {
+            this.spawnEnemy(enemy);
         });
+    }
+
+    spawnEnemy(enemy: Enemy): void {
+        if(this._currentWave == undefined) return
+
+        if (!this.view) {
+            throw new Error("View not set. Call setView() before spawning enemies.");
+        }
+
+        // Add to view
+        this.view!.spawnEnemyVisuals(enemy);
+        this.view!.updateEnemyTransform(enemy, 0);
+
+        // Track for targeting
+        this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
 
         // Set draw order based on distance
-        const sortedIds = this.getIdsSortedByDistance(wave);
+        const sortedIds = this.getIdsSortedByDistance(this._currentWave);
         this.view.setDrawOrder(sortedIds);
 
         // Update level and wave display
         this.view.updateLevel(this._currentLevel);
         this.view.updateWaves(this._waves.length);
-        this.view.updateEnemiesLeft(wave.getCount());
+        this.view.updateEnemiesLeft(this._currentWave.getCount());
+    }
+
+    spawnAdditionalEnemy(enemy: Enemy): void {
+        this._currentWave?.addEnemy(enemy);
+        this.spawnEnemy(enemy);
     }
 
     /**
@@ -209,6 +223,19 @@ class LevelManager {
         return enemies
             .sort((a, b) => a.distance - b.distance)
             .map(e => e.id);
+    }
+
+    getWord(length?: number): string {
+        if(this._currentWave != undefined){
+            return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
+        }
+        return "CANT USE GET WORD WITHOUT CURRENTWAVE"
+    }
+
+    changeWord(En: Enemy, word: string): void {
+        this.letterToId.delete(En.word[0]);
+        En.word = word;
+        this.letterToId.set(word[0], En.id);
     }
 
 
