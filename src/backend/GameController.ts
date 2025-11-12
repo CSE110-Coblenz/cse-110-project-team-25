@@ -241,8 +241,6 @@ export class GameController {
         this.view.updateEffects(dt);
     }
 
-
-
     /**
      * Handle game over
      */

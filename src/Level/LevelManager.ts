@@ -11,7 +11,7 @@ import Enemy from "../objects/Enemy"
 class LevelManager {
     private _currentLevel: number = 1;
     // private _waveLevels: Map<number, Wave[]> = new Map(); 
-    // private _difficulty: number = 1;
+    private _difficulty: number = 1;
     // private _isEndless: boolean = false;
     private _waves: Wave[] = [];
     private _currentWave: Wave | null = null;
@@ -97,7 +97,7 @@ class LevelManager {
     /**
      * Generate a new set of random waves for the current level
      */
-    private generateNewLevel(): void {
+    private generateNewLevel(difficulty?: number): void {
         const wavesPerLevel = 3; // Number of waves per level
         const baseEnemyCount = 3;
         const speedMultiplier = 1 + (this._currentLevel * 0.2);
@@ -225,11 +225,35 @@ class LevelManager {
             .map(e => e.id);
     }
 
+    /**
+     * Get a word based on current difficulty level
+     * @param length Optional specific length (overrides difficulty-based selection)
+     */
     getWord(length?: number): string {
         if(this._currentWave != undefined){
-            return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
+            if (length !== undefined) {
+                // If length is specified, use the original method
+                return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
+            } else {
+                // Use difficulty-based word selection
+                return this.enemyFactory.getRandomWordByDifficulty(this._currentWave.activeInitials, this._difficulty);
+            }
         }
         return "CANT USE GET WORD WITHOUT CURRENTWAVE"
+    }
+
+    /**
+     * Set the current difficulty level (1-100)
+     */
+    setDifficulty(difficulty: number): void {
+        this._difficulty = Math.max(1, Math.min(100, difficulty));
+    }
+
+    /**
+     * Get the current difficulty level
+     */
+    get difficulty(): number {
+        return this._difficulty;
     }
 
     changeWord(En: Enemy, word: string): void {
@@ -237,8 +261,6 @@ class LevelManager {
         En.word = word;
         this.letterToId.set(word[0], En.id);
     }
-
-
 }
 
 export default LevelManager;
