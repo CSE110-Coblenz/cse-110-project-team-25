@@ -2,7 +2,7 @@ import { ScreenController } from "../../types.ts";
 import type { ScreenSwitcher } from "../../types.ts";
 import { GameScreenModel } from "./GameScreenModel.ts";
 import { GameScreenView } from "./GameScreenView.ts";
-import { GameController } from "../../GameController.ts";
+import { GameController } from "../../backend/GameController.ts";
 
 export class GameScreenController extends ScreenController {
     private model: GameScreenModel;
