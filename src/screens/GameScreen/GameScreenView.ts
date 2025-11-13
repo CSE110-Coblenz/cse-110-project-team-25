@@ -110,9 +110,14 @@ export class GameScreenView implements View {
     });
   }
 	/** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
-  //TODO:: COMBINE CHANGES FROM THIS TRANSFORM WITH TEH ONE IN ENEMY.TS. RIGHT NOW ITS REDUNDANT
 	updateEnemyTransform(En: Enemy, dt: number): void {
     En.updateTransform(dt);
+    this.group.getLayer()?.batchDraw();
+	}
+
+  /** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
+	updateEffectTransform(Ef: Effect, dt: number): void {
+    Ef.update(dt);
     this.group.getLayer()?.batchDraw();
 	}
 
@@ -149,6 +154,13 @@ export class GameScreenView implements View {
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
     this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
+  }
+
+  destroyEffect(id: number): void {
+    const Ef = this.effects.get(id);
+    if (!Ef) return;
+    Ef.destroy();
+    this.effects.delete(id);
   }
 
   setTarget(id: number | null): void {
@@ -196,7 +208,7 @@ export class GameScreenView implements View {
 
     // Create Shot Effect
     // this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
-    this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
+    // this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
 
 
     // Shake animation parameters
