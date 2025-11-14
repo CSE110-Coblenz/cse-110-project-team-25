@@ -7,6 +7,7 @@ import Enemy from "../objects/Enemy";
 class Wave {
     private enemies: Map<number, Enemy>;
     private objects: Map<number, Object>;
+    private _activeLanes: Set<number> = new Set<number>();
     private _activeInitials: Set<string>;
     constructor() {
         this.enemies = new Map<number, Enemy>();
@@ -75,12 +76,34 @@ class Wave {
         return Array.from(this.enemies.keys());
     }
 
+    addLane(lane: number): void {
+        this._activeLanes.add(lane);
+    }
+
+    getInactiveLane(): number {
+        let tries = 0;
+        while (tries < 100) {
+            const lane = Math.floor(Math.random() * 6) - 3; // -3 to +2
+            if (!this._activeLanes.has(lane)) {
+                return lane;
+            }
+            tries++;
+        }
+        // Fallback in case all lanes are active
+        return 0;
+    }
+
+
     /**
      * Iterate through all enemies
      */
     forEach(callback: (enemy: Enemy, id: number) => void): void {
         this.enemies.forEach(callback);
     }
+
+    get activeLanes(): Set<number> { return this._activeLanes; }
+
+    set activeLanes(lanes: Set<number>) { this._activeLanes = lanes; }    
 
     get activeInitials(): Set<string> { return this._activeInitials; }
 }

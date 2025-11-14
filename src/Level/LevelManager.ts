@@ -1,4 +1,5 @@
 import { Wave } from "../WaveGen/Wave";
+import DifficultyUtil from "../backend/difficulty/DifficultyUtil";
 import EnemyFactory from "../WaveGen/EnemyFactory";
 import type { GameScreenView } from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
@@ -11,18 +12,18 @@ import Enemy from "../objects/Enemy"
 class LevelManager {
     private _currentLevel: number = 1;
     // private _waveLevels: Map<number, Wave[]> = new Map(); 
-    private _difficulty: number = 1;
-    // private _isEndless: boolean = false;
+    private _isEndless: boolean = false;
     private _waves: Wave[] = [];
     private _currentWave: Wave | null = null;
+    private _difficultyUtil: DifficultyUtil;
     private enemyFactory: EnemyFactory;
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
     private letterToId: Map<string, number> = new Map();
 
-
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
-        this.enemyFactory = new EnemyFactory();
+        this._difficultyUtil = new DifficultyUtil(10);
+        this.enemyFactory = new EnemyFactory(this._difficultyUtil);
         this.view = view;
         this.screenSwitcher = screenSwitcher;
     }
@@ -49,6 +50,16 @@ class LevelManager {
     /** Get current wave */
     get currentWave(): Wave | null {
         return this._currentWave;
+    }
+
+    set difficulty(value: number) {
+        this._difficultyUtil.difficulty = value;
+    }
+    /**
+     * Get the current difficulty level
+     */
+    get difficulty(): number {
+        return this._difficultyUtil.difficulty;
     }
 
     /** Set the view for rendering enemies */
@@ -97,13 +108,17 @@ class LevelManager {
     /**
      * Generate a new set of random waves for the current level
      */
-    private generateNewLevel(difficulty?: number): void {
+    private generateNewLevel(): void {
         const wavesPerLevel = 3; // Number of waves per level
-        const baseEnemyCount = 3;
-        const speedMultiplier = 1 + (this._currentLevel * 0.2);
 
         for (let i = 0; i < wavesPerLevel; i++) {
-            const enemyCount = baseEnemyCount + this._currentLevel + i;
+            // Use difficulty-based enemy count if available, otherwise use level scaling
+            const speedMultiplier = this._difficultyUtil
+                ? this._difficultyUtil.randSpeedMultiplier()
+                : 1 + (this._currentLevel * 0.2);
+            const enemyCount = this._difficultyUtil
+                ? this._difficultyUtil.randEnemyCount()
+                : 3;
             const wave = this.enemyFactory.generateRandomWave(
                 enemyCount,
                 speedMultiplier,
@@ -225,6 +240,11 @@ class LevelManager {
             .map(e => e.id);
     }
 
+    changeWord(En: Enemy, word: string): void {
+        this.letterToId.delete(En.word[0]);
+        En.word = word;
+        this.letterToId.set(word[0], En.id);
+    }
     /**
      * Get a word based on current difficulty level
      * @param length Optional specific length (overrides difficulty-based selection)
@@ -235,32 +255,16 @@ class LevelManager {
                 // If length is specified, use the original method
                 return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
             } else {
-                // Use difficulty-based word selection
-                return this.enemyFactory.getRandomWordByDifficulty(this._currentWave.activeInitials, this._difficulty);
+                length = this._difficultyUtil.randWordLength();
+                return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
             }
         }
         return "CANT USE GET WORD WITHOUT CURRENTWAVE"
     }
 
-    /**
-     * Set the current difficulty level (1-100)
-     */
-    setDifficulty(difficulty: number): void {
-        this._difficulty = Math.max(1, Math.min(100, difficulty));
-    }
 
-    /**
-     * Get the current difficulty level
-     */
-    get difficulty(): number {
-        return this._difficulty;
-    }
 
-    changeWord(En: Enemy, word: string): void {
-        this.letterToId.delete(En.word[0]);
-        En.word = word;
-        this.letterToId.set(word[0], En.id);
-    }
+
 }
 
 export default LevelManager;

@@ -11,12 +11,18 @@ import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
 import Shooter from "../objects/Enemies/Shooter";
 import Comet from "../objects/Enemies/Comet";
 import Dummy from "../objects/Enemies/Dummy";
+import DifficultyUtil from "../backend/difficulty/DifficultyUtil";
 
 /**
  * Factory class for creating enemies and waves
  * Generates enemies with configurable attributes but does NOT render them
  */
 class EnemyFactory {
+    private difficultyUtil?: DifficultyUtil | null;
+
+    constructor(difficulty: DifficultyUtil | null = null) {
+        this.difficultyUtil = difficulty;
+    }
     /**
      * Create a single enemy with all configurable attributes
      */
@@ -211,13 +217,14 @@ class EnemyFactory {
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
             const word = this.getRandomWord(activeInitials);
-            const lane = Math.random() * 6 - 3; // -3..+3
             const z = 40 + Math.random() * 30;  // 40..70
-            const speed = (5 + Math.random() * 4) * speedMultiplier;
+            
+            const baseSpeed = 5 + Math.random() * 4;  // Base speed range: 5-9
+            const speed = baseSpeed * speedMultiplier;
+
             const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"]
             const type = types[Math.round(Math.random()* (types.length-1))]
             const health = 2
-
             const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
@@ -231,8 +238,10 @@ class EnemyFactory {
      */
     getRandomWord(activeInitials: Set<string>, length?: number): string {
         let len = Math.round(Math.random() * 4 + 1);
-        if(length != undefined){
+        if(length !== undefined){
             len = length;
+        } else if (this.difficultyUtil){
+            len = this.difficultyUtil.randWordLength();
         }
         const word = wordBank.getRandomWordExcludingInitials(
             activeInitials,
@@ -242,19 +251,6 @@ class EnemyFactory {
         return word || "default";
     }
 
-    /**
-     * Get a random word based on difficulty level (1-100)
-     * @param activeInitials Set of initials to exclude
-     * @param difficulty Difficulty level (1-100)
-     */
-    getRandomWordByDifficulty(activeInitials: Set<string>, difficulty: number): string {
-        const word = wordBank.getRandomWordByDifficulty(
-            difficulty,
-            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
-            activeInitials
-        );
-        return word || "default";
-    }
 }
 
 export default EnemyFactory;

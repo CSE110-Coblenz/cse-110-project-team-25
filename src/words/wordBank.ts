@@ -18,12 +18,12 @@ export class WordBank {
      * Difficulty 100: average 7 letters
      * Higher difficulty increases variance towards longer words
      */
-    private calculateWordLengthFromDifficulty(difficulty: number): number {
+    wordLengthFromDifficulty(difficulty: number): number {
         // Clamp difficulty to 1-100 range
         difficulty = Math.max(1, Math.min(100, difficulty));
         
-        // Base average length progression: 4 at difficulty 10, 7 at difficulty 100
-        const baseAverage = 4 + (3 * (difficulty - 10) / 90);
+        // Base average length progression: 3 at difficulty 10, 7 at difficulty 100
+        const baseAverage = 3 + (4 * (difficulty - 10) / 90);
         const clampedAverage = Math.max(3, Math.min(7, baseAverage));
         
         // Variance increases with difficulty
@@ -75,26 +75,6 @@ export class WordBank {
         
         // Fallback to clamped average
         return Math.round(clampedAverage);
-    }
-
-    /**
-     * Get a random word based on difficulty level (1-100)
-     * @param difficulty Difficulty level (1-100)
-     * @param categories Word categories to select from
-     * @param excludedInitials Optional set of initials to exclude
-     */
-    getRandomWordByDifficulty(
-        difficulty: number, 
-        categories: Bank[] = ["bnm,."], 
-        excludedInitials?: Set<string> | string[]
-    ): string | null {
-        const length = this.calculateWordLengthFromDifficulty(difficulty);
-        
-        if (excludedInitials) {
-            return this.getRandomWordExcludingInitials(excludedInitials, categories, length);
-        } else {
-            return this.getRandomWord(categories, length);
-        }
     }
 
     // Original methods preserved for backward compatibility

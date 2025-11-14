@@ -10,9 +10,9 @@ class Enemy extends Object {
     private readonly UFO_PROMPT_OFFSET = 40;
     private readonly METEOR_PROMPT_OFFSET = 65;
     private readonly DEAULT_PROMPT_OFFSET = 100;
-    _word: string;
     private _type: string;
     private _health: number;
+    _word: string;
     _maxHealth: number = 100;
     _healthBar: Konva.Rect;
     _healthBarFill: Konva.Rect;
