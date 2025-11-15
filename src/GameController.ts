@@ -3,9 +3,10 @@ import { GameScreenModel } from "./screens/GameScreen/GameScreenModel";
 import { GameScreenView } from "./screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher } from "./types";
 import { Money } from "./Money";
-import { Health } from "./Health";
 import LevelManager from "./Level/LevelManager";
 import { Save } from "./GameLogic/Save";
+import { Player } from "./Player/Player.ts";
+import ItemRegistry from "./Player/ItemRegistry.ts";
 
 /**
  * GameController handles the core game logic including:
@@ -44,20 +45,74 @@ export class GameController {
      */
     async startGame(): Promise<void> {
         Save.load();
-        Money.getInstance().amount = Save.money;
-        console.log("Loaded money:" + Money.getInstance().amount);
+
+        // Sync Player with saved money
+        const player = Player.getInstance();
+        player.setMoney(Save.money);
+        console.log("Loaded money:" + player.getMoney());
+
         this.resetGameState();
+        this.addSampleItems(); // Add sample items for testing
         this.levelManager.initializeLevel();
         this.setupKeyboardInput();
         this.startGameLoop();
     }
 
     /**
+     * Add sample items to player inventory for testing
+     * TODO: Remove this when shop is implemented
+     */
+    private addSampleItems(): void {
+        const player = Player.getInstance();
+        const registry = ItemRegistry.getInstance();
+
+        // Clear existing items first (prevents duplicates on restart)
+        player.getConsumableInventory().clear();
+        player.getUpgradeInventory().clear();
+
+        // Add some consumable items to inventory
+        const healthPotion = registry.getItem("health_potion");
+        const greaterHealthPotion = registry.getItem("greater_health_potion");
+        const heartContainer = registry.getItem("heart_container");
+        const moneyBag = registry.getItem("money_bag");
+
+        if (healthPotion) {
+            player.addConsumable(healthPotion, 3);
+        }
+        if (greaterHealthPotion) {
+            player.addConsumable(greaterHealthPotion, 2);
+        }
+        if (heartContainer) {
+            player.addConsumable(heartContainer, 2);
+        }
+        if (moneyBag) {
+            player.addConsumable(moneyBag, 2);
+        }
+
+        // Add some upgrades
+        const damageAmp = registry.getItem("damage_amplifier");
+        const luckyToken = registry.getItem("money_multiplier");
+
+        if (damageAmp) {
+            player.equipUpgrade(damageAmp, 0);
+        }
+        if (luckyToken) {
+            player.equipUpgrade(luckyToken, 1);
+        }
+
+        // Update UI to show items
+        this.view.updatePlayerUI();
+    }
+
+    /**
      * Stop the game and clean up resources
      */
     stopGame(): void {
-        Save.money = Money.getInstance().amount;
+        // Save Player's money
+        const player = Player.getInstance();
+        Save.money = player.getMoney();
         Save.save();
+
         this.stopGameLoop();
         this.cleanupKeyboardInput();
         this.clearAllEnemies();
@@ -100,9 +155,14 @@ export class GameController {
         this.targetedId = null;
         this.clearAllEnemies();
         this.view.setTarget(null);
-        this.view.updateMoney(Money.getInstance().amount);
-        Health.getInstance().reset();
-        this.view.updateHealth(Health.getInstance().maxLives);
+
+        // Reset Player health
+        const player = Player.getInstance();
+        player.resetHealth();
+
+        // Update displays with Player values
+        this.view.updateMoney(player.getMoney());
+        this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
     }
 
     /**
@@ -134,9 +194,11 @@ export class GameController {
         this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
 
-        // Money reward
-        Money.getInstance().add(Money.getInstance().calculateReward(enemy.word.length, enemy.speed));
-        this.view.updateMoney(Money.getInstance().amount);
+        // Money reward - use Player's money system with modifiers
+        const player = Player.getInstance();
+        const baseReward = Money.getInstance().calculateReward(enemy.word.length, enemy.speed);
+        player.addMoney(baseReward); // This applies money multiplier!
+        this.view.updateMoney(player.getMoney());
 
         // Reset targeting if this was the target
         if (this.targetedId === id) {
@@ -222,11 +284,14 @@ export class GameController {
         // Check game over condition
         if (closeEnemy !== null) {
             this.EnemyHitsPlayer(closeEnemy);
-            Health.getInstance().loseLife();
-            this.view.updateHealth(Health.getInstance().lives);
+
+            // Use Player's health system
+            const player = Player.getInstance();
+            player.takeDamage(1);
+            this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
             closeEnemy = null;
 
-            if(Health.getInstance().lives <= 0){
+            if(player.isDead()){
                 this.gameOver();
             }
         }
@@ -261,8 +326,16 @@ export class GameController {
                 } else {
                     this.pauseGame()
                 }
+                return;
             }
             if(!this.paused){
+                // Handle number keys 1-9 for consumable items
+                if (e.key >= '1' && e.key <= '9') {
+                    const slot = parseInt(e.key) - 1; // Convert to 0-indexed
+                    this.useConsumableItem(slot);
+                    return;
+                }
+
                 if (e.key === "Backspace") {
                     e.preventDefault(); // Prevent default browser backspace behavior
                     this.handleBackspace();
@@ -275,6 +348,25 @@ export class GameController {
         };
 
         window.addEventListener("keydown", this.keyboardHandler);
+    }
+
+    /**
+     * Use consumable item from inventory
+     */
+    private useConsumableItem(slot: number): void {
+        const player = Player.getInstance();
+        const success = player.useConsumable(slot);
+
+        if (success) {
+            // Update health and money displays
+            this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
+            this.view.updateMoney(player.getMoney());
+
+            // Update inventory UI to reflect changes
+            this.view.updateInventoryUI();
+
+            console.log(`Used item in slot ${slot + 1}`);
+        }
     }
 
     /**
@@ -381,7 +473,9 @@ export class GameController {
 
         // Only complete if length matches AND text is valid (correct)
         if (word && this.typedText.length === word.length && this.isTypedTextValid(word, this.typedText)) {
-            enemy.health -= 1;
+            // Apply damage with Player's damage multiplier
+            const player = Player.getInstance();
+            enemy.health -= player.getDamage();
             if(enemy.health > 0){
                 // Reset targeting if this was the target
                 if (this.targetedId === id) {

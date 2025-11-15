@@ -5,6 +5,8 @@ import { GameScreenController } from "./screens/GameScreen/GameScreenController.
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 import GameRenderer from "./rendering/GameRenderer.ts";
 import { wordBank } from "./words/wordBank.ts";
+import ItemRegistry from "./Player/ItemRegistry.ts";
+import { testPlayerSystem } from "./testPlayerSystem.ts";
 
 
 class App implements ScreenSwitcher {
@@ -68,5 +70,12 @@ class App implements ScreenSwitcher {
 // Boot the app
 (async () => {
   await wordBank.load();        // load JSON once
+  ItemRegistry.getInstance();   // Initialize item registry
   new App("container");         // then boot your app
+
+  // Make test function available globally for console testing
+  if (typeof window !== "undefined") {
+    (window as any).testPlayerSystem = testPlayerSystem;
+  }
+  console.log("Run testPlayerSystem() in console to test the Player system!");
 })();
