@@ -120,24 +120,29 @@ class EnemyFactory {
      * @param url - The URL or path to the JSON file (e.g., '/waveConfig.json')
      * @returns Promise that resolves to a Wave object
      */
-    async loadWaveFromJSON(url: string, activeInitials: Set<string> = new Set()): Promise<Wave> {
+    async loadWaveFromJSON(url: string): Promise<Wave> {
         const config = await this.loadWaveConfigFromJSON(url);
-        return this.generateWaveFromJSON(config, activeInitials);
+        return this.generateWaveFromJSON(config);
     }
 
     /**
      * Generate a wave from JSON configuration
      * JSON format: {"types": {"1": "ufo", "2": "meteor"}, "health": [1, 2], "speed": [5, 6], ...}
      */
-    generateWaveFromJSON(config: WaveConfig, activeInitials: Set<string> = new Set(), manager?: LevelManager): Wave {
+    generateWaveFromJSON(config: WaveConfig, manager?: LevelManager): Wave {
         const decodedConfig = this.decodeJSON(config);
         const wave = new Wave();
 
+        const activeInitials: Set<string> = new Set();
         for (let i = 0; i < decodedConfig.count; i++) {
             const type = decodedConfig.types[i];
-            const word = decodedConfig.words[i] || this.getRandomWord(activeInitials);
+            let word = this.getRandomWord(activeInitials);
+            if (config.words !== undefined && config.words.length > i){
+                word = decodedConfig.words[i];
+            }
             const speed = decodedConfig.speed[i];
             const distance = decodedConfig.distance[i];
+            const health = decodedConfig.health[i];
             let x = STAGE_WIDTH / 2;
             let y = STAGE_HEIGHT / 2;
             if(config.x !== undefined){
@@ -155,8 +160,10 @@ class EnemyFactory {
             }
 
             // createEnemy(type, word, health=1, distance=40, speed=6, x, y)
-            const enemy = this.createEnemy(type, word, decodedConfig.health[i], distance, speed, x, y, undefined, manager);
+            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, undefined, manager);
             wave.addEnemy(enemy);
+
+            activeInitials.add(word[0].toLowerCase());
         }
 
         return wave;
@@ -289,20 +296,14 @@ class EnemyFactory {
      * Generate multiple waves from a LevelConfig
      * Returns an array of Wave objects based on the level configuration
      * @param config - The level configuration
-     * @param activeInitials - Set of active initials to avoid word conflicts
      * @returns Array of Wave objects
      */
-    generateWavesFromLevelConfig(config: LevelConfig, activeInitials: Set<string> = new Set(), manager?: LevelManager): Wave[] {
+    generateWavesFromLevelConfig(config: LevelConfig, manager?: LevelManager): Wave[] {
         const waves: Wave[] = [];
         
         for (const waveConfig of config.waves) {
-            const wave = this.generateWaveFromJSON(waveConfig, activeInitials, manager);
+            const wave = this.generateWaveFromJSON(waveConfig, manager);
             waves.push(wave);
-            
-            // Update active initials for next wave
-            wave.getAllEnemies().forEach(enemy => {
-                activeInitials.add(enemy.word[0].toLowerCase());
-            });
         }
         
         return waves;
@@ -315,7 +316,7 @@ class EnemyFactory {
      */
     async loadLevelFromJSON(url: string, manager?: LevelManager): Promise<Wave[]> {
         const config = await this.loadLevelConfigFromJSON(url);
-        return this.generateWavesFromLevelConfig(config, new Set(), manager);
+        return this.generateWavesFromLevelConfig(config, manager);
     }
 }
 
