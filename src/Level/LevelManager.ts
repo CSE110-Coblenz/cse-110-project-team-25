@@ -19,6 +19,7 @@ class LevelManager {
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
     private letterToId: Map<string, number> = new Map();
+    private _isTransitioning: boolean = false;
 
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
@@ -81,13 +82,13 @@ class LevelManager {
      * When currentWave.isEmpty(), this is called to get the next wave
      * When waves array is empty, generate a new level
      */
-    private popNextWave(): void {
+    async popNextWave(): Promise<void> {
         if (this._waves.length > 0) {
             this._currentWave = this._waves.shift()!;
         } else {
             // No more waves, increment level and generate new waves
             this.advanceLevel();
-            this.generateNewLevel();
+            await this.generateNewLevel();
             if (this._waves.length > 0) {
                 this._currentWave = this._waves.shift()!;
             }
@@ -97,7 +98,7 @@ class LevelManager {
     /**
      * Generate a new set of random waves for the current level
      */
-    private generateNewLevel(): void {
+    private generateNewRandomLevel(): void {
         const wavesPerLevel = 3; // Number of waves per level
         const baseEnemyCount = 3;
         const speedMultiplier = 1 + (this._currentLevel * 0.2);
@@ -114,14 +115,31 @@ class LevelManager {
     }
 
     /**
+     * Generate a new level from config
+     */
+    async generateNewLevel(): Promise<void> {
+        // Try to load a level file matching the current level number, fallback to random
+        await this.loadLevelFromJSON(`/levels/level${this.currentLevel}.json`).catch(() => {
+            this.generateNewRandomLevel();
+        });
+    }
+
+    /**
      * Check if current wave is empty and handle wave/level progression
      * Call this when an enemy is defeated
      */
-    onWaveCheck(): void {
+    async onWaveCheck(): Promise<void> {
         if (this._currentWave && this._currentWave.isEmpty()) {
-            this.popNextWave();
-            if (this._currentWave) {
-                this.spawnNewWave();
+            // Prevent concurrent transitions (multiple callers triggering a double-spawn)
+            if (this._isTransitioning) return;
+            this._isTransitioning = true;
+            try {
+                await this.popNextWave();
+                if (this._currentWave) {
+                    this.spawnNewWave();
+                }
+            } finally {
+                this._isTransitioning = false;
             }
         }
     }
@@ -129,9 +147,9 @@ class LevelManager {
     /**
      * Initialize the first level
      */
-    initializeLevel(): void {
-        this.generateNewLevel();
-        this.popNextWave();
+    async initializeLevel(): Promise<void> {
+        await this.generateNewLevel();
+        await this.popNextWave();
         if (this._currentWave) {
             this.spawnNewWave();
         }
@@ -238,6 +256,22 @@ class LevelManager {
         this.letterToId.set(word[0], En.id);
     }
 
+    /**
+     * Load level configuration from JSON, 
+     * generate random wave if none provided.
+     * @param url - Path to the level JSON file (e.g., '/levels/level1.json')
+     */
+    async loadLevelFromJSON(url: string): Promise<void> {
+        if (url){
+            try {
+                const waves = await this.enemyFactory.loadLevelFromJSON(url, this);
+                this._waves = waves;
+                return;
+            } catch (error) {
+                throw new Error(`Failed to load level from ${url}: ${error}`);
+            }
+        }
+    }
 
 }
 

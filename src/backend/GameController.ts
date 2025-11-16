@@ -54,7 +54,7 @@ export class GameController {
         Money.getInstance().amount = Save.money;
         console.log("Loaded money:" + Money.getInstance().amount);
         this.resetGameState();
-        this.levelManager.initializeLevel();
+        await this.levelManager.initializeLevel();
         this.keyboardController.setupInput();
         this.startGameLoop();
     }

@@ -15,6 +15,17 @@ export interface WaveConfig {
 	y?: number[];
 }
 
+/**
+ * Level configuration JSON format
+ * Allows customization of entire levels with multiple waves
+ * Format: { "levelNumber": 1, "waves": [{wave config}, {wave config}, ...] }
+ */
+export interface LevelConfig {
+	levelNumber?: number;            // Optional level number (defaults to 1)
+	difficulty?: number;             // Optional difficulty multiplier for speed/health
+	waves: WaveConfig[];             // Array of wave configurations
+}
+
 export interface View {
 	getGroup(): Group;
 	show(): void;
