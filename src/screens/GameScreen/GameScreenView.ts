@@ -101,9 +101,9 @@ export class GameScreenView implements View {
     return Ef.id;
   }
 
-  updateEffects(dt: number): void {
+  updateEffects(dt: number, nextLetter: string): void {
     this.effects.forEach((Ef, id) => {
-      Ef.update(dt);
+      Ef.update(dt, nextLetter);
       if(Ef.dead == true){
         this.effects.delete(id);
       }
@@ -116,8 +116,8 @@ export class GameScreenView implements View {
 	}
 
   /** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
-	updateEffectTransform(Ef: Effect, dt: number): void {
-    Ef.update(dt);
+	updateEffectTransform(Ef: Effect, dt: number, nextLetter: string): void {
+    Ef.update(dt, nextLetter);
     this.group.getLayer()?.batchDraw();
 	}
 

@@ -16,6 +16,13 @@ class Wave {
     }
 
     /**
+     * return number of enemies
+     */
+    count(): number {
+        return this._activeInitials.size
+    }
+
+    /**
      * Add an enemy to the wave
      */
     addEnemy(enemy: Enemy): void {

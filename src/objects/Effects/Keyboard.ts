@@ -5,7 +5,9 @@ import { STAGE_WIDTH } from "../../constants";
 
 
 class Keyboard extends Effect {
-
+    private keyMap: Map<string, Konva.Group>;
+    private nextLetter: string;
+    private Group: Konva.Group;
 
     constructor(){
         const Group = new Konva.Group({ width: 80, height: 80 });
@@ -34,8 +36,128 @@ class Keyboard extends Effect {
             Group.getLayer()?.batchDraw?.();
         }
         super(Group, 100000000000, STAGE_WIDTH / 2 - 1080 * scale / 2, STAGE_HEIGHT - 390 * scale, scale);
+        this.Group = Group;
 
-        let keyMap = new Map<string, Konva.Group>;
+        //hands
+        const leftHand = new Image();
+        const rightHand = new Image();
+        const leftAnimations = {
+            a: [0, 0, 480, 480],
+            s: [0, 0, 480, 480],
+            d: [0, 0, 480, 480],
+            f: [0, 0, 480, 480],
+            space: [0, 0, 480, 480],
+            backspace: [0, 0, 480, 480],
+            y: [0, 0, 480, 480],
+            u: [0, 0, 480, 480],
+            i: [0, 0, 480, 480],
+            o: [0, 0, 480, 480],
+            p: [0, 0, 480, 480],
+            h: [0, 0, 480, 480],
+            j: [0, 0, 480, 480],
+            k: [0, 0, 480, 480],
+            l: [0, 0, 480, 480],
+            semicolon: [0, 0, 480, 480],
+            b: [0, 0, 480, 480],
+            n: [0, 0, 480, 480],
+            m: [0, 0, 480, 480],
+            comma: [0, 0, 480, 480],
+            period: [0, 0, 480, 480],
+            forwardSlash: [0, 0, 480, 480],
+            rightShift: [0,0,480,480],
+            c: [480, 0, 480, 480],
+            e: [480*2, 0, 480, 480],
+            g: [480*3, 0, 480, 480],
+            leftShift: [480*4, 0, 480, 480],
+            q: [480*5, 0, 480, 480],
+            r: [480*6, 0, 480, 480],
+            t: [480*7, 0, 480, 480],
+            tab: [480*8, 0, 480, 480],
+            v: [480*9, 0, 480, 480],
+            w: [480*10, 0, 480, 480],
+            x: [480*11, 0, 480, 480],
+            z: [480*12, 0, 480, 480],
+            apostrophe: [0, 0, 480, 480],
+        };
+        const rightAnimations = {
+            a: [480*6, 0, 480, 480],
+            s: [480*6, 0, 480, 480],
+            d: [480*6, 0, 480, 480],
+            f: [480*6, 0, 480, 480],
+            space: [480*6, 0, 480, 480],
+            backspace: [480*6, 0, 480, 480],
+            y: [480*14, 0, 480, 480],
+            u: [480*13, 0, 480, 480],
+            i: [480*2, 0, 480, 480],
+            o: [480*9, 0, 480, 480],
+            p: [480*10, 0, 480, 480],
+            h: [480*5, 0, 480, 480],
+            j: [480*6, 0, 480, 480],
+            k: [480*6, 0, 480, 480],
+            l: [480*6, 0, 480, 480],
+            semicolon: [480*6, 0, 480, 480],
+            b: [480*3, 0, 480, 480],
+            n: [480*8, 0, 480, 480],
+            m: [480*7, 0, 480, 480],
+            comma: [480*1, 0, 480, 480],
+            period: [480*11, 0, 480, 480],
+            forwardSlash: [480*4, 0, 480, 480],
+            rightShift: [480*12,0,480,480],
+            c: [480*6, 0, 480, 480],
+            e: [480*6, 0, 480, 480],
+            g: [480*6, 0, 480, 480],
+            leftShift: [480*4, 0, 480, 480],
+            q: [480*6, 0, 480, 480],
+            r: [480*6, 0, 480, 480],
+            t: [480*6, 0, 480, 480],
+            tab: [480*6, 0, 480, 480],
+            v: [480*6, 0, 480, 480],
+            w: [480*6, 0, 480, 480],
+            x: [480*6, 0, 480, 480],
+            z: [480*6, 0, 480, 480],
+            apostrophe: [480*12, 0, 480, 480]
+        };
+        
+        leftHand.src = "/leftHand.png";
+        leftHand.onload = function() {
+            const hand = new Konva.Sprite({
+                x: 50,
+                y: -50,
+                scale: { x: 1, y: 1},
+                offset: { x: 0, y: 0},
+                image: leftHand,
+                animation: 'a',
+                animations: leftAnimations,
+                frameRate: 15,
+                frameIndex: 0,
+                opacity: 0.5,
+                id: 'leftHand'
+            });
+            Group.add(hand);
+            Group.getLayer()?.batchDraw?.();
+        }
+        rightHand.src = "/rightHand.png";
+        rightHand.onload = function() {
+            const hand = new Konva.Sprite({
+                x: 520,
+                y: -50,
+                scale: { x: 1, y: 1},
+                offset: { x: 0, y: 0},
+                image: rightHand,
+                animation: 'a',
+                animations: rightAnimations,
+                frameRate: 15,
+                frameIndex: 0,
+                opacity: 0.5,
+                id: 'rightHand'
+            });
+            Group.add(hand);
+            Group.getLayer()?.batchDraw?.();
+        }
+
+        this.nextLetter = ""
+
+        this.keyMap = new Map<string, Konva.Group>;
         type KeyEntry = [string, number, number];
 
         let keys: KeyEntry[] = [
@@ -77,8 +199,8 @@ class Keyboard extends Effect {
             ['j', 138+72*6, 150],
             ['k', 138+72*7, 150],
             ['l', 138+72*8, 150],
-            [";", 138+72*9, 150],
-            ["'", 138+72*10, 150],
+            ["semicolon", 138+72*9, 150],
+            ["apostrophe", 138+72*10, 150],
             ['enter', 138+72*11, 150],
             ['leftShift', 20, 222],
             ['z', 178+72*0, 222],
@@ -88,7 +210,7 @@ class Keyboard extends Effect {
             ['b', 178+72*4, 222],
             ['n', 178+72*5, 222],
             ['m', 178+72*6, 222],
-            [',', 178+72*7, 222],
+            ['comma', 178+72*7, 222],
             ['period', 178+72*8, 222],
             ['forwardSlash', 178+72*9, 222],
             ['rightShift', 178+72*10, 222],
@@ -100,54 +222,9 @@ class Keyboard extends Effect {
             const x = keys[i][1]
             const y = keys[i][2]
             const img = this.KeyImg(key, x, y)
-            keyMap.set(key, img)
+            this.keyMap.set(key, img)
             Group.add(img)
         }
-        Group.getLayer()?.batchDraw?.();
-
-        Group.add()
-
-
-
-        let high = keyMap.get("a")
-        if(high == undefined) return;
-
-        // ... assuming 'myGroup' is a Konva.Group
-        let spriteNodes = high.find('.zach');
-
-        // Check if the collection is not empty
-        if (spriteNodes.length === 0){
-            console.log("sadly empty")
-            console.log(high.width())
-            return;
-        } 
-
-        // Get the first element
-        let spriteCandidate = spriteNodes[0];
-
-        // Use an 'instanceof' type guard to ensure it's a Konva.Shape (which Konva.Sprite extends)
-        if (spriteCandidate instanceof Konva.Shape) {
-            // Inside this block, TypeScript recognizes 'spriteCandidate' 
-            // as a Konva.Shape, and it now allows shape properties like shadowColor.
-
-            // Apply the highlight style
-            spriteCandidate.shadowColor('cyan');
-            spriteCandidate.shadowBlur(15);
-            spriteCandidate.shadowOffset({ x: 0, y: 0 });
-            spriteCandidate.shadowOpacity(1.0);
-
-            // Apply stroke if desired
-            spriteCandidate.stroke('yellow');
-            spriteCandidate.strokeWidth(5);
-            
-            // Redraw
-            spriteCandidate.getLayer()?.batchDraw();
-        } else {
-            // Optional: Log a message if the found node isn't a shape
-            console.warn("Node found with selector '.player-sprite' is not a Konva.Shape.");
-        }
-        
-
         Group.getLayer()?.batchDraw?.();
     }
 
@@ -186,6 +263,41 @@ class Keyboard extends Effect {
         return Group
     }
 
+
+    override update(dt:number, nextLetter: string){
+        if(this.nextLetter != nextLetter){
+            //cleanup old
+            this.cleanupHighlight()
+
+            //put highlight
+            let high = this.keyMap.get(nextLetter)
+            if(high == undefined) return;
+
+            high.add(new Konva.Circle({
+                    x: 36, y: 36, radius: 40,
+                    fill: "#f0f04dff", stroke: "#0b5ea8", strokeWidth: 0, opacity: 0.5
+                }))
+            this.nextLetter = nextLetter
+
+            //change animation
+            const leftHand = this.Group.find('#leftHand')[0] as Konva.Sprite
+            if(leftHand){leftHand.animation(nextLetter)}
+            const rightHand = this.Group.find('#rightHand')[0] as Konva.Sprite
+            if(rightHand){rightHand.animation(nextLetter)}
+        }
+    }
+
+    cleanupHighlight(){
+        let high = this.keyMap.get(this.nextLetter)
+        if(high == undefined) return;
+
+        let children = high.getChildren();
+        for(let i = 0; i < children.length; i++){
+            if (children[i] instanceof Konva.Circle) {
+                children[i].destroy()
+            }
+        }
+    }
 
 
     

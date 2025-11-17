@@ -223,15 +223,16 @@ class EnemyFactory {
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
             const word = this.getRandomWord(activeInitials);
+            // const word = "asdfghjkl;'qwertyuiop\\zxcvbnm,./"
             const lane = Math.random() * 6 - 3; // -3..+3
             const z = 40 + Math.random() * 30;  // 40..70
-            let speed = (5 + Math.random() * 4) * speedMultiplier;
-            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"]
-            // const type = types[Math.round(Math.random()* (types.length-1))]
-            let type = "textbox"
+            let speed = (5 + Math.random() * 4) * speedMultiplier * 0.1;
+            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle", "textbox"]
+            const type = types[Math.round(Math.random()* (types.length-1))]
+            // const type = "textbox"
             const health = 2
-            if(type === "amiiba"){ speed /= 8}
-            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager, ["The quick brown fox jumped over the lazy dog. The quick brown fox jumped over the lazy dog. The quick brown fox jumped over the lazy dog."]);
+            // if(type === "amiiba"){ speed /= 8}
+            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2-200, 3, manager, ["Welcome to this wonderful typing game. to start we're going to teach you the correct places for your fingers. put your hands on the keyboard as shown below"]);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }

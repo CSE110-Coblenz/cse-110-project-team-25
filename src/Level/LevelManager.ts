@@ -194,7 +194,7 @@ class LevelManager {
 
         // Add to view
         this.view!.spawnEffectVisuals(effect);
-        this.view!.updateEffectTransform(effect, 0);
+        this.view!.updateEffectTransform(effect, 0, "");
     }
 
     spawnAdditionalEnemy(enemy: Enemy): void {

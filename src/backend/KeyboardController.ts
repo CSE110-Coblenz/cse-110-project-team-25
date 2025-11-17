@@ -263,4 +263,32 @@ export class KeyboardController {
             this.view.setTarget(null);
         }
     }
+
+
+    nextLetter(): string {
+        //case target is locked
+        if(this.targetedId !== null){
+            const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
+            const isValid = this.isTypedTextValid(word, this.typedText);
+            //case incorrect currently
+            if(!isValid) return "backspace"
+            if(word.length <= this.typedText.length){
+                return "space"
+            }
+            return word.charAt(this.typedText.length)
+        }
+        //case target is not locked and theres only one enemy
+        let x = this.levelManager.currentWave;
+        if(x?.count() == 1){
+            const word = this.levelManager.currentWave?.getEnemy(x.getEnemyIds()[0])?.word ?? "";
+            if(word == ""){
+                return "space"
+            }
+            return word.charAt(0)
+        }
+        
+
+        //other
+        return ""
+    }
 }
