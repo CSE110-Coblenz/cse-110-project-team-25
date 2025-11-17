@@ -218,6 +218,7 @@ class EnemyFactory {
         speedMultiplier: number = 1,
         manager: LevelManager
     ): Wave {
+        const keyboardIncluded = true;
         const wave = new Wave();
         n = 1
         const activeInitials: Set<string> = new Set();
@@ -237,7 +238,7 @@ class EnemyFactory {
             wave.addEnemy(enemy);
         }
         const effect = this.createEffect("keyboard")
-        wave.addEffect(effect)
+        if(keyboardIncluded) wave.addEffect(effect)
         return wave;
     }
 
