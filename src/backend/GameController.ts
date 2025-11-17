@@ -98,7 +98,7 @@ export class GameController {
         this.stopGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.pause();
             });
         }
@@ -112,7 +112,7 @@ export class GameController {
         this.startGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.unpause();
             });
         }
@@ -136,9 +136,12 @@ export class GameController {
     private clearAllEnemies(): void {
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 this.view.destroyEnemy(enemy.id);
             });
+            currentWave.forEachEffect((effect) => {
+                this.view.destroyEffect(effect.id);
+            })
             currentWave.clear();
         }
     }
@@ -223,7 +226,7 @@ export class GameController {
         if (!currentWave) return;
     
         // Update all enemies
-        currentWave.forEach((enemy) => {
+        currentWave.forEachEnemy((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
             this.view.updateEnemyTransform(enemy, dt);
             
@@ -248,7 +251,13 @@ export class GameController {
         this.levelManager.onWaveCheck();
 
         //update effects
-        this.view.updateEffects(dt);
+        let word = this.keyboardController.nextLetter()
+        if(word === ';') word = "semicolon";
+        if(word === '.') word = "period";
+        if(word === ',') word = "comma";
+        if(word === '/') word = "forwardSlash"
+        if(word === "'") word = "apostrophe"
+        this.view.updateEffects(dt, word);
     }
 
 

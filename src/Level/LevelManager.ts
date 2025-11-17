@@ -3,6 +3,7 @@ import EnemyFactory from "../WaveGen/EnemyFactory";
 import type { GameScreenView } from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
 import Enemy from "../objects/Enemy"
+import Effect from "../objects/Effect"
 
 /**
  * LevelManager manages game progression through levels
@@ -134,6 +135,9 @@ class LevelManager {
             if (this._isTransitioning) return;
             this._isTransitioning = true;
             try {
+                this._currentWave.forEachEffect((effect) => {
+                    this.view.destroyEffect(effect.id);
+                })
                 await this.popNextWave();
                 if (this._currentWave) {
                     this.spawnNewWave();
@@ -165,8 +169,13 @@ class LevelManager {
         this.letterToId.clear();
 
         // Iterate through all enemies in the wave
-        this._currentWave.forEach((enemy) => {
+        this._currentWave.forEachEnemy((enemy) => {
             this.spawnEnemy(enemy);
+        });
+
+        // Iterate through all effects in the wave
+        this._currentWave.forEachEffect((effect) => {
+            this.spawnEffect(effect);
         });
     }
 
@@ -192,6 +201,18 @@ class LevelManager {
         this.view.updateLevel(this._currentLevel);
         this.view.updateWaves(this._waves.length);
         this.view.updateEnemiesLeft(this._currentWave.getCount());
+    }
+
+    spawnEffect(effect: Effect): void {
+        if(this._currentWave == undefined) return
+
+        if (!this.view) {
+            throw new Error("View not set. Call setView() before spawning enemies.");
+        }
+
+        // Add to view
+        this.view!.spawnEffectVisuals(effect);
+        this.view!.updateEffectTransform(effect, 0, "");
     }
 
     spawnAdditionalEnemy(enemy: Enemy): void {
