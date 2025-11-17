@@ -36,12 +36,13 @@ export interface View {
  * Screen types for navigation
  *
  * - "menu": Main menu screen
- * - "game": Gameplay screen
+ * - "levelSelect": Level selection screen
+ * - "game": Gameplay screen with optional levelNumber
  */
 export type Screen =
 	| { type: "menu" }
-	| { type: "game" };
-	// | { type: "debug" }; // DEBUG: Commented out for production
+	| { type: "levelSelect" }
+	| { type: "game"; levelNumber?: number };
 
 export abstract class ScreenController {
 	abstract getView(): View;

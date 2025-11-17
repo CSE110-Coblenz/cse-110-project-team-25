@@ -48,12 +48,19 @@ export class GameController {
 
     /**
      * Initialize and start the game
+     * @param levelNumber - Optional level number to load (defaults to 1)
      */
-    async startGame(): Promise<void> {
+    async startGame(levelNumber?: number): Promise<void> {
+
         Save.load();
+        Save.loaded = true;
         Money.getInstance().amount = Save.money;
         console.log("Loaded money:" + Money.getInstance().amount);
+        
         this.resetGameState();
+        if (levelNumber !== undefined) {
+            this.levelManager.setLevel(levelNumber);
+        }
         await this.levelManager.initializeLevel();
         this.keyboardController.setupInput();
         this.startGameLoop();
@@ -63,8 +70,11 @@ export class GameController {
      * Stop the game and clean up resources
      */
     stopGame(): void {
-        Save.money = Money.getInstance().amount;
-        Save.save();
+
+        if (Save.loaded) {
+            Save.money = Money.getInstance().amount;
+            Save.save();
+        }
         this.stopGameLoop();
         this.keyboardController.cleanup();
         this.clearAllEnemies();

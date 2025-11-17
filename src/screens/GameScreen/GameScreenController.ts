@@ -20,10 +20,11 @@ export class GameScreenController extends ScreenController {
 
     /**
      * Start the game screen and initialize the game
+     * @param levelNumber - Optional level number to load (defaults to level 1)
      */
-    async startGame(): Promise<void> {
+    async startGame(levelNumber?: number): Promise<void> {
         this.model.reset();
-        await this.gameController.startGame();
+        await this.gameController.startGame(levelNumber);
         this.view.show();
     }
 
