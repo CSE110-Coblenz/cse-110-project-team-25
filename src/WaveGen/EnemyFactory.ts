@@ -257,7 +257,7 @@ class EnemyFactory {
             const x = STAGE_WIDTH / 2 + lane * laneWidth;
             const y = 100 + Math.random() * 200;
 
-            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, 2, manager, ["test textbox");
+            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, 2, manager, ["test textbox"]);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }
