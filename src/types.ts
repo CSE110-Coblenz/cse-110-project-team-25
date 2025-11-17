@@ -1,5 +1,11 @@
 import type { Group } from "konva/lib/Group";
 
+
+/**
+ * Type for level screens.
+ */
+export type levelName = "tutorial_earth" | "campaign_easy" | "campaign_medi" | "campaign_hard";
+
 /**
  * Wave configuration JSON format
  * Format: {"1": "type", "2": "type", ...}, {"health": [1, 2, ...], "speed": [...], ...}
@@ -40,7 +46,9 @@ export interface View {
  */
 export type Screen =
 	| { type: "menu" }
-	| { type: "game" };
+	| { type: "game" }
+	| { type: "levelSelect" }
+	| { type: levelName };
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {
