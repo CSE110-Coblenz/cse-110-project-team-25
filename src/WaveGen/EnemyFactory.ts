@@ -11,6 +11,9 @@ import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
 import Shooter from "../objects/Enemies/Shooter";
 import Comet from "../objects/Enemies/Comet";
 import Dummy from "../objects/Enemies/Dummy";
+import TextBox from "../objects/Enemies/TextBox";
+import Keyboard from "../objects/Effects/Keyboard";
+import type Effect from "../objects/Effect";
 
 /**
  * Factory class for creating enemies and waves
@@ -30,6 +33,7 @@ class EnemyFactory {
         y: number = STAGE_HEIGHT / 2,
         split?: number,
         manager?: LevelManager,
+        text?: string[]
 
     ): Enemy {
         if(type === "ufo"){
@@ -44,8 +48,16 @@ class EnemyFactory {
             return new Comet(word, x, y, manager, 10, health);
         } else if(type === "dummy"){
             return new Dummy(word, distance, x, y, health);
+        } else if(type === "textbox" && text != undefined){
+            return new TextBox(text)
         }
         return new Circle(word, distance, speed, x, y, health)
+    }
+
+    createEffect(
+        type: string
+    ): Effect {
+        return new Keyboard();
     }
 
     /**
@@ -213,16 +225,18 @@ class EnemyFactory {
             const word = this.getRandomWord(activeInitials);
             const lane = Math.random() * 6 - 3; // -3..+3
             const z = 40 + Math.random() * 30;  // 40..70
-            const speed = (5 + Math.random() * 4) * speedMultiplier;
+            let speed = (5 + Math.random() * 4) * speedMultiplier;
             const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"]
-            const type = types[Math.round(Math.random()* (types.length-1))]
+            // const type = types[Math.round(Math.random()* (types.length-1))]
+            let type = "textbox"
             const health = 2
-
-            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);
+            if(type === "amiiba"){ speed /= 8}
+            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager, ["The quick brown fox jumped over the lazy dog. The quick brown fox jumped over the lazy dog. The quick brown fox jumped over the lazy dog."]);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }
-
+        const effect = this.createEffect("keyboard")
+        wave.addEffect(effect)
         return wave;
     }
 

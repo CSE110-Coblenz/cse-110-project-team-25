@@ -39,11 +39,11 @@ def create_spritesheet(image_folder, output_filename, sprite_width, sprite_heigh
 
 
 if __name__ == "__main__":
-    image_folder = "assets/enemies/meteor"
-    output_file = "meteor.png"
+    image_folder = "assets/effects/explosion/emission"
+    output_file = "explosion_emission.png"
     individual_sprite_width = 480
     individual_sprite_height = 480
-    num_columns = 20
+    num_columns = 5
 
     if not os.path.exists(image_folder):
         os.makedirs(image_folder)

@@ -59,6 +59,9 @@ export class KeyboardController {
             }
             
             if (!this.isPaused()) {
+                //check for textboxes
+                let id = this.levelManager.getEnemyIdByInitial(" ");
+                if(id != null) this.fireAtEnemy();
                 if (e.key === "Backspace") {
                     e.preventDefault(); // Prevent default browser backspace behavior
                     this.handleBackspace();
@@ -70,6 +73,7 @@ export class KeyboardController {
                     this.handleSpacebar();
                     return;
                 }
+                
 
                 if (e.key.length !== 1) return;
                 this.handleCharacterInput(e.key.toLowerCase());
@@ -216,13 +220,15 @@ export class KeyboardController {
      * Fire at the targeted enemy (shared logic for both auto-fire and manual spacebar fire)
      */
     private fireAtEnemy(): void {
-        if (!this.isWordComplete()) return;
-        
+        let id = this.levelManager.getEnemyIdByInitial(" ");
         const currentWave = this.levelManager.currentWave;
         if (!currentWave) return;
+        if(id === null){
+            if (!this.isWordComplete()) return;
 
-        const id = this.targetedId;
-        if (id === null) return;
+            id = this.targetedId;
+            if (id === null) return;
+        }
 
         const enemy = currentWave.getEnemy(id);
         if (!enemy) return;

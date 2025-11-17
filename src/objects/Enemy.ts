@@ -18,7 +18,6 @@ class Enemy extends Object {
   _healthBarFill: Konva.Rect;
   _healthBarWidth: number = 50;
   _healthBarHeight: number = 6;
-  private static seq = 1;
 
   // Projection constants (tweak to taste)
   private readonly SCALE_K   = 60;               // scale ≈ SCALE_K / z
@@ -43,7 +42,6 @@ class Enemy extends Object {
     this._prompt = new Prompt(word);
     this._distance = distance;
     this._speed = speed;
-    this._id = Enemy.seq++;
     this._health = health;
     this._healthBar = new Konva.Rect({
       width: this._healthBarWidth,
@@ -90,7 +88,10 @@ class Enemy extends Object {
     this._word = word;
   }
 
-  get initial(): string {console.log("this:", this.prompt.word); return this._prompt.word[0]}
+  get initial(): string {console.log("this:", this.prompt.word); 
+    if(this._prompt.word.length == 0) return " ";
+    return this._prompt.word[0]
+  }
   
   get type(): string { return this._type}
 
