@@ -131,13 +131,14 @@ class LevelManager {
      */
     async onWaveCheck(): Promise<void> {
         if (this._currentWave && this._currentWave.isEmpty()) {
-            // Prevent concurrent transitions (multiple callers triggering a double-spawn)
+ 
+            this._currentWave.forEachEffect((effect) => {
+                this.view.destroyEffect(effect.id);
+            })
+
             if (this._isTransitioning) return;
             this._isTransitioning = true;
             try {
-                this._currentWave.forEachEffect((effect) => {
-                    this.view.destroyEffect(effect.id);
-                })
                 await this.popNextWave();
                 if (this._currentWave) {
                     this.spawnNewWave();

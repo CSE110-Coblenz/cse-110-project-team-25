@@ -95,6 +95,10 @@ export class GameController {
      * pause all timely elements
      */
     pauseGame(): void {
+        if (Save.loaded) {
+            Save.money = Money.getInstance().amount;
+            Save.save();
+        }
         this.stopGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
