@@ -19,7 +19,7 @@ export class MenuScreenController extends BaseMenuController {
 	 */
 	private handleStartClick(): void {
 		console.log("Start button clicked!");
-		this.screenSwitcher.switchToScreen({type: "game"});
+		this.screenSwitcher.switchToScreen({type: "levelSelect"});
 	}
 
 	// DEBUG: Debug handler commented out for production
