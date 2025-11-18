@@ -14,7 +14,7 @@ class Effect extends Object {
         this._dead = false;
     }
 
-    update(dt: number): void {
+    update(dt: number, nextLetter: string): void {
         this._lifeTime -= dt;
         if(this._lifeTime < 0){
             this.destroy();

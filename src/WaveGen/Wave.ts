@@ -1,4 +1,5 @@
 import Enemy from "../objects/Enemy";
+import Effect from "../objects/Effect"
 
 /**
  * Wave class holds a collection of enemies for a single wave
@@ -6,12 +7,20 @@ import Enemy from "../objects/Enemy";
  */
 class Wave {
     private enemies: Map<number, Enemy>;
-    private objects: Map<number, Object>;
+    private effects: Map<number, Effect>;
     private _activeInitials: Set<string>;
     constructor() {
         this.enemies = new Map<number, Enemy>();
         this.objects = new Map<number, Object>();
-        this._activeInitials = new Set<string>;
+        this._activeInitials = new Set<string>();
+        this.effects = new Map<number, Effect>();
+    }
+
+    /**
+     * return number of enemies
+     */
+    count(): number {
+        return this._activeInitials.size
     }
 
     /**
@@ -62,10 +71,11 @@ class Wave {
     }
 
     /**
-     * Clear all enemies from the wave
+     * Clear all enemies and effects from the wave
      */
     clear(): void {
         this.enemies.clear();
+        this.effects.clear();
     }
 
     /**
@@ -78,8 +88,38 @@ class Wave {
     /**
      * Iterate through all enemies
      */
-    forEach(callback: (enemy: Enemy, id: number) => void): void {
+    forEachEnemy(callback: (enemy: Enemy, id: number) => void): void {
         this.enemies.forEach(callback);
+    }
+    /**
+     * Iterate through all effects
+     */
+    forEachEffect(callback: (effect: Effect, id: number) => void): void {
+        this.effects.forEach(callback);
+    }
+
+    /**
+     * Add an effect to the wave
+     */
+    addEffect(effect: Effect): void {
+        this.effects.set(effect.id, effect);
+    }
+
+    /**
+     * Remove an effect from the wave by ID
+     */
+    removeEffect(id: number): void {
+        let temp = this.getEffect(id);
+        if(temp != undefined){
+            this.effects.delete(id);
+        }
+    }
+
+    /**
+     * Get an enemy by ID
+     */
+    getEffect(id: number): Effect | undefined {
+        return this.effects.get(id);
     }
 
     get activeInitials(): Set<string> { return this._activeInitials; }

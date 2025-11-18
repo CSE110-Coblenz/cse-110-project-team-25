@@ -1,0 +1,18 @@
+{
+  "levelNumber": 1,
+  "difficulty": 1,
+  "waves": [
+    {
+      "types": {
+        "1": "circle",
+        "2": "ufo",
+        "3": "meteor"
+      },
+      "health": [1, 1, 2],
+      "speed": [5, 6, 7],
+      "distance": [40, 45, 50],
+      "words": ["template", "custom", "level"],
+      "x": [-1, 0, 1]
+    }
+  ]
+}

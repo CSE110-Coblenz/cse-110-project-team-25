@@ -1,12 +1,12 @@
 import Konva from "konva";
-import { GameScreenModel } from "./screens/GameScreen/GameScreenModel";
-import { GameScreenView } from "./screens/GameScreen/GameScreenView";
-import type { ScreenSwitcher } from "./types";
-import { Money } from "./Money";
-import LevelManager from "./Level/LevelManager";
-import { Save } from "./GameLogic/Save";
-import { Player } from "./Player/Player.ts";
-import ItemRegistry from "./Player/ItemRegistry.ts";
+import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
+import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import type { ScreenSwitcher } from "../types";
+import { Money } from "../Money";
+import LevelManager from "../Level/LevelManager";
+import { Save } from "./Save";
+import { Player } from "../Player/Player.ts";
+import ItemRegistry from "../Player/ItemRegistry.ts";
 
 /**
  * GameController handles the core game logic including:
