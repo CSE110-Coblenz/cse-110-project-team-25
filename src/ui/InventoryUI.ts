@@ -3,8 +3,14 @@ import { Player } from "../Player/Player.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../constants.ts";
 
 /**
+ * Animation state for inventory UI
+ */
+type AnimationState = "hidden" | "showing" | "visible" | "hiding";
+
+/**
  * InventoryUI displays the 9-slot consumable inventory at the bottom-middle of the screen
  * Players can use items by pressing 1-9 keys
+ * Slides up from bottom when toggled
  */
 export class InventoryUI {
   private group: Konva.Group;
@@ -12,11 +18,17 @@ export class InventoryUI {
   private readonly SLOT_SIZE = 50;
   private readonly SLOT_SPACING = 10;
   private readonly NUM_SLOTS = 9;
+  private readonly VISIBLE_Y = STAGE_HEIGHT - 80;
+  private readonly HIDDEN_Y = STAGE_HEIGHT + 100; // Off-screen below
+  private readonly ANIMATION_DURATION = 0.5; // seconds
+
+  private animationState: AnimationState = "hidden";
+  private currentTween: Konva.Tween | null = null;
 
   constructor() {
     this.group = new Konva.Group({
       x: STAGE_WIDTH / 2,
-      y: STAGE_HEIGHT - 80,
+      y: this.HIDDEN_Y, // Start off-screen
     });
 
     this.createSlots();
@@ -125,14 +137,85 @@ export class InventoryUI {
   }
 
   /**
-   * Show the inventory UI
+   * Toggle inventory visibility with slide animation
+   */
+  toggle(): void {
+    if (this.animationState === "hidden" || this.animationState === "hiding") {
+      this.slideIn();
+    } else if (this.animationState === "visible" || this.animationState === "showing") {
+      this.slideOut();
+    }
+  }
+
+  /**
+   * Slide inventory in from bottom (show)
+   */
+  private slideIn(): void {
+    // Stop current animation if running
+    if (this.currentTween) {
+      this.currentTween.destroy();
+    }
+
+    this.animationState = "showing";
+    this.group.visible(true);
+
+    const currentY = this.group.y();
+    this.currentTween = new Konva.Tween({
+      node: this.group,
+      duration: this.ANIMATION_DURATION,
+      y: this.VISIBLE_Y,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        this.animationState = "visible";
+        this.currentTween = null;
+      }
+    });
+
+    this.currentTween.play();
+  }
+
+  /**
+   * Slide inventory out to bottom (hide)
+   */
+  private slideOut(): void {
+    // Stop current animation if running
+    if (this.currentTween) {
+      this.currentTween.destroy();
+    }
+
+    this.animationState = "hiding";
+
+    this.currentTween = new Konva.Tween({
+      node: this.group,
+      duration: this.ANIMATION_DURATION,
+      y: this.HIDDEN_Y,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        this.animationState = "hidden";
+        this.group.visible(false);
+        this.currentTween = null;
+      }
+    });
+
+    this.currentTween.play();
+  }
+
+  /**
+   * Check if inventory is visible or showing
+   */
+  isVisible(): boolean {
+    return this.animationState === "visible" || this.animationState === "showing";
+  }
+
+  /**
+   * Show the inventory UI (legacy method - use toggle instead)
    */
   show(): void {
     this.group.visible(true);
   }
 
   /**
-   * Hide the inventory UI
+   * Hide the inventory UI (legacy method - use toggle instead)
    */
   hide(): void {
     this.group.visible(false);

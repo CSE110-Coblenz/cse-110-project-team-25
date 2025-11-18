@@ -320,6 +320,13 @@ export class GameController {
         this.cleanupKeyboardInput();
 
         this.keyboardHandler = (e: KeyboardEvent) => {
+            // Tab key toggles inventory UI (works even when paused)
+            if (e.key === "Tab") {
+                e.preventDefault(); // Prevent default tab behavior
+                this.view.toggleInventoryUI();
+                return;
+            }
+
             if (e.key === "Escape"){
                 if(this.paused){
                     this.unpauseGame()

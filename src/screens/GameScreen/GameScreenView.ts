@@ -382,6 +382,14 @@ export class GameScreenView implements View {
     this.upgradeUI.update();
   }
 
+  /**
+   * Toggle inventory UIs visibility with animation
+   */
+  toggleInventoryUI(): void {
+    this.inventoryUI.toggle();
+    this.upgradeUI.toggle();
+  }
+
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }
   hide(): void { this.group.visible(false); this.group.getLayer()?.draw(); }
   getGroup(): Konva.Group { return this.group; }
