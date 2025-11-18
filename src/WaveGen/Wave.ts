@@ -11,7 +11,6 @@ class Wave {
     private _activeInitials: Set<string>;
     constructor() {
         this.enemies = new Map<number, Enemy>();
-        this.objects = new Map<number, Object>();
         this._activeInitials = new Set<string>();
         this.effects = new Map<number, Effect>();
     }

@@ -7,29 +7,26 @@ import LevelManager from "../Level/LevelManager";
 import { Save } from "./Save";
 import { Player } from "../Player/Player.ts";
 import ItemRegistry from "../Player/ItemRegistry.ts";
+import { KeyboardController } from "./KeyboardController";
 
 /**
  * GameController handles the core game logic including:
- * - Typing input and targeting
  * - Game loop and collision detection
  * - Score and game over conditions
  * - Delegates enemy/wave management to LevelManager
+ * - Delegates input handling to KeyboardController
  */
 export class GameController {
     private model: GameScreenModel;
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
     private levelManager: LevelManager;
-    
+    private keyboardController: KeyboardController;
+
     // Game state
     private anim?: Konva.Animation;
     private paused: Boolean = false;
-    
-    // Targeting and input
-    private typedText = "";
-    private targetedId: number | null = null;
-    private keyboardHandler: ((e: KeyboardEvent) => void) | null = null;
-    
+
     // Game parameters
     private readonly NEAR_GAME_OVER = 10;
 
@@ -38,12 +35,27 @@ export class GameController {
         this.view = view;
         this.screenSwitcher = screenSwitcher;
         this.levelManager = new LevelManager(view, screenSwitcher);
+
+        // Initialize keyboard controller with callbacks
+        this.keyboardController = new KeyboardController(
+            view,
+            model,
+            this.levelManager,
+            {
+                onPauseToggle: () => this.togglePause(),
+                onEnemyDefeated: (id: number) => this.onEnemyDefeated(id),
+                isPaused: () => this.paused as boolean,
+                onToggleInventory: () => this.toggleInventoryUI(),
+                onUseConsumable: (slot: number) => this.useConsumableItem(slot)
+            }
+        );
     }
 
     /**
      * Initialize and start the game
+     * @param levelNumber - Optional level number to load (defaults to level 1)
      */
-    async startGame(): Promise<void> {
+    async startGame(levelNumber?: number): Promise<void> {
         Save.load();
 
         // Sync Player with saved money
@@ -53,8 +65,14 @@ export class GameController {
 
         this.resetGameState();
         this.addSampleItems(); // Add sample items for testing
-        this.levelManager.initializeLevel();
-        this.setupKeyboardInput();
+
+        // Set level if provided
+        if (levelNumber !== undefined) {
+            this.levelManager.setLevel(levelNumber);
+        }
+
+        await this.levelManager.initializeLevel();
+        this.keyboardController.setupInput();
         this.startGameLoop();
     }
 
@@ -114,18 +132,29 @@ export class GameController {
         Save.save();
 
         this.stopGameLoop();
-        this.cleanupKeyboardInput();
+        this.keyboardController.cleanup();
         this.clearAllEnemies();
+    }
+
+    /**
+     * Toggle pause state
+     */
+    private togglePause(): void {
+        if (this.paused) {
+            this.unpauseGame();
+        } else {
+            this.pauseGame();
+        }
     }
 
     /**
      * pause all timely elements
      */
-    pauseGame(): void {
+    private pauseGame(): void {
         this.stopGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.pause();
             });
         }
@@ -135,11 +164,11 @@ export class GameController {
     /**
      * unpause all timely elements
      */
-    unpauseGame(): void {
+    private unpauseGame(): void {
         this.startGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.unpause();
             });
         }
@@ -150,11 +179,8 @@ export class GameController {
      * Reset all game state to initial values
      */
     private resetGameState(): void {
-        this.typedText = "";
-        this.view.updateText(this.typedText);
-        this.targetedId = null;
+        this.keyboardController.reset();
         this.clearAllEnemies();
-        this.view.setTarget(null);
 
         // Reset Player health
         const player = Player.getInstance();
@@ -171,7 +197,7 @@ export class GameController {
     private clearAllEnemies(): void {
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 this.view.destroyEnemy(enemy.id);
             });
             currentWave.clear();
@@ -190,6 +216,9 @@ export class GameController {
         const enemy = currentWave.getEnemy(id);
         if (!enemy) return;
 
+        // Clear typing state if this was the targeted enemy
+        this.keyboardController.clearTargetIfMatches(id);
+
         // Remove from wave and view
         this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
@@ -199,14 +228,6 @@ export class GameController {
         const baseReward = Money.getInstance().calculateReward(enemy.word.length, enemy.speed);
         player.addMoney(baseReward); // This applies money multiplier!
         this.view.updateMoney(player.getMoney());
-
-        // Reset targeting if this was the target
-        if (this.targetedId === id) {
-            this.targetedId = null;
-            this.typedText = "";
-            this.view.updateText(this.typedText);
-            this.view.setTarget(null);
-        }
 
         // Check for wave completion and advance
         this.levelManager.onWaveCheck();
@@ -225,14 +246,6 @@ export class GameController {
         // Remove from wave and view
         this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
-
-        // Reset targeting if this was the target
-        if (this.targetedId === id) {
-            this.targetedId = null;
-            this.typedText = "";
-            this.view.updateText(this.typedText);
-            this.view.setTarget(null);
-        }
 
         // Check for wave completion and advance
         this.levelManager.onWaveCheck();
@@ -270,7 +283,7 @@ export class GameController {
         if (!currentWave) return;
     
         // Update all enemies
-        currentWave.forEach((enemy) => {
+        currentWave.forEachEnemy((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
             this.view.updateEnemyTransform(enemy, dt);
             
@@ -298,7 +311,7 @@ export class GameController {
         this.levelManager.onWaveCheck();
 
         //update effects
-        this.view.updateEffects(dt);
+        this.view.updateEffects(dt, "");
     }
 
 
@@ -314,47 +327,10 @@ export class GameController {
     // ---------- Input Handling ----------
 
     /**
-     * Set up keyboard input handling
+     * Toggle inventory UI visibility
      */
-    private setupKeyboardInput(): void {
-        this.cleanupKeyboardInput();
-
-        this.keyboardHandler = (e: KeyboardEvent) => {
-            // Tab key toggles inventory UI (works even when paused)
-            if (e.key === "Tab") {
-                e.preventDefault(); // Prevent default tab behavior
-                this.view.toggleInventoryUI();
-                return;
-            }
-
-            if (e.key === "Escape"){
-                if(this.paused){
-                    this.unpauseGame()
-                } else {
-                    this.pauseGame()
-                }
-                return;
-            }
-            if(!this.paused){
-                // Handle number keys 1-9 for consumable items
-                if (e.key >= '1' && e.key <= '9') {
-                    const slot = parseInt(e.key) - 1; // Convert to 0-indexed
-                    this.useConsumableItem(slot);
-                    return;
-                }
-
-                if (e.key === "Backspace") {
-                    e.preventDefault(); // Prevent default browser backspace behavior
-                    this.handleBackspace();
-                    return;
-                }
-
-                if (e.key.length !== 1) return;
-                this.handleCharacterInput(e.key.toLowerCase());
-            }
-        };
-
-        window.addEventListener("keydown", this.keyboardHandler);
+    private toggleInventoryUI(): void {
+        this.view.toggleInventoryUI();
     }
 
     /**
@@ -373,129 +349,6 @@ export class GameController {
             this.view.updateInventoryUI();
 
             console.log(`Used item in slot ${slot + 1}`);
-        }
-    }
-
-    /**
-     * Clean up keyboard input handling
-     */
-    private cleanupKeyboardInput(): void {
-        if (this.keyboardHandler) {
-            window.removeEventListener("keydown", this.keyboardHandler);
-            this.keyboardHandler = null;
-        }
-    }
-
-    /**
-     * Handle backspace input
-     */
-    private handleBackspace(): void {
-        if (this.targetedId !== null) {
-            const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
-            this.typedText = this.typedText.slice(0, -1);
-            this.view.updateText(this.typedText);
-            const isValid = this.isTypedTextValid(word, this.typedText);
-            this.view.updateEnemyProgress(this.targetedId, this.typedText, isValid);
-
-            if (this.typedText.length === 0) {
-                this.view.setTarget(null);
-                this.targetedId = null;
-            }
-        }
-    }
-
-    /**
-     * Handle character input
-     */
-    private handleCharacterInput(char: string): void {
-        const currentWave = this.levelManager.currentWave;
-        // console.log(currentWave);
-        if (!currentWave) return;
-        console.log(this.targetedId);
-
-        // Acquire target if none selected
-        if (this.targetedId === null) {
-            const id = this.levelManager.getEnemyIdByInitial(char);
-            if (!id) return; // No enemy with that initial
-
-            this.targetedId = id;
-            const word = currentWave.getEnemy(id)?.word ?? "ERROR! NO WORD FOUND!";
-            console.log(word);
-            console.log("Hello")
-            this.model.setTargetWord(word);
-
-            this.typedText = char;
-            this.view.setTarget(id);
-            this.view.updateText(this.typedText);
-            const isValid = this.isTypedTextValid(word, this.typedText);
-            this.view.updateEnemyProgress(id, this.typedText, isValid);
-            this.checkCompletion();
-            this.view.showTypingSuccess(id);
-            return;
-        }
-
-        // Progress existing target - accept ALL characters
-        const id = this.targetedId;
-        const word = currentWave.getEnemy(id)?.word ?? "";
-
-
-        // Add character to typed text regardless of correctness
-        this.typedText += char;
-        this.view.updateText(this.typedText);
-
-        // Check if typed text is valid
-        const isValid = this.isTypedTextValid(word, this.typedText);
-        this.view.updateEnemyProgress(id, this.typedText, isValid);
-
-        // Show shake animation if wrong
-        if (!isValid) {
-            this.view.showTypingError(id);
-        } else {
-            this.view.showTypingSuccess(id);
-        }
-
-        this.checkCompletion();
-    }
-
-    /**
-     * Check if typed text matches the target word so far
-     */
-    private isTypedTextValid(targetWord: string, typedText: string): boolean {
-        return targetWord.toLowerCase().startsWith(typedText.toLowerCase());
-    }
-
-    /**
-     * Check if current word is complete
-     */
-    private checkCompletion(): void {
-        if (this.targetedId === null) return;
-        
-        const currentWave = this.levelManager.currentWave;
-        if (!currentWave) return;
-
-        const id = this.targetedId;
-        const enemy = this.levelManager.currentWave?.getEnemy(this.targetedId)
-        if(enemy === undefined) return;
-        const word = enemy.word ?? "";
-
-        // Only complete if length matches AND text is valid (correct)
-        if (word && this.typedText.length === word.length && this.isTypedTextValid(word, this.typedText)) {
-            // Apply damage with Player's damage multiplier
-            const player = Player.getInstance();
-            enemy.health -= player.getDamage();
-            if(enemy.health > 0){
-                // Reset targeting if this was the target
-                if (this.targetedId === id) {
-                    this.targetedId = null;
-                    this.typedText = "";
-                    this.view.updateText(this.typedText);
-                    this.view.setTarget(null);
-                    this.levelManager.changeWord(enemy, this.levelManager.getWord(word.length))
-                }
-            } else {
-                this.model.setScore(this.model.getScore() + 100);
-                this.onEnemyDefeated(id);
-            }
         }
     }
 
