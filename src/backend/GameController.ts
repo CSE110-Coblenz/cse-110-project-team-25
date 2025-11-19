@@ -26,6 +26,7 @@ export class GameController {
     // Game state
     private anim?: Konva.Animation;
     private paused: Boolean = false;
+    private gameStarted: boolean = false;
 
     // Game parameters
     private readonly NEAR_GAME_OVER = 10;
@@ -56,15 +57,37 @@ export class GameController {
      * @param levelNumber - Optional level number to load (defaults to level 1)
      */
     async startGame(levelNumber?: number): Promise<void> {
+        console.log("=== STARTING GAME ===");
         Save.load();
 
-        // Sync Player with saved money
+        // Load Player data from save
         const player = Player.getInstance();
-        player.setMoney(Save.money);
-        console.log("Loaded money:" + player.getMoney());
+        const registry = ItemRegistry.getInstance();
+
+        console.log("Save.playerData is null?", Save.playerData === null);
+        if (Save.playerData) {
+            // Load from saved player data
+            console.log("Loading from saved player data...");
+            Player.fromJSON(Save.playerData, registry.getItemsMap());
+            console.log("Player data loaded. Current inventory:");
+            console.log("Consumables:", player.getConsumableInventory());
+            console.log("Upgrades:", player.getUpgradeInventory());
+        } else {
+            // No save data - use defaults or backward compatibility
+            console.log("No saved player data - using defaults and adding sample items");
+            player.setMoney(Save.money || 0);
+        }
 
         this.resetGameState();
-        this.addSampleItems(); // Add sample items for testing
+
+        // Add sample items if no save data (after reset so health is at max)
+        if (!Save.playerData) {
+            console.log("=== ADDING SAMPLE ITEMS ===");
+            this.addSampleItems();
+            console.log("Sample items added. Current inventory:");
+            console.log("Consumables:", player.getConsumableInventory());
+            console.log("Upgrades:", player.getUpgradeInventory());
+        }
 
         // Set level if provided
         if (levelNumber !== undefined) {
@@ -74,6 +97,7 @@ export class GameController {
         await this.levelManager.initializeLevel();
         this.keyboardController.setupInput();
         this.startGameLoop();
+        this.gameStarted = true;
     }
 
     /**
@@ -126,10 +150,23 @@ export class GameController {
      * Stop the game and clean up resources
      */
     stopGame(): void {
-        // Save Player's money
-        const player = Player.getInstance();
-        Save.money = player.getMoney();
-        Save.save();
+        console.log("=== STOPPING GAME ===");
+        console.log("Game was started?", this.gameStarted);
+
+        // Only save if the game was actually started
+        if (this.gameStarted) {
+            console.log("Saving player data...");
+            const player = Player.getInstance();
+            Save.playerData = player.toJSON();
+            Save.money = player.getMoney(); // Keep for backward compatibility
+            console.log("About to save. Player inventory:");
+            console.log("Consumables:", player.getConsumableInventory());
+            console.log("Upgrades:", player.getUpgradeInventory());
+            Save.save();
+            this.gameStarted = false;
+        } else {
+            console.log("Game never started - skipping save");
+        }
 
         this.stopGameLoop();
         this.keyboardController.cleanup();
@@ -151,6 +188,16 @@ export class GameController {
      * pause all timely elements
      */
     private pauseGame(): void {
+        console.log("=== PAUSING GAME - SAVING DATA ===");
+        // Save Player data when pausing
+        const player = Player.getInstance();
+        Save.playerData = player.toJSON();
+        Save.money = player.getMoney();
+        console.log("About to save on pause. Player inventory:");
+        console.log("Consumables:", player.getConsumableInventory());
+        console.log("Upgrades:", player.getUpgradeInventory());
+        Save.save();
+
         this.stopGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
