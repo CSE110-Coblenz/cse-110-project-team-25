@@ -397,6 +397,7 @@ export class GameScreenView implements View {
     this.pauseMenuView = new PauseMenuView(onResume, onQuit);
     this.group.add(this.pauseMenuView.getGroup());
     this.pauseMenuView.hide();
+  }
   /**
    * Update inventory UI to reflect Player's current inventory
    */
