@@ -57,16 +57,23 @@ export class GameController {
      */
     async startGame(levelNumber?: number): Promise<void> {
         Save.load();
+        Save.loaded = true;
+        Money.getInstance().amount = Save.money;
+        console.log("Loaded money:" + Money.getInstance().amount);
 
-        // Sync Player with saved money
-        const player = Player.getInstance();
-        player.setMoney(Save.money);
-        console.log("Loaded money:" + player.getMoney());
-
-        this.resetGameState();
+        // Set up pause menu callbacks
+        this.view.setPauseMenuCallbacks(
+            () => this.unpauseGame(),
+            () => {
+                this.view.hidePauseMenu();
+                this.paused = false; // Reset pause state
+                this.stopGame();
+                this.screenSwitcher.switchToScreen({ type: "menu" });
+            }
+        );
+      
         this.addSampleItems(); // Add sample items for testing
 
-        // Set level if provided
         if (levelNumber !== undefined) {
             this.levelManager.setLevel(levelNumber);
         }
@@ -159,12 +166,14 @@ export class GameController {
             });
         }
         this.paused = true;
+        this.view.showPauseMenu();
     }
 
     /**
      * unpause all timely elements
      */
-    private unpauseGame(): void {
+    unpauseGame(): void {
+        this.view.hidePauseMenu();
         this.startGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {

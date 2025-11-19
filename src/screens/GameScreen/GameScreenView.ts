@@ -5,6 +5,7 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
+import { PauseMenuView } from "../PauseMenuScreen/PauseMenuView.ts";
 import { InventoryUI } from "../../ui/InventoryUI.ts";
 import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
@@ -19,6 +20,7 @@ export class GameScreenView implements View {
   enemyContainer: Konva.Group;
   effectContainer: Konva.Group;
   private hudContainer: Konva.Group;
+  private pauseMenuView: PauseMenuView;
   enemies = new Map<number, Enemy>();
   effects = new Map<number, Effect>();
   private targetedId: number | null = null;
@@ -88,6 +90,13 @@ export class GameScreenView implements View {
     this.hudContainer.add(this.waveText);
     this.hudContainer.add(this.enemiesLeftText);
 
+    // Initialize pause menu (hidden by default)
+    this.pauseMenuView = new PauseMenuView(
+      () => {}, // Resume callback - will be set by GameController
+      () => {}  // Quit callback - will be set by GameController
+    );
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
     // Initialize player UI components
     this.inventoryUI = new InventoryUI();
     this.upgradeUI = new UpgradeUI();
@@ -372,6 +381,22 @@ export class GameScreenView implements View {
     this.group.getLayer()?.batchDraw();
   }
 
+  showPauseMenu(): void {
+    this.pauseMenuView.show();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  hidePauseMenu(): void {
+    this.pauseMenuView.hide();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  setPauseMenuCallbacks(onResume: () => void, onQuit: () => void): void {
+    // Recreate pause menu with new callbacks
+    this.pauseMenuView.getGroup().destroy();
+    this.pauseMenuView = new PauseMenuView(onResume, onQuit);
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
   /**
    * Update inventory UI to reflect Player's current inventory
    */
