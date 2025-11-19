@@ -311,10 +311,15 @@ export class GameController {
         this.levelManager.onWaveCheck();
 
         //update effects
-        this.view.updateEffects(dt, "");
+        let word = this.keyboardController.nextLetter()
+        if(word === ';') word = "semicolon";
+        if(word === '.') word = "period";
+        if(word === ',') word = "comma";
+        if(word === '/') word = "forwardSlash"
+        if(word === "'") word = "apostrophe"
+        if(word === " ") word = "space"
+        this.view.updateEffects(dt, word);
     }
-
-
 
     /**
      * Handle game over
