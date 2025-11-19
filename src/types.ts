@@ -13,6 +13,8 @@ export interface WaveConfig {
 	words?: string[];                // Optional word assignments
 	x?: number[];                    // Optional x positions (lanes)
 	y?: number[];
+	text?: string[];
+	keyboard?: boolean
 }
 
 /**

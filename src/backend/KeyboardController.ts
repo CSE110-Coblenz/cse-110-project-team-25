@@ -147,7 +147,6 @@ export class KeyboardController {
      */
     private handleCharacterInput(char: string): void {
         const currentWave = this.levelManager.currentWave;
-        // console.log(currentWave);
         if (!currentWave) return;
 
         // Acquire target if none selected
@@ -157,8 +156,6 @@ export class KeyboardController {
 
             this.targetedId = id;
             const word = currentWave.getEnemy(id)?.word ?? "ERROR! NO WORD FOUND!";
-            console.log(word);
-            console.log("Hello");
             this.model.setTargetWord(word);
 
             this.typedText = char;
@@ -221,7 +218,11 @@ export class KeyboardController {
      */
     private handleSpacebar(): void {
         // Simply call checkCompletion with manual fire flag
-        this.fireAtEnemy();
+        if(this.isWordComplete()){
+            this.fireAtEnemy();
+        } else {
+            this.handleCharacterInput(" ");
+        }
     }
 
     /**

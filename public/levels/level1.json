@@ -1,17 +1,208 @@
 {
-  "levelNumber": 1,
+  "levelNumber": 4,
   "difficulty": 1,
   "waves": [
     {
       "types": {
-        "1": "meteor",
-        "2": "ufo"
+        "1": "textbox"
       },
-      "health": [2, 2],
-      "speed": [5, 5],
+      "text": ["Place your hands on the keyboard just like the blue hands on the screen."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Try to feel the bumps on the F and J keys."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Make sure your thumbs are on the long key at the bottom. This is called the space bar."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["We are going to start by practicing these keys. Press the long key (space bar) when you are done."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["If you make a mistake, don’t worry. You can always press the backspace key on the top right with your pinky."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["jf jf jf jf"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["fjjj fjjj fjjj"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["jff jfff fjjj"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re already getting the hang of things!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Lets put your skills to the test against some real enemies."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Be quick and destroy the targets before they reach you."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["fjfj"],
+      "speed": [2],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["jf", "fj"],
+      "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
-      "y": [100, 150]
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["jjj", "fff"],
+      "speed": [2, 2],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["fjfj jfjf"],
+      "speed": [2],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["fjfj", "jfjf"],
+      "speed": [2, 2],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["ff jj", "jj ff"],
+      "speed": [2, 2],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["ff", "jj"],
+      "speed": [2, 2],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Great Job!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’ve mastered these keys."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re ready to learn the next ones."],
+      "keyboard": true
     }
   ]
 }

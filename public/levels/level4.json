@@ -1,19 +1,19 @@
 {
-  "levelNumber": 2,
+  "levelNumber": 1,
   "difficulty": 1,
   "waves": [
     {
       "types": {
         "1": "textbox"
       },
-      "text": ["The next keys are the S and L keys."],
+      "text": ["The next keys are the A and ; keys."],
       "keyboard": true
     },
     {
       "types": {
         "1": "textbox"
       },
-      "text": ["Make sure to press these with your ring fingers like on the keyboard below."],
+      "text": ["Make sure to press these with your pinky fingers."],
       "keyboard": true
     },
     {
@@ -28,7 +28,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["sl sl sl sl"],
+      "words": ["a; a; a; a;"],
       "y": [200],
       "keyboard": true
     },
@@ -37,7 +37,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["ls ls ls ls"],
+      "words": [";a ;a ;a ;a"],
       "y": [200],
       "keyboard": true
     },
@@ -46,7 +46,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["slll slll slll"],
+      "words": ["a;;; a;;; a;;;"],
       "y": [200],
       "keyboard": true
     },
@@ -55,7 +55,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["lss lsss slll"],
+      "words": [";aa ;aaa a;;;"],
       "y": [200],
       "keyboard": true
     },
@@ -78,7 +78,7 @@
         "1": "ufo"
       },
       "health": [1, 1],
-      "words": ["slsl"],
+      "words": ["a;a;"],
       "speed": [2],
       "distance": [40],
       "x": [700],
@@ -91,7 +91,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["ls", "sl"],
+      "words": [";a", "a;"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -104,7 +104,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["sss", "lll"],
+      "words": ["aaa", ";;;"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -116,7 +116,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["slsl lsls"],
+      "words": ["a;a; ;a;a"],
       "speed": [2],
       "distance": [40],
       "x": [700],
@@ -129,7 +129,7 @@
         "2": "ufo"
       },
       "health": [1, 1],
-      "words": ["lsls", "slsl"],
+      "words": [";a;a", "a;a;"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -142,7 +142,7 @@
         "2": "ufo"
       },
       "health": [1, 1],
-      "words": ["ss ll", "ll ss"],
+      "words": ["aa ;;", ";; aa"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -155,7 +155,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["ss", "ll"],
+      "words": ["aa", ";;"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -180,6 +180,13 @@
       "types": {
         "1": "textbox"
       },
+      "text": ["This time we have enough letters to type some real words."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
       "text": ["Good Luck!"],
       "keyboard": true
     },
@@ -188,7 +195,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["dkls"],
+      "words": ["fall"],
       "speed": [2],
       "distance": [40],
       "x": [700],
@@ -200,7 +207,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["ksld"],
+      "words": ["add;"],
       "speed": [2],
       "distance": [40],
       "x": [700],
@@ -213,7 +220,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["ls", "dk"],
+      "words": ["ask", "dad"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -226,7 +233,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["sf", "fl"],
+      "words": ["a", "fall"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -239,7 +246,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["ssj", "jlk"],
+      "words": ["as;", "add"],
       "speed": [2, 2],
       "distance": [40, 45],
       "x": [700, 500],
@@ -251,7 +258,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["fd jk ld ds"],
+      "words": ["ask a dad"],
       "speed": [2],
       "distance": [40],
       "x": [700],
@@ -266,7 +273,7 @@
         "4": "meteor"
       },
       "health": [1,1,1,1],
-      "words": ["ll","ss","df","fj"],
+      "words": ["as","sad",";;","fad"],
       "speed": [2,2,2,2],
       "distance": [40,45,40,50],
       "x": [700, 500, 700, 500],
@@ -284,7 +291,7 @@
       "types": {
         "1": "textbox"
       },
-      "text": ["You’ve mastered 6 keys already. You’re ready for the next challenge."],
+      "text": ["Congratulations! Finish the next level and you'll be able to type the home row."],
       "keyboard": true
     }
   ]
