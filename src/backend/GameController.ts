@@ -261,6 +261,7 @@ export class GameController {
         if(word === ',') word = "comma";
         if(word === '/') word = "forwardSlash"
         if(word === "'") word = "apostrophe"
+        if(word === " ") word = "space"
         this.view.updateEffects(dt, word);
     }
 
