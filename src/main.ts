@@ -65,7 +65,7 @@ class App implements ScreenSwitcher {
         this.gameController.startGame(); // shows game screen inside
         break;
       case "levelSelect":
-        this.levelController.getView().show();
+        this.levelController.getView().showWithTransition();
         break;
       // DEBUG: Debug case commented out for production
       // case "debug":

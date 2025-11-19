@@ -46,7 +46,7 @@ export class MenuScreenView extends BaseMenuView {
         this.positionElement(levelSelectBtn, STAGE_WIDTH / 2, STAGE_HEIGHT / 2 + 80);
 
         const startBtn = this.createButton({
-            text: "START GAME",
+            text: "PLAY ENDLESS",
             width: 200,
             height: 60,
             fill: "green",
