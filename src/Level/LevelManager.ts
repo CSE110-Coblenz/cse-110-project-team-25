@@ -99,29 +99,32 @@ class LevelManager {
     /**
      * Generate a new set of random waves for the current level
      */
-    private generateNewLevel(difficulty?: number): void {
-        const wavesPerLevel = 3; // Number of waves per level
-        const baseEnemyCount = 3;
-        const speedMultiplier = 1 + (this._currentLevel * 0.2);
+    // private generateNewLevel(difficulty?: number): void {
+    //     const wavesPerLevel = 3; // Number of waves per level
+    //     const baseEnemyCount = 3;
+    //     const speedMultiplier = 1 + (this._currentLevel * 0.2);
 
-        for (let i = 0; i < wavesPerLevel; i++) {
-            const enemyCount = baseEnemyCount + this._currentLevel + i;
-            const wave = this.enemyFactory.generateRandomWave(
-                enemyCount,
-                speedMultiplier,
-                this
-            );
-            this._waves.push(wave);
-        }
-    }
+    //     for (let i = 0; i < wavesPerLevel; i++) {
+    //         const enemyCount = baseEnemyCount + this._currentLevel + i;
+    //         const wave = this.enemyFactory.generateRandomWave(
+    //             enemyCount,
+    //             speedMultiplier,
+    //             this
+    //         );
+    //         this._waves.push(wave);
+    //     }
+    // }
 
     /**
      * Generate a new level from config
      */
     async generateNewLevel(): Promise<void> {
         // Try to load a level file matching the current level number, fallback to random
-        await this.loadLevelFromJSON(`/levels/level${this.currentLevel}.json`).catch(() => {
-            this.generateNewRandomLevel();
+        // await this.loadLevelFromJSON(`/levels/level${this.currentLevel}.json`).catch(() => {
+        //     this.generateNewLevel();
+        // });
+        await this.loadLevelFromJSON(`/levels/level5.json`).catch(() => {
+            this.generateNewLevel();
         });
     }
 
@@ -192,7 +195,13 @@ class LevelManager {
         this.view!.updateEnemyTransform(enemy, 0);
 
         // Track for targeting
-        this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
+        let initial;
+        if(enemy.initial != undefined){
+            initial = enemy.initial.toLowerCase()
+        } else {
+            initial = " "
+        }
+        this.letterToId.set(initial, enemy.id);
 
         // Set draw order based on distance
         const sortedIds = this.getIdsSortedByDistance(this._currentWave);
@@ -230,7 +239,13 @@ class LevelManager {
             const enemy = this._currentWave.getEnemy(id);
             if (enemy) {
                 // Remove from letterToId map
-                this.letterToId.delete(enemy.initial.toLowerCase());
+                let initial;
+                if(enemy.initial != undefined){
+                    initial = enemy.initial.toLowerCase()
+                } else {
+                    initial = " "
+                }
+                this.letterToId.delete(initial);
                 // Remove from wave
                 this._currentWave.removeEnemy(id);
                 
