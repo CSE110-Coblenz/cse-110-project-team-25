@@ -1,6 +1,7 @@
 import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
 import { GameScreenView } from "../screens/GameScreen/GameScreenView";
 import LevelManager from "../Level/LevelManager";
+import { Player } from "../Player/Player.ts";
 
 /**
  * KeyboardController handles all keyboard input for the game
@@ -27,6 +28,8 @@ export class KeyboardController {
     private onPauseToggle: () => void;
     private onEnemyDefeated: (id: number) => void;
     private isPaused: () => boolean;
+    private onToggleInventory: () => void;
+    private onUseConsumable: (slot: number) => void;
 
     constructor(
         view: GameScreenView,
@@ -36,6 +39,8 @@ export class KeyboardController {
             onPauseToggle: () => void;
             onEnemyDefeated: (id: number) => void;
             isPaused: () => boolean;
+            onToggleInventory: () => void;
+            onUseConsumable: (slot: number) => void;
         }
     ) {
         this.view = view;
@@ -44,6 +49,8 @@ export class KeyboardController {
         this.onPauseToggle = callbacks.onPauseToggle;
         this.onEnemyDefeated = callbacks.onEnemyDefeated;
         this.isPaused = callbacks.isPaused;
+        this.onToggleInventory = callbacks.onToggleInventory;
+        this.onUseConsumable = callbacks.onUseConsumable;
     }
 
     /**
@@ -53,12 +60,26 @@ export class KeyboardController {
         this.cleanup();
 
         this.keyboardHandler = (e: KeyboardEvent) => {
+            // Tab key toggles inventory UI (works even when paused)
+            if (e.key === "Tab") {
+                e.preventDefault();
+                this.onToggleInventory();
+                return;
+            }
+
             if (e.key === "Escape") {
                 this.onPauseToggle();
                 return;
             }
-            
+
             if (!this.isPaused()) {
+                // Handle number keys 1-9 for consumable items
+                if (e.key >= '1' && e.key <= '9') {
+                    const slot = parseInt(e.key) - 1;
+                    this.onUseConsumable(slot);
+                    return;
+                }
+
                 //check for textboxes
                 let id = this.levelManager.getEnemyIdByInitial(" ");
                 if(id != null) this.fireAtEnemy();
@@ -73,7 +94,7 @@ export class KeyboardController {
                     this.handleSpacebar();
                     return;
                 }
-                
+
 
                 if (e.key.length !== 1) return;
                 this.handleCharacterInput(e.key.toLowerCase());
@@ -236,8 +257,9 @@ export class KeyboardController {
 
         const word = enemy.word ?? "";
 
-        // Fire! Decrease enemy health
-        enemy.health -= 1;
+        // Fire! Decrease enemy health using Player's damage multiplier
+        const player = Player.getInstance();
+        enemy.health -= player.getDamage();
         if (enemy.health > 0) {
             // Enemy still alive, change word
             this.targetedId = null;

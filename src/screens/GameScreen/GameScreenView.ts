@@ -5,6 +5,8 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
+import { InventoryUI } from "../../ui/InventoryUI.ts";
+import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
 export class GameScreenView implements View {
   private group: Konva.Group;
@@ -16,10 +18,14 @@ export class GameScreenView implements View {
   private enemiesLeftText: Konva.Text;
   enemyContainer: Konva.Group;
   effectContainer: Konva.Group;
-  private hudContainer: Konva.Group; 
+  private hudContainer: Konva.Group;
   enemies = new Map<number, Enemy>();
   effects = new Map<number, Effect>();
   private targetedId: number | null = null;
+
+  // Player UI components
+  private inventoryUI: InventoryUI;
+  private upgradeUI: UpgradeUI;
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
@@ -81,6 +87,12 @@ export class GameScreenView implements View {
     this.hudContainer.add(this.levelText);
     this.hudContainer.add(this.waveText);
     this.hudContainer.add(this.enemiesLeftText);
+
+    // Initialize player UI components
+    this.inventoryUI = new InventoryUI();
+    this.upgradeUI = new UpgradeUI();
+    this.hudContainer.add(this.inventoryUI.getGroup());
+    this.hudContainer.add(this.upgradeUI.getGroup());
   }
 
   // Spawn enemy visuals (no world coords here yet)
@@ -332,9 +344,16 @@ export class GameScreenView implements View {
     this.group.getLayer()?.batchDraw();
   }
 
-  updateHealth(lives: number): void {
-    const hearts = "♥".repeat(lives);
-    this.healthText.text(`Health: ${hearts}`);
+  /**
+   * Update health display with current/max hearts
+   * @param currentHealth Current health value
+   * @param maxHealth Maximum health value (optional, defaults to currentHealth)
+   */
+  updateHealth(currentHealth: number, maxHealth?: number): void {
+    const max = maxHealth ?? currentHealth;
+    const filledHearts = "♥".repeat(Math.max(0, currentHealth));
+    const emptyHearts = "♡".repeat(Math.max(0, max - currentHealth));
+    this.healthText.text(`Health: ${filledHearts}${emptyHearts}`);
     this.group.getLayer()?.batchDraw();
   }
 
@@ -351,6 +370,36 @@ export class GameScreenView implements View {
   updateEnemiesLeft(enemiesLeft: number): void {
     this.enemiesLeftText.text(`Enemies: ${enemiesLeft}`);
     this.group.getLayer()?.batchDraw();
+  }
+
+  /**
+   * Update inventory UI to reflect Player's current inventory
+   */
+  updateInventoryUI(): void {
+    this.inventoryUI.update();
+  }
+
+  /**
+   * Update upgrade UI to reflect Player's equipped upgrades
+   */
+  updateUpgradeUI(): void {
+    this.upgradeUI.update();
+  }
+
+  /**
+   * Update both inventory and upgrade UI
+   */
+  updatePlayerUI(): void {
+    this.inventoryUI.update();
+    this.upgradeUI.update();
+  }
+
+  /**
+   * Toggle inventory UIs visibility with animation
+   */
+  toggleInventoryUI(): void {
+    this.inventoryUI.toggle();
+    this.upgradeUI.toggle();
   }
 
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }
