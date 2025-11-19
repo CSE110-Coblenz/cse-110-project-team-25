@@ -5,6 +5,7 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
+import { PauseMenuView } from "../PauseMenuScreen/PauseMenuView.ts";
 
 export class GameScreenView implements View {
   private group: Konva.Group;
@@ -16,7 +17,8 @@ export class GameScreenView implements View {
   private enemiesLeftText: Konva.Text;
   enemyContainer: Konva.Group;
   effectContainer: Konva.Group;
-  private hudContainer: Konva.Group; 
+  private hudContainer: Konva.Group;
+  private pauseMenuView: PauseMenuView;
   enemies = new Map<number, Enemy>();
   effects = new Map<number, Effect>();
   private targetedId: number | null = null;
@@ -81,6 +83,14 @@ export class GameScreenView implements View {
     this.hudContainer.add(this.levelText);
     this.hudContainer.add(this.waveText);
     this.hudContainer.add(this.enemiesLeftText);
+
+    // Initialize pause menu (hidden by default)
+    this.pauseMenuView = new PauseMenuView(
+      () => {}, // Resume callback - will be set by GameController
+      () => {}  // Quit callback - will be set by GameController
+    );
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
   }
 
   // Spawn enemy visuals (no world coords here yet)
@@ -351,6 +361,24 @@ export class GameScreenView implements View {
   updateEnemiesLeft(enemiesLeft: number): void {
     this.enemiesLeftText.text(`Enemies: ${enemiesLeft}`);
     this.group.getLayer()?.batchDraw();
+  }
+
+  showPauseMenu(): void {
+    this.pauseMenuView.show();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  hidePauseMenu(): void {
+    this.pauseMenuView.hide();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  setPauseMenuCallbacks(onResume: () => void, onQuit: () => void): void {
+    // Recreate pause menu with new callbacks
+    this.pauseMenuView.getGroup().destroy();
+    this.pauseMenuView = new PauseMenuView(onResume, onQuit);
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
   }
 
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }

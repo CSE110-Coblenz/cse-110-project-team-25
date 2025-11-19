@@ -56,8 +56,15 @@ export class GameController {
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
         console.log("Loaded money:" + Money.getInstance().amount);
-        
+
         this.resetGameState();
+
+        // Set up pause menu callbacks
+        this.view.setPauseMenuCallbacks(
+            () => this.unpauseGame(),
+            () => this.stopGame()
+        );
+
         if (levelNumber !== undefined) {
             this.levelManager.setLevel(levelNumber);
         }
@@ -107,12 +114,14 @@ export class GameController {
             });
         }
         this.paused = true;
+        this.view.showPauseMenu();
     }
 
     /**
      * unpause all timely elements
      */
     unpauseGame(): void {
+        this.view.hidePauseMenu();
         this.startGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
