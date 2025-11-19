@@ -3,6 +3,7 @@ export class Save {
     static levelComplete: number;
     static money: number;
     static items: string[];
+    static _loaded: boolean = false;
 
     public static save(){
         localStorage.setItem("LevelComplete", JSON.stringify(Save.levelComplete));
@@ -37,6 +38,14 @@ export class Save {
         }
 
         console.log("Game Loaded");
+    }
+
+    public static set loaded(value: boolean){
+        this._loaded = value;
+    }
+
+    public static get loaded(): boolean{
+        return this._loaded;
     }
 
 }

@@ -24,6 +24,7 @@ class Object {
     this._x = x;
     this._y = y;
     this._image = image;
+    
 
     // Center origin based on the group's visual content, not width()/height()
     this.recenterOriginToContent();
