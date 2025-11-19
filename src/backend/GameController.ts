@@ -264,8 +264,6 @@ export class GameController {
         this.view.updateEffects(dt, word);
     }
 
-
-
     /**
      * Handle game over
      */

@@ -283,6 +283,19 @@ class EnemyFactory {
     }
 
     /**
+     * Get a random word based on difficulty level (1-100)
+     * @param activeInitials Set of initials to exclude
+     * @param difficulty Difficulty level (1-100)
+     */
+    getRandomWordByDifficulty(activeInitials: Set<string>, difficulty: number): string {
+        const word = wordBank.getRandomWordByDifficulty(
+            difficulty,
+            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
+            activeInitials
+        );
+        return word || "default";
+   
+    /**
      * Load a LevelConfig from an external JSON file
      * @param url - The URL or path to the JSON file (e.g., '/levels/level1.json')
      * @returns Promise that resolves to a LevelConfig object
