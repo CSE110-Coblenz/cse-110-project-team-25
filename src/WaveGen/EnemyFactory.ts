@@ -294,7 +294,8 @@ class EnemyFactory {
             activeInitials
         );
         return word || "default";
-   
+    }
+    
     /**
      * Load a LevelConfig from an external JSON file
      * @param url - The URL or path to the JSON file (e.g., '/levels/level1.json')
