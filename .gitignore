@@ -31,3 +31,6 @@ bin64/
 
 # Debug/test screens (not for production)
 src/screens/debug-screen/
+
+# Claude Code documentation
+CLAUDE.md

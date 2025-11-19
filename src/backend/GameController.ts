@@ -62,7 +62,12 @@ export class GameController {
         // Set up pause menu callbacks
         this.view.setPauseMenuCallbacks(
             () => this.unpauseGame(),
-            () => this.stopGame()
+            () => {
+                this.view.hidePauseMenu();
+                this.paused = false; // Reset pause state
+                this.stopGame();
+                this.screenSwitcher.switchToScreen({ type: "menu" });
+            }
         );
 
         if (levelNumber !== undefined) {
