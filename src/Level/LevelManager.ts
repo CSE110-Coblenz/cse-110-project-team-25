@@ -1,8 +1,9 @@
 import { Wave } from "../WaveGen/Wave";
 import EnemyFactory from "../WaveGen/EnemyFactory";
-import type { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import type GameScreenView from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
 import Enemy from "../objects/Enemy"
+import Effect from "../objects/Effect"
 
 /**
  * LevelManager manages game progression through levels
@@ -11,7 +12,7 @@ import Enemy from "../objects/Enemy"
 class LevelManager {
     private _currentLevel: number = 1;
     // private _waveLevels: Map<number, Wave[]> = new Map(); 
-    // private _difficulty: number = 1;
+    private _difficulty: number = 1;
     // private _isEndless: boolean = false;
     private _waves: Wave[] = [];
     private _currentWave: Wave | null = null;
@@ -98,21 +99,21 @@ class LevelManager {
     /**
      * Generate a new set of random waves for the current level
      */
-    private generateNewRandomLevel(): void {
-        const wavesPerLevel = 3; // Number of waves per level
-        const baseEnemyCount = 3;
-        const speedMultiplier = 1 + (this._currentLevel * 0.2);
+    // private generateNewLevel(difficulty?: number): void {
+    //     const wavesPerLevel = 3; // Number of waves per level
+    //     const baseEnemyCount = 3;
+    //     const speedMultiplier = 1 + (this._currentLevel * 0.2);
 
-        for (let i = 0; i < wavesPerLevel; i++) {
-            const enemyCount = baseEnemyCount + this._currentLevel + i;
-            const wave = this.enemyFactory.generateRandomWave(
-                enemyCount,
-                speedMultiplier,
-                this
-            );
-            this._waves.push(wave);
-        }
-    }
+    //     for (let i = 0; i < wavesPerLevel; i++) {
+    //         const enemyCount = baseEnemyCount + this._currentLevel + i;
+    //         const wave = this.enemyFactory.generateRandomWave(
+    //             enemyCount,
+    //             speedMultiplier,
+    //             this
+    //         );
+    //         this._waves.push(wave);
+    //     }
+    // }
 
     /**
      * Generate a new level from config
@@ -120,8 +121,11 @@ class LevelManager {
     async generateNewLevel(): Promise<void> {
         // Try to load a level file matching the current level number, fallback to random
         await this.loadLevelFromJSON(`/levels/level${this.currentLevel}.json`).catch(() => {
-            this.generateNewRandomLevel();
+            this.generateNewLevel();
         });
+        // await this.loadLevelFromJSON(`/levels/level5.json`).catch(() => {
+        //     this.generateNewLevel();
+        // });
     }
 
     /**
@@ -130,7 +134,11 @@ class LevelManager {
      */
     async onWaveCheck(): Promise<void> {
         if (this._currentWave && this._currentWave.isEmpty()) {
-            // Prevent concurrent transitions (multiple callers triggering a double-spawn)
+ 
+            this._currentWave.forEachEffect((effect) => {
+                this.view.destroyEffect(effect.id);
+            })
+
             if (this._isTransitioning) return;
             this._isTransitioning = true;
             try {
@@ -165,8 +173,13 @@ class LevelManager {
         this.letterToId.clear();
 
         // Iterate through all enemies in the wave
-        this._currentWave.forEach((enemy) => {
+        this._currentWave.forEachEnemy((enemy) => {
             this.spawnEnemy(enemy);
+        });
+
+        // Iterate through all effects in the wave
+        this._currentWave.forEachEffect((effect) => {
+            this.spawnEffect(effect);
         });
     }
 
@@ -182,7 +195,13 @@ class LevelManager {
         this.view!.updateEnemyTransform(enemy, 0);
 
         // Track for targeting
-        this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
+        let initial;
+        if(enemy.initial != undefined){
+            initial = enemy.initial.toLowerCase()
+        } else {
+            initial = " "
+        }
+        this.letterToId.set(initial, enemy.id);
 
         // Set draw order based on distance
         const sortedIds = this.getIdsSortedByDistance(this._currentWave);
@@ -192,6 +211,18 @@ class LevelManager {
         this.view.updateLevel(this._currentLevel);
         this.view.updateWaves(this._waves.length);
         this.view.updateEnemiesLeft(this._currentWave.getCount());
+    }
+
+    spawnEffect(effect: Effect): void {
+        if(this._currentWave == undefined) return
+
+        if (!this.view) {
+            throw new Error("View not set. Call setView() before spawning enemies.");
+        }
+
+        // Add to view
+        this.view!.spawnEffectVisuals(effect);
+        this.view!.updateEffectTransform(effect, 0, "");
     }
 
     spawnAdditionalEnemy(enemy: Enemy): void {
@@ -208,7 +239,13 @@ class LevelManager {
             const enemy = this._currentWave.getEnemy(id);
             if (enemy) {
                 // Remove from letterToId map
-                this.letterToId.delete(enemy.initial.toLowerCase());
+                let initial;
+                if(enemy.initial != undefined){
+                    initial = enemy.initial.toLowerCase()
+                } else {
+                    initial = " "
+                }
+                this.letterToId.delete(initial);
                 // Remove from wave
                 this._currentWave.removeEnemy(id);
                 
@@ -243,11 +280,35 @@ class LevelManager {
             .map(e => e.id);
     }
 
+    /**
+     * Get a word based on current difficulty level
+     * @param length Optional specific length (overrides difficulty-based selection)
+     */
     getWord(length?: number): string {
         if(this._currentWave != undefined){
-            return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
+            if (length !== undefined) {
+                // If length is specified, use the original method
+                return this.enemyFactory.getRandomWord(this._currentWave.activeInitials, length);
+            } else {
+                // Use difficulty-based word selection
+                return this.enemyFactory.getRandomWordByDifficulty(this._currentWave.activeInitials, this._difficulty);
+            }
         }
         return "CANT USE GET WORD WITHOUT CURRENTWAVE"
+    }
+
+    /**
+     * Set the current difficulty level (1-100)
+     */
+    setDifficulty(difficulty: number): void {
+        this._difficulty = Math.max(1, Math.min(100, difficulty));
+    }
+
+    /**
+     * Get the current difficulty level
+     */
+    get difficulty(): number {
+        return this._difficulty;
     }
 
     changeWord(En: Enemy, word: string): void {
@@ -255,7 +316,7 @@ class LevelManager {
         En.word = word;
         this.letterToId.set(word[0], En.id);
     }
-
+  
     /**
      * Load level configuration from JSON, 
      * generate random wave if none provided.

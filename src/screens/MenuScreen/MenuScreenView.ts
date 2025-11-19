@@ -4,15 +4,15 @@ import { BaseMenuView } from "../base/BaseMenuView.ts";
 /**
  * MenuScreenView - Renders the menu screen
  */
-export class MenuScreenView extends BaseMenuView {
+export default class MenuScreenView extends BaseMenuView {
     private onStartClick: () => void;
     // private onDebugClick: () => void; // DEBUG: Commented out for production
-    private onLevelSelectClick: () => void;
+    private onPlanetSelectClick: () => void;
 
-    constructor(onStartClick: () => void, onLevelSelectClick: () => void /* , onDebugClick: () => void */) { // debug
+    constructor(onStartClick: () => void, onPlanetSelectClick: () => void /* , onDebugClick: () => void */) { // debug
         super("#0f0f23", false); // Don't auto-build
         this.onStartClick = onStartClick;
-        this.onLevelSelectClick = onLevelSelectClick;
+        this.onPlanetSelectClick = onPlanetSelectClick;
         // this.onDebugClick = onDebugClick; //
         this.buildLayout(); // Build after callback is assigned
         // Make menu visible by default (main menu shows first)
@@ -41,7 +41,7 @@ export class MenuScreenView extends BaseMenuView {
             stroke: "darkblue",
             strokeWidth: 3,
             fontSize: 24,
-            onClick: this.onLevelSelectClick,
+            onClick: this.onPlanetSelectClick,
         });
         this.positionElement(levelSelectBtn, STAGE_WIDTH / 2, STAGE_HEIGHT / 2 + 80);
 

@@ -4,7 +4,7 @@ import { BaseMenuView } from "../base/BaseMenuView.ts";
 /**
  * LevelCompleteScreenView - Renders the level completion screen
  */
-export class LevelCompleteScreenView extends BaseMenuView {
+export default class LevelCompleteScreenView extends BaseMenuView {
     private level: number;
     private score: number;
     private onNextLevelClick: () => void;

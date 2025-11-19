@@ -5,10 +5,11 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
+import PauseMenuView from "../PauseMenuScreen/PauseMenuView.ts";
 import { InventoryUI } from "../../ui/InventoryUI.ts";
 import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
-export class GameScreenView implements View {
+export default class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
   private moneyText: Konva.Text;
@@ -19,6 +20,7 @@ export class GameScreenView implements View {
   enemyContainer: Konva.Group;
   effectContainer: Konva.Group;
   private hudContainer: Konva.Group;
+  private pauseMenuView: PauseMenuView;
   enemies = new Map<number, Enemy>();
   effects = new Map<number, Effect>();
   private targetedId: number | null = null;
@@ -81,13 +83,20 @@ export class GameScreenView implements View {
       fontSize: 20, fontFamily: "Courier New", fill: "white", align: "left", listening: false,
     });
     
-    this.hudContainer.add(this.typedText);
+    // this.hudContainer.add(this.typedText);
     this.hudContainer.add(this.moneyText);
     this.hudContainer.add(this.healthText);
     this.hudContainer.add(this.levelText);
     this.hudContainer.add(this.waveText);
     this.hudContainer.add(this.enemiesLeftText);
 
+    // Initialize pause menu (hidden by default)
+    this.pauseMenuView = new PauseMenuView(
+      () => {}, // Resume callback - will be set by GameController
+      () => {}  // Quit callback - will be set by GameController
+    );
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
     // Initialize player UI components
     this.inventoryUI = new InventoryUI();
     this.upgradeUI = new UpgradeUI();
@@ -113,18 +122,23 @@ export class GameScreenView implements View {
     return Ef.id;
   }
 
-  updateEffects(dt: number): void {
+  updateEffects(dt: number, nextLetter: string): void {
     this.effects.forEach((Ef, id) => {
-      Ef.update(dt);
+      Ef.update(dt, nextLetter);
       if(Ef.dead == true){
         this.effects.delete(id);
       }
     });
   }
 	/** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
-  //TODO:: COMBINE CHANGES FROM THIS TRANSFORM WITH TEH ONE IN ENEMY.TS. RIGHT NOW ITS REDUNDANT
 	updateEnemyTransform(En: Enemy, dt: number): void {
     En.updateTransform(dt);
+    this.group.getLayer()?.batchDraw();
+	}
+
+  /** Project world (x,z) to screen (x,y,scale) and apply to enemy visuals. */
+	updateEffectTransform(Ef: Effect, dt: number, nextLetter: string): void {
+    Ef.update(dt, nextLetter);
     this.group.getLayer()?.batchDraw();
 	}
 
@@ -161,6 +175,13 @@ export class GameScreenView implements View {
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
     this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
+  }
+
+  destroyEffect(id: number): void {
+    const Ef = this.effects.get(id);
+    if (!Ef) return;
+    Ef.destroy();
+    this.effects.delete(id);
   }
 
   setTarget(id: number | null): void {
@@ -208,7 +229,7 @@ export class GameScreenView implements View {
 
     // Create Shot Effect
     // this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
-    this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
+    // this.spawnEffectVisuals(new Shot(enemy.x,enemy.y, enemy.image.scaleX()));
 
 
     // Shake animation parameters
@@ -360,6 +381,23 @@ export class GameScreenView implements View {
     this.group.getLayer()?.batchDraw();
   }
 
+  showPauseMenu(): void {
+    this.pauseMenuView.show();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  hidePauseMenu(): void {
+    this.pauseMenuView.hide();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  setPauseMenuCallbacks(onResume: () => void, onQuit: () => void): void {
+    // Recreate pause menu with new callbacks
+    this.pauseMenuView.getGroup().destroy();
+    this.pauseMenuView = new PauseMenuView(onResume, onQuit);
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
+  }
   /**
    * Update inventory UI to reflect Player's current inventory
    */
@@ -380,6 +418,14 @@ export class GameScreenView implements View {
   updatePlayerUI(): void {
     this.inventoryUI.update();
     this.upgradeUI.update();
+  }
+
+  /**
+   * Toggle inventory UIs visibility with animation
+   */
+  toggleInventoryUI(): void {
+    this.inventoryUI.toggle();
+    this.upgradeUI.toggle();
   }
 
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }

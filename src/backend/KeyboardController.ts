@@ -1,6 +1,7 @@
-import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
-import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import GameScreenModel from "../screens/GameScreen/GameScreenModel";
+import GameScreenView from "../screens/GameScreen/GameScreenView";
 import LevelManager from "../Level/LevelManager";
+import { Player } from "../Player/Player.ts";
 
 /**
  * KeyboardController handles all keyboard input for the game
@@ -27,6 +28,8 @@ export class KeyboardController {
     private onPauseToggle: () => void;
     private onEnemyDefeated: (id: number) => void;
     private isPaused: () => boolean;
+    private onToggleInventory: () => void;
+    private onUseConsumable: (slot: number) => void;
 
     constructor(
         view: GameScreenView,
@@ -36,6 +39,8 @@ export class KeyboardController {
             onPauseToggle: () => void;
             onEnemyDefeated: (id: number) => void;
             isPaused: () => boolean;
+            onToggleInventory: () => void;
+            onUseConsumable: (slot: number) => void;
         }
     ) {
         this.view = view;
@@ -44,6 +49,8 @@ export class KeyboardController {
         this.onPauseToggle = callbacks.onPauseToggle;
         this.onEnemyDefeated = callbacks.onEnemyDefeated;
         this.isPaused = callbacks.isPaused;
+        this.onToggleInventory = callbacks.onToggleInventory;
+        this.onUseConsumable = callbacks.onUseConsumable;
     }
 
     /**
@@ -53,12 +60,29 @@ export class KeyboardController {
         this.cleanup();
 
         this.keyboardHandler = (e: KeyboardEvent) => {
+            // Tab key toggles inventory UI (works even when paused)
+            if (e.key === "Tab") {
+                e.preventDefault();
+                this.onToggleInventory();
+                return;
+            }
+
             if (e.key === "Escape") {
                 this.onPauseToggle();
                 return;
             }
-            
+
             if (!this.isPaused()) {
+                // Handle number keys 1-9 for consumable items
+                if (e.key >= '1' && e.key <= '9') {
+                    const slot = parseInt(e.key) - 1;
+                    this.onUseConsumable(slot);
+                    return;
+                }
+
+                //check for textboxes
+                let id = this.levelManager.getEnemyIdByInitial(" ");
+                if(id != null) this.fireAtEnemy();
                 if (e.key === "Backspace") {
                     e.preventDefault(); // Prevent default browser backspace behavior
                     this.handleBackspace();
@@ -70,6 +94,7 @@ export class KeyboardController {
                     this.handleSpacebar();
                     return;
                 }
+
 
                 if (e.key.length !== 1) return;
                 this.handleCharacterInput(e.key.toLowerCase());
@@ -122,7 +147,6 @@ export class KeyboardController {
      */
     private handleCharacterInput(char: string): void {
         const currentWave = this.levelManager.currentWave;
-        // console.log(currentWave);
         if (!currentWave) return;
 
         // Acquire target if none selected
@@ -132,8 +156,6 @@ export class KeyboardController {
 
             this.targetedId = id;
             const word = currentWave.getEnemy(id)?.word ?? "ERROR! NO WORD FOUND!";
-            console.log(word);
-            console.log("Hello");
             this.model.setTargetWord(word);
 
             this.typedText = char;
@@ -196,7 +218,11 @@ export class KeyboardController {
      */
     private handleSpacebar(): void {
         // Simply call checkCompletion with manual fire flag
-        this.fireAtEnemy();
+        if(this.isWordComplete()){
+            this.fireAtEnemy();
+        } else {
+            this.handleCharacterInput(" ");
+        }
     }
 
     /**
@@ -216,21 +242,24 @@ export class KeyboardController {
      * Fire at the targeted enemy (shared logic for both auto-fire and manual spacebar fire)
      */
     private fireAtEnemy(): void {
-        if (!this.isWordComplete()) return;
-        
+        let id = this.levelManager.getEnemyIdByInitial(" ");
         const currentWave = this.levelManager.currentWave;
         if (!currentWave) return;
+        if(id === null){
+            if (!this.isWordComplete()) return;
 
-        const id = this.targetedId;
-        if (id === null) return;
+            id = this.targetedId;
+            if (id === null) return;
+        }
 
         const enemy = currentWave.getEnemy(id);
         if (!enemy) return;
 
         const word = enemy.word ?? "";
 
-        // Fire! Decrease enemy health
-        enemy.health -= 1;
+        // Fire! Decrease enemy health using Player's damage multiplier
+        const player = Player.getInstance();
+        enemy.health -= player.getDamage();
         if (enemy.health > 0) {
             // Enemy still alive, change word
             this.targetedId = null;
@@ -256,5 +285,33 @@ export class KeyboardController {
             this.view.updateText(this.typedText);
             this.view.setTarget(null);
         }
+    }
+
+
+    nextLetter(): string {
+        //case target is locked
+        if(this.targetedId !== null){
+            const word = this.levelManager.currentWave?.getEnemy(this.targetedId)?.word ?? "";
+            const isValid = this.isTypedTextValid(word, this.typedText);
+            //case incorrect currently
+            if(!isValid) return "backspace"
+            if(word.length <= this.typedText.length){
+                return "space"
+            }
+            return word.charAt(this.typedText.length)
+        }
+        //case target is not locked and theres only one enemy
+        let x = this.levelManager.currentWave;
+        if(x?.count() == 1){
+            const word = this.levelManager.currentWave?.getEnemy(x.getEnemyIds()[0])?.word ?? "";
+            if(word == ""){
+                return "space"
+            }
+            return word.charAt(0)
+        }
+        
+
+        //other
+        return ""
     }
 }

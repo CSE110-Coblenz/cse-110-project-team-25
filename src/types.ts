@@ -4,7 +4,7 @@ import type { Group } from "konva/lib/Group";
 /**
  * Type for level screens.
  */
-export type levelName = "tutorial_earth" | "campaign_easy" | "campaign_medi" | "campaign_hard";
+export type planetName = "tutorial_earth" | "campaign_easy" | "campaign_medi" | "campaign_hard";
 
 /**
  * Wave configuration JSON format
@@ -19,6 +19,8 @@ export interface WaveConfig {
 	words?: string[];                // Optional word assignments
 	x?: number[];                    // Optional x positions (lanes)
 	y?: number[];
+	text?: string[];
+	keyboard?: boolean
 }
 
 /**
@@ -42,13 +44,14 @@ export interface View {
  * Screen types for navigation
  *
  * - "menu": Main menu screen
- * - "game": Gameplay screen
+ * - "levelSelect": Level selection screen
+ * - "game": Gameplay screen with optional levelNumber
  */
 export type Screen =
 	| { type: "menu" }
-	| { type: "game" }
-	| { type: "levelSelect" }
-	| { type: levelName };
+	| { type: "planetSelect" }
+	| { type: planetName }
+	| { type: "game"; levelNumber?: number };
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {

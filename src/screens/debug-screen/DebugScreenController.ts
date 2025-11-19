@@ -1,11 +1,11 @@
 import type { ScreenSwitcher } from "../../types.ts";
 import { BaseMenuController } from "../base/BaseMenuController.ts";
-import { DebugScreenView } from "./DebugScreenView.ts";
+import DebugScreenView from "./DebugScreenView.ts";
 
 /**
  * DebugScreenController - Handles debug screen interactions
  */
-export class DebugScreenController extends BaseMenuController {
+export default class DebugScreenController extends BaseMenuController {
   constructor(screenSwitcher: ScreenSwitcher) {
     super(screenSwitcher);
     this.view = new DebugScreenView(() => this.handleBackClick());

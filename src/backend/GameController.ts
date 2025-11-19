@@ -1,6 +1,6 @@
 import Konva from "konva";
-import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
-import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import GameScreenModel from "../screens/GameScreen/GameScreenModel";
+import GameScreenView from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher } from "../types";
 import { KeyboardController } from "./KeyboardController";
 import LevelManager from "../Level/LevelManager";
@@ -18,23 +18,25 @@ import ItemRegistry from "../Player/ItemRegistry.ts";
  * - Delegates input handling to KeyboardController
  */
 export class GameController {
+    private model: GameScreenModel;
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
     private levelManager: LevelManager;
     private keyboardController: KeyboardController;
-    
+
     // Game state
     private anim?: Konva.Animation;
     private paused: Boolean = false;
-    
+
     // Game parameters
     private readonly NEAR_GAME_OVER = 10;
 
     constructor(model: GameScreenModel, view: GameScreenView, screenSwitcher: ScreenSwitcher) {
+        this.model = model;
         this.view = view;
         this.screenSwitcher = screenSwitcher;
         this.levelManager = new LevelManager(view, screenSwitcher);
-        
+
         // Initialize keyboard controller with callbacks
         this.keyboardController = new KeyboardController(
             view,
@@ -43,16 +45,22 @@ export class GameController {
             {
                 onPauseToggle: () => this.togglePause(),
                 onEnemyDefeated: (id: number) => this.onEnemyDefeated(id),
-                isPaused: () => this.paused as boolean
+                isPaused: () => this.paused as boolean,
+                onToggleInventory: () => this.toggleInventoryUI(),
+                onUseConsumable: (slot: number) => this.useConsumableItem(slot)
             }
         );
     }
 
     /**
      * Initialize and start the game
+     * @param levelNumber - Optional level number to load (defaults to level 1)
      */
-    async startGame(): Promise<void> {
+    async startGame(levelNumber?: number): Promise<void> {
         Save.load();
+        Save.loaded = true;
+        Money.getInstance().amount = Save.money;
+        console.log("Loaded money:" + Money.getInstance().amount);
 
         // Sync Player with saved money
         const player = Player.getInstance();
@@ -64,6 +72,26 @@ export class GameController {
         this.keyboardController.setupInput();
         this.addSampleItems(); // Add sample items for testing
         this.levelManager.initializeLevel();
+
+        // Set up pause menu callbacks
+        this.view.setPauseMenuCallbacks(
+            () => this.unpauseGame(),
+            () => {
+                this.view.hidePauseMenu();
+                this.paused = false; // Reset pause state
+                this.stopGame();
+                this.screenSwitcher.switchToScreen({ type: "menu" });
+            }
+        );
+      
+        this.addSampleItems(); // Add sample items for testing
+
+        if (levelNumber !== undefined) {
+            this.levelManager.setLevel(levelNumber);
+        }
+
+        await this.levelManager.initializeLevel();
+        this.keyboardController.setupInput();
         this.startGameLoop();
     }
 
@@ -141,25 +169,27 @@ export class GameController {
     /**
      * pause all timely elements
      */
-    pauseGame(): void {
+    private pauseGame(): void {
         this.stopGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.pause();
             });
         }
         this.paused = true;
+        this.view.showPauseMenu();
     }
 
     /**
      * unpause all timely elements
      */
     unpauseGame(): void {
+        this.view.hidePauseMenu();
         this.startGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.unpause();
             });
         }
@@ -192,7 +222,7 @@ export class GameController {
     private clearAllEnemies(): void {
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 this.view.destroyEnemy(enemy.id);
             });
             currentWave.clear();
@@ -211,6 +241,9 @@ export class GameController {
         const enemy = currentWave.getEnemy(id);
         if (!enemy) return;
 
+        // Clear typing state if this was the targeted enemy
+        this.keyboardController.clearTargetIfMatches(id);
+
         // Remove from wave and view
         this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
@@ -220,9 +253,6 @@ export class GameController {
         const baseReward = Money.getInstance().calculateReward(enemy.word.length, enemy.speed);
         player.addMoney(baseReward); // This applies money multiplier!
         this.view.updateMoney(player.getMoney());
-
-        // Reset targeting if this was the target (handled by KeyboardController)
-        this.keyboardController.clearTargetIfMatches(id);
 
         // Check for wave completion and advance
         this.levelManager.onWaveCheck();
@@ -241,9 +271,6 @@ export class GameController {
         // Remove from wave and view
         this.levelManager.removeEnemyFromWave(id);
         this.view.destroyEnemy(id);
-
-        // Reset targeting if this was the target (handled by KeyboardController)
-        this.keyboardController.clearTargetIfMatches(id);
 
         // Check for wave completion and advance
         this.levelManager.onWaveCheck();
@@ -281,7 +308,7 @@ export class GameController {
         if (!currentWave) return;
     
         // Update all enemies
-        currentWave.forEach((enemy) => {
+        currentWave.forEachEnemy((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
             this.view.updateEnemyTransform(enemy, dt);
             
@@ -309,10 +336,15 @@ export class GameController {
         this.levelManager.onWaveCheck();
 
         //update effects
-        this.view.updateEffects(dt);
+        let word = this.keyboardController.nextLetter()
+        if(word === ';') word = "semicolon";
+        if(word === '.') word = "period";
+        if(word === ',') word = "comma";
+        if(word === '/') word = "forwardSlash"
+        if(word === "'") word = "apostrophe"
+        if(word === " ") word = "space"
+        this.view.updateEffects(dt, word);
     }
-
-
 
     /**
      * Handle game over
@@ -320,6 +352,34 @@ export class GameController {
     private gameOver(): void {
         this.stopGame();
         this.screenSwitcher.switchToScreen({ type: "menu" });
+    }
+
+    // ---------- Input Handling ----------
+
+    /**
+     * Toggle inventory UI visibility
+     */
+    private toggleInventoryUI(): void {
+        this.view.toggleInventoryUI();
+    }
+
+    /**
+     * Use consumable item from inventory
+     */
+    private useConsumableItem(slot: number): void {
+        const player = Player.getInstance();
+        const success = player.useConsumable(slot);
+
+        if (success) {
+            // Update health and money displays
+            this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
+            this.view.updateMoney(player.getMoney());
+
+            // Update inventory UI to reflect changes
+            this.view.updateInventoryUI();
+
+            console.log(`Used item in slot ${slot + 1}`);
+        }
     }
 
     // ---------- Utility Methods ----------

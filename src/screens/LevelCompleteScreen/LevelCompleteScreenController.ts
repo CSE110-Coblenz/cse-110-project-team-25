@@ -5,7 +5,7 @@ import { LevelCompleteScreenView } from "./LevelCompleteScreenView.ts";
 /**
  * LevelCompleteScreenController - Handles level completion screen interactions
  */
-export class LevelCompleteScreenController extends BaseMenuController {
+export default class LevelCompleteScreenController extends BaseMenuController {
 	private level: number;
 
 	constructor(screenSwitcher: ScreenSwitcher, level: number, score: number) {

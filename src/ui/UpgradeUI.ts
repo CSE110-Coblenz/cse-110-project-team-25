@@ -3,8 +3,14 @@ import { Player } from "../Player/Player.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../constants.ts";
 
 /**
+ * Animation state for upgrade UI
+ */
+type AnimationState = "hidden" | "showing" | "visible" | "hiding";
+
+/**
  * UpgradeUI displays the 3 permanent upgrade slots on the right-middle of the screen
  * Shows equipped upgrades that provide passive bonuses
+ * Slides left from right side when toggled
  */
 export class UpgradeUI {
   private group: Konva.Group;
@@ -12,10 +18,16 @@ export class UpgradeUI {
   private readonly SLOT_SIZE = 60;
   private readonly SLOT_SPACING = 10;
   private readonly NUM_SLOTS = 3;
+  private readonly VISIBLE_X = STAGE_WIDTH - 90;
+  private readonly HIDDEN_X = STAGE_WIDTH + 100; // Off-screen to the right
+  private readonly ANIMATION_DURATION = 0.5; // seconds
+
+  private animationState: AnimationState = "hidden";
+  private currentTween: Konva.Tween | null = null;
 
   constructor() {
     this.group = new Konva.Group({
-      x: STAGE_WIDTH - 90,
+      x: this.HIDDEN_X, // Start off-screen
       y: STAGE_HEIGHT / 2 - 100,
     });
 
@@ -126,14 +138,84 @@ export class UpgradeUI {
   }
 
   /**
-   * Show the upgrade UI
+   * Toggle upgrade UI visibility with slide animation
+   */
+  toggle(): void {
+    if (this.animationState === "hidden" || this.animationState === "hiding") {
+      this.slideIn();
+    } else if (this.animationState === "visible" || this.animationState === "showing") {
+      this.slideOut();
+    }
+  }
+
+  /**
+   * Slide upgrade UI in from right (show)
+   */
+  private slideIn(): void {
+    // Stop current animation if running
+    if (this.currentTween) {
+      this.currentTween.destroy();
+    }
+
+    this.animationState = "showing";
+    this.group.visible(true);
+
+    this.currentTween = new Konva.Tween({
+      node: this.group,
+      duration: this.ANIMATION_DURATION,
+      x: this.VISIBLE_X,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        this.animationState = "visible";
+        this.currentTween = null;
+      }
+    });
+
+    this.currentTween.play();
+  }
+
+  /**
+   * Slide upgrade UI out to right (hide)
+   */
+  private slideOut(): void {
+    // Stop current animation if running
+    if (this.currentTween) {
+      this.currentTween.destroy();
+    }
+
+    this.animationState = "hiding";
+
+    this.currentTween = new Konva.Tween({
+      node: this.group,
+      duration: this.ANIMATION_DURATION,
+      x: this.HIDDEN_X,
+      easing: Konva.Easings.EaseInOut,
+      onFinish: () => {
+        this.animationState = "hidden";
+        this.group.visible(false);
+        this.currentTween = null;
+      }
+    });
+
+    this.currentTween.play();
+  }
+
+  /**
+   * Check if upgrade UI is visible or showing
+   */
+  isVisible(): boolean {
+    return this.animationState === "visible" || this.animationState === "showing";
+  }
+
+  /**
+   * Show the upgrade UI (legacy method - use toggle instead)
    */
   show(): void {
     this.group.visible(true);
   }
 
   /**
-   * Hide the upgrade UI
+   * Hide the upgrade UI (legacy method - use toggle instead)
    */
   hide(): void {
     this.group.visible(false);

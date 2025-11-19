@@ -11,6 +11,9 @@ import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
 import Shooter from "../objects/Enemies/Shooter";
 import Comet from "../objects/Enemies/Comet";
 import Dummy from "../objects/Enemies/Dummy";
+import TextBox from "../objects/Enemies/TextBox";
+import Keyboard from "../objects/Effects/Keyboard";
+import type Effect from "../objects/Effect";
 
 /**
  * Factory class for creating enemies and waves
@@ -30,6 +33,7 @@ class EnemyFactory {
         y: number = STAGE_HEIGHT / 2,
         split?: number,
         manager?: LevelManager,
+        text?: string[]
 
     ): Enemy {
         if(type === "ufo"){
@@ -44,8 +48,16 @@ class EnemyFactory {
             return new Comet(word, x, y, manager, 10, health);
         } else if(type === "dummy"){
             return new Dummy(word, distance, x, y, health);
+        } else if(type === "textbox" && text != undefined){
+            return new TextBox(text)
         }
         return new Circle(word, distance, speed, x, y, health)
+    }
+
+    createEffect(
+        type: string
+    ): Effect {
+        return new Keyboard();
     }
 
     /**
@@ -143,6 +155,7 @@ class EnemyFactory {
             const speed = decodedConfig.speed[i];
             const distance = decodedConfig.distance[i];
             const health = decodedConfig.health[i];
+            const text = decodedConfig.text[i];
             let x = STAGE_WIDTH / 2;
             let y = STAGE_HEIGHT / 2;
             if(config.x !== undefined){
@@ -160,8 +173,14 @@ class EnemyFactory {
             }
 
             // createEnemy(type, word, health=1, distance=40, speed=6, x, y)
-            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, undefined, manager);
+            // console.log(type, word, type, word, health, distance, speed, x, y)
+            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, undefined, manager, [text]);
             wave.addEnemy(enemy);
+
+            //make keyboard
+            const effect = this.createEffect("keyboard")
+            console.log("this is the keyboard boolean", config.keyboard)
+            if(config.keyboard) wave.addEffect(effect)
 
             activeInitials.add(word[0].toLowerCase());
         }
@@ -182,6 +201,8 @@ class EnemyFactory {
         words: string[];
         x: number[];
         y: number[];
+        text: string[];
+        keyboard: boolean;
     } {
         // Get enemy count from types object
         const typeKeys = Object.keys(config.types);
@@ -191,6 +212,22 @@ class EnemyFactory {
         const types: string[] = [];
         for (let i = 1; i <= count; i++) {
             types.push(config.types[i.toString()] || "ufo");
+        }
+
+        //Extract text
+        let text
+        if(config.text){
+            text = config.text
+        } else {
+            text = ["default text"]
+        }
+
+        //extract keyboard
+        let keyboard
+        if(config.keyboard){
+            keyboard = config.keyboard
+        } else {
+            keyboard = false
         }
 
         // Helper to expand array or use defaults
@@ -208,7 +245,6 @@ class EnemyFactory {
             }
             return arr.slice(0, count);
         };
-
         return {
             count,
             types,
@@ -217,7 +253,9 @@ class EnemyFactory {
             distance: expandArray(config.distance, 40),
             words: expandArray(config.words, ""),
             x: expandArray(config.x, 0),
-            y: expandArray(config.y, 0)
+            y: expandArray(config.y, 0),
+            keyboard: keyboard,
+            text: text
         };
     }
 
@@ -229,6 +267,7 @@ class EnemyFactory {
         speedMultiplier: number = 1,
         manager: LevelManager
     ): Wave {
+        const keyboardIncluded = true;
         const wave = new Wave();
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
@@ -236,7 +275,7 @@ class EnemyFactory {
             const lane = Math.floor(Math.random() * 7) - 3; // -3..+3 lanes
             const distance = 40 + Math.random() * 30;  // 40..70
             const speed = (5 + Math.random() * 4) * speedMultiplier;
-            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy"];
+            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle", "textbox"];
             const type = types[Math.floor(Math.random() * types.length)];
             const health = Math.random() < 0.8 ? 1 : 2;
 
@@ -244,11 +283,12 @@ class EnemyFactory {
             const x = STAGE_WIDTH / 2 + lane * laneWidth;
             const y = 100 + Math.random() * 200;
 
-            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, 2, manager);
+            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, 2, manager, ["test textbox"]);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }
-
+        const effect = this.createEffect("keyboard")
+        if(keyboardIncluded) wave.addEffect(effect)
         return wave;
     }
 
@@ -268,6 +308,20 @@ class EnemyFactory {
         return word || "default";
     }
 
+    /**
+     * Get a random word based on difficulty level (1-100)
+     * @param activeInitials Set of initials to exclude
+     * @param difficulty Difficulty level (1-100)
+     */
+    getRandomWordByDifficulty(activeInitials: Set<string>, difficulty: number): string {
+        const word = wordBank.getRandomWordByDifficulty(
+            difficulty,
+            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
+            activeInitials
+        );
+        return word || "default";
+    }
+    
     /**
      * Load a LevelConfig from an external JSON file
      * @param url - The URL or path to the JSON file (e.g., '/levels/level1.json')
