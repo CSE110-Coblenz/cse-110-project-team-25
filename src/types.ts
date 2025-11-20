@@ -4,7 +4,7 @@ import type { Group } from "konva/lib/Group";
 /**
  * Type for level screens.
  */
-export type planetName = "tutorial_earth" | "campaign_easy" | "campaign_medi" | "campaign_hard";
+export type planetName = "tutorial_planet" | "campaign_planet"
 
 /**
  * Wave configuration JSON format

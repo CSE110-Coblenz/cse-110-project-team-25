@@ -12,10 +12,8 @@ export default class PlanetSelectScreenView extends BaseMenuView {
     private onLevelClick: (planetName: planetName) => void;
     private planets: Konva.Group[] = [];
     private planetData: Array<{ name: planetName; label: string; x: number; y: number }> = [
-        { name: "tutorial_earth", label: "Earth", x: STAGE_WIDTH * 0.2, y: STAGE_HEIGHT * 0.35 },
-        { name: "campaign_easy", label: "Orion", x: STAGE_WIDTH * 0.4, y: STAGE_HEIGHT * 0.5 },
-        { name: "campaign_medi", label: "Asterion", x: STAGE_WIDTH * 0.6, y: STAGE_HEIGHT * 0.4 },
-        { name: "campaign_hard", label: "L'maarxion", x: STAGE_WIDTH * 0.8, y: STAGE_HEIGHT * 0.55 },
+        { name: "tutorial_planet", label: "Earth", x: STAGE_WIDTH * 0.2, y: STAGE_HEIGHT * 0.35 },
+        { name: "campaign_planet", label: "L'maarxion", x: STAGE_WIDTH * 0.8, y: STAGE_HEIGHT * 0.55 },
     ];
     private panoramicBackground: Konva.Group | null = null;
     private isTransitioning: boolean = false;
@@ -25,19 +23,15 @@ export default class PlanetSelectScreenView extends BaseMenuView {
         this.onBackClick = onBackClick;
         this.onLevelClick = onPlanetClick;
         
-        // Replace the default background with space2.png
-        this.background.image.destroy();
-        this.createSpace2Background();
-        
-        this.buildLayout();
+        // Replace the default background with planetSelect.png
         // Initial draw to make elements visible
         this.group.getLayer()?.draw();
     }
 
     /**
-     * Create space2.png background
+     * Creates background konva for planet select screen
      */
-    private createSpace2Background(): void {
+    private createPlanetSelectBackground(): void {
         const bgGroup = new Konva.Group({
             x: 0,
             y: 0,
@@ -46,7 +40,6 @@ export default class PlanetSelectScreenView extends BaseMenuView {
             listening: false,
         });
 
-        // Load space2.png as background
         const imageObj = new Image();
         imageObj.onload = () => {
             const bgImage = new Konva.Image({
@@ -56,11 +49,21 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                 width: STAGE_WIDTH,
                 height: STAGE_HEIGHT,
             });
+            
+            // Add image to group first
             bgGroup.add(bgImage);
-            bgGroup.zIndex(0); // Ensure background is at the bottom
-            this.group.getLayer()?.draw();
+            
+            // Apply brightness filter
+            bgImage.cache();
+            bgImage.filters([Konva.Filters.Brightness]);
+            bgImage.brightness(-0.5);
+            
+            bgGroup.zIndex(0);
+            
+            // Redraw the layer to apply the filter
+            this.group.getLayer()?.batchDraw();
         };
-        imageObj.src = "/assets/backgrounds/space2.png";
+        imageObj.src = "/assets/backgrounds/planetselectbg.png";
 
         this.background = new Background(bgGroup);
         this.group.add(this.background.image);
@@ -69,7 +72,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
 
     protected buildLayout(): void {
         // Create title
-        const title = this.createTitle("SELECT YOUR MISSION", {
+        const title = this.createTitle("SELECT YOUR Planet", {
             fontSize: 42,
             fontFamily: "Times New Roman",
             fill: "white",
@@ -114,6 +117,8 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                     offsetX: 75,
                     offsetY: 75,
                 });
+                
+                planetImage.zIndex(10);
 
                 // Add hover effect
                 planetImage.on("mouseenter", () => {
@@ -146,7 +151,6 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                 });
                 label.offsetX(label.width() / 2);
                 planetGroup.add(label);
-                
                 // Redraw the layer after adding the image
                 this.group.getLayer()?.draw();
             };
@@ -158,10 +162,10 @@ export default class PlanetSelectScreenView extends BaseMenuView {
     }
 
     /**
-     * Perform panoramic transition from space1 to selectLevel
+     * Perform panoramic transition from space1 to planetSelect
      * Combines both backgrounds side-by-side and pans right (180 degrees)
      */
-    public startPanoramicTransition(onComplete?: () => void): void {
+    public startPanoramicTransition(onComplete: () => void): void {
         if (this.isTransitioning) return;
         this.isTransitioning = true;
 
@@ -181,27 +185,27 @@ export default class PlanetSelectScreenView extends BaseMenuView {
 
         // Load both backgrounds
         const space1Img = new Image();
-        const selectLevelImg = new Image();
+        const planetSelectImg = new Image();
         
         let loadedCount = 0;
         const onImageLoad = () => {
             loadedCount++;
             if (loadedCount === 2) {
                 // Both images loaded, create panorama
-                this.createPanorama(space1Img, selectLevelImg, onComplete);
+                this.createPanorama(space1Img, planetSelectImg, onComplete.bind(this));
             }
         };
 
         space1Img.onload = onImageLoad;
-        selectLevelImg.onload = onImageLoad;
+        planetSelectImg.onload = onImageLoad;
         space1Img.src = "/assets/backgrounds/space.png";
-        selectLevelImg.src = "/assets/backgrounds/selectLevel.png";
+        planetSelectImg.src = "/assets/backgrounds/planetselectbg.png";
     }
 
     /**
      * Create and animate the panoramic background
      */
-    private createPanorama(space1Img: HTMLImageElement, selectLevelImg: HTMLImageElement, onComplete?: () => void): void {
+    private createPanorama(space1Img: HTMLImageElement, planetSelectImg: HTMLImageElement, onComplete?: () => void): void {
         if (!this.panoramicBackground) return;
 
         // Create first background (space1) on the left
@@ -213,9 +217,9 @@ export default class PlanetSelectScreenView extends BaseMenuView {
             height: STAGE_HEIGHT,
         });
 
-        // Create second background (selectLevel) on the right
+        // Create second background (planetSelect) on the right
         const bg2 = new Konva.Image({
-            image: selectLevelImg,
+            image: planetSelectImg,
             x: STAGE_WIDTH,
             y: 0,
             width: STAGE_WIDTH,
@@ -223,13 +227,13 @@ export default class PlanetSelectScreenView extends BaseMenuView {
         });
 
         this.panoramicBackground.add(bg1);
-        this.panoramicBackground.add(bg2);
+        // this.panoramicBackground.add(bg2);
 
         // Add panoramic background to the group (behind everything else)
         this.panoramicBackground.zIndex(0);
         this.group.add(this.panoramicBackground);
 
-        // Animate the panoramic pan (move left, revealing space2)
+        // Animate the panoramic pan (move left, revealing planetSelect)
         const panDuration = 2; // 2 seconds
         const anim = new Konva.Animation((frame) => {
             if (!frame || !this.panoramicBackground) return;
@@ -237,7 +241,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
             const time = frame.time / 1000; // Convert to seconds
             const progress = Math.min(time / panDuration, 1);
             
-            // Move background left to reveal space2
+            // Move background left to reveal planetSelect
             this.panoramicBackground.x(-STAGE_WIDTH * progress);
 
             // Slide planets from right to left
@@ -263,6 +267,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                 
                 if (onComplete) {
                     onComplete();
+
                 }
             }
         }, this.group.getLayer());
@@ -270,6 +275,11 @@ export default class PlanetSelectScreenView extends BaseMenuView {
         anim.start();
     }
 
+    private onTransitionComplete(): void {
+        this.background.image.destroy();
+        this.createPlanetSelectBackground();
+        this.buildLayout();
+    }
     /**
      * Override show to make screen visible without animation
      */
@@ -283,7 +293,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
      */
     public showWithTransition(): void {
         this.group.visible(true);
-        this.startPanoramicTransition();
+        this.startPanoramicTransition(this.onTransitionComplete);
     }
 
     public hide(): void {
