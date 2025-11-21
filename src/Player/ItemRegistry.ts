@@ -37,7 +37,7 @@ class ItemRegistry {
       maxStack: 5,
       modifiers: { healAmount: 1 },
       price: 50,
-      spriteSheet: "/ufo.png",
+      spriteSheet: "./ufo.png",
       animations: {
         idle: [
           0, 0, 480, 220,

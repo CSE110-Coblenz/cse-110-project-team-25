@@ -50,7 +50,7 @@ export class LevelSelectScreenView extends BaseMenuView {
      * Expects image files named level1.png, level2.png,...
      */
     private loadLevelImage(level: number, x: number, y: number): void {
-        const imagePath = `/level${level}.png`;
+        const imagePath = `./level${level}.png`;
         
         Konva.Image.fromURL(imagePath, (image) => {
             const levelGroup = new Konva.Group({
@@ -76,7 +76,7 @@ export class LevelSelectScreenView extends BaseMenuView {
 
             levelGroup.on("mouseenter", () => {
                 //image.opacity(0.8);
-                const highlightPath = `/level${level}_highlight.png`;
+                const highlightPath = `./level${level}_highlight.png`;
                 Konva.Image.fromURL(highlightPath, (highlight) => {
 
                     highlight.width(120);

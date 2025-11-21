@@ -36,7 +36,7 @@ class Meteor extends Enemy {
         };
 
         const imageObj = new Image();
-        imageObj.src = "/meteor.png";
+        imageObj.src = "./meteor.png";
         imageObj.onload = function() {
             const scale = Math.min(80 / 480, 80 / 220);
             const meteor = new Konva.Sprite({
