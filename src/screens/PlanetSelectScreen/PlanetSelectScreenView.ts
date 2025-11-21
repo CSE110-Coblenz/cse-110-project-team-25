@@ -9,7 +9,7 @@ import Background from "../../objects/Background.ts";
  */
 export default class PlanetSelectScreenView extends BaseMenuView {
     private onBackClick: () => void; 
-    private onLevelClick: (planetName: planetName) => void;
+    private onPlanetClick: (planetName: planetName) => void;
     private planets: Konva.Group[] = [];
     private planetData: Array<{ name: planetName; label: string; x: number; y: number }> = [
         { name: "tutorial_planet", label: "Earth", x: STAGE_WIDTH * 0.2, y: STAGE_HEIGHT * 0.35 },
@@ -18,14 +18,15 @@ export default class PlanetSelectScreenView extends BaseMenuView {
     private panoramicBackground: Konva.Group | null = null;
     private isTransitioning: boolean = false;
     private uiElements: Konva.Node[] = []; // Store UI elements to hide during transition
+    private planetHighlights: Map<planetName, Konva.Image> = new Map();
 
     constructor(onBackClick: () => void, onPlanetClick: (planetName: planetName) => void) {
-        super("#0f0f23", false); // Don't auto-build
+        super("#0f0f23", false, false); // Don't auto-build
         this.onBackClick = onBackClick;
-        this.onLevelClick = onPlanetClick;
+        this.onPlanetClick = onPlanetClick;
         
-        // Create the background first
-        this.createBackground();
+        // Create the custom background
+        this.createPlanetSelectBackground();
         
         // Build the layout (title, buttons, planets)
         this.buildLayout();
@@ -37,7 +38,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
     /**
      * Creates background konva for planet select screen
      */
-    createBackground(): void {
+    private createPlanetSelectBackground(): void {
         const bgGroup = new Konva.Group({
             x: 0,
             y: 0,
@@ -74,6 +75,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
         this.background = new Background(bgGroup);
         this.group.add(this.background.image);
         this.background.image.zIndex(0); // Ensure it's at the back
+        this.uiElements.push(this.background.image);
     }
 
     protected buildLayout(): void {
@@ -111,102 +113,68 @@ export default class PlanetSelectScreenView extends BaseMenuView {
      */
     private createPlanetButtons(): void {
         this.planetData.forEach((planet) => {
-            const planetGroup = new Konva.Group({
-                x: planet.x, // Start at final position
-                y: planet.y,
-            });
-
-            // Load planet and glow images
-            const planetImg = new Image();
-            const glowImg = new Image();
+            const imagePath = `./planets/${planet.name}.png`;
             
-            // Determine glow image filename
-            const glowName = planet.name === "tutorial_planet" ? "earth_glow" : "campaign_glow";
-            
-            let planetImage: Konva.Image;
-            let glowImage: Konva.Image;
-            
-            // Track loading
-            let loadedCount = 0;
-            const onImageLoad = () => {
-                loadedCount++;
-                if (loadedCount === 2) {
-                    // Both images loaded, create the planet button
-                    createPlanetButton();
-                }
-            };
-            
-            const createPlanetButton = () => {
-                // Add glow image (hidden by default)
-                glowImage = new Konva.Image({
-                    image: glowImg,
-                    width: 200,
-                    height: 200,
-                    offsetX: 100,
-                    offsetY: 100,
-                    opacity: 0,
+            Konva.Image.fromURL(imagePath, (image) => {
+                const planetGroup = new Konva.Group({
+                    width: 120,
+                    height: 120,
+                    listening: true,
+                    x: planet.x,
+                    y: planet.y,
                 });
-                
-                // Add planet image
-                planetImage = new Konva.Image({
-                    image: planetImg,
-                    width: 150,
-                    height: 150,
-                    offsetX: 75,
-                    offsetY: 75,
+                planetGroup.offsetX(60);
+                planetGroup.offsetY(60);
+
+                image.width(120);
+                image.height(120);
+                image.x(0);
+                image.y(0);
+
+                planetGroup.add(image);
+
+                planetGroup.on("click", () => {
+                    this.onPlanetClick(planet.name);
                 });
 
-                planetGroup.add(glowImage);
-                planetGroup.add(planetImage);
-                
-                glowImage.zIndex(9);
-                planetImage.zIndex(10);
+                planetGroup.on("mouseenter", () => {
+                    const glowName = planet.name === "tutorial_planet" ? "tutorial_glow" : "campaign_glow";
+                    const highlightPath = `./planets/${glowName}.png`;
+                    Konva.Image.fromURL(highlightPath, (highlight) => {
+                        highlight.width(120);
+                        highlight.height(120);
+                        
+                        highlight.globalCompositeOperation("lighter");
+                        planetGroup.add(highlight);
+                        this.planetHighlights.set(planet.name, highlight);
+                        
+                        // Scale both image and highlight
+                        image.scale({ x: 1.1, y: 1.1 });
+                        highlight.scale({ x: 1.1, y: 1.1 });
+                    });
 
-                // Add hover effect with glow
-                planetImage.on("mouseenter", () => {
-                    planetImage.scale({ x: 1.1, y: 1.1 });
-                    glowImage.scale({ x: 1.1, y: 1.1 });
-                    glowImage.opacity(0.8);
+                    planetGroup.getLayer()?.batchDraw();
                     document.body.style.cursor = "pointer";
                 });
 
-                planetImage.on("mouseleave", () => {
-                    planetImage.scale({ x: 1, y: 1 });
-                    glowImage.scale({ x: 1, y: 1 });
-                    glowImage.opacity(0);
+                planetGroup.on("mouseleave", () => {
+                    const highlight = this.planetHighlights.get(planet.name);
+                    if (highlight) {
+                        highlight.destroy();
+                        this.planetHighlights.delete(planet.name);
+                    }
+                    
+                    // Reset image scale
+                    image.scale({ x: 1, y: 1 });
+
                     document.body.style.cursor = "default";
+                    planetGroup.getLayer()?.batchDraw();
                 });
 
-                planetImage.on("click", () => {
-                    this.onLevelClick(planet.name);
-                });
-
-                // Add label below planet
-                const label = new Konva.Text({
-                    text: planet.label,
-                    fontSize: 20,
-                    fontFamily: "Arial",
-                    fill: "white",
-                    stroke: "black",
-                    strokeWidth: 1,
-                    align: "center",
-                    y: 85,
-                    offsetX: 0,
-                });
-                label.offsetX(label.width() / 2);
-                planetGroup.add(label);
-                
-                // Redraw the layer after adding the images
-                this.group.getLayer()?.draw();
-            };
-            
-            planetImg.onload = onImageLoad;
-            glowImg.onload = onImageLoad;
-            planetImg.src = `./planets/${planet.name}.png`;
-            glowImg.src = `./planets/${glowName}.png`;
-            
-            this.planets.push(planetGroup);
-            this.group.add(planetGroup);
+                this.group.add(planetGroup);
+                this.planets.push(planetGroup);
+                this.group.getLayer()?.batchDraw();
+            });
         });
     }
 
@@ -221,14 +189,6 @@ export default class PlanetSelectScreenView extends BaseMenuView {
         // Hide all UI elements during transition
         this.uiElements.forEach(element => element.visible(false));
         this.planets.forEach(planet => planet.visible(false));
-
-        // Move planets off-screen to the right before starting transition
-        this.planetData.forEach((planetInfo, index) => {
-            const planet = this.planets[index];
-            if (planet) {
-                planet.x(planetInfo.x + STAGE_WIDTH);
-            }
-        });
 
         // Create panoramic background container
         this.panoramicBackground = new Konva.Group({
