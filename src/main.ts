@@ -64,6 +64,7 @@ class App implements ScreenSwitcher {
         this.gameController.startGame(screen.levelNumber); // shows game screen inside
         break;
       case "planetSelect":
+        // Use regular show - transition should be triggered explicitly if needed
         this.planetSelectController.getView().showWithTransition();
         break;
       // DEBUG: Debug case commented out for production

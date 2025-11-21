@@ -1,6 +1,6 @@
 import type { ScreenSwitcher } from "../../types.ts";
 import { BaseMenuController } from "../base/BaseMenuController.ts";
-import { LevelCompleteScreenView } from "./LevelCompleteScreenView.ts";
+import LevelCompleteScreenView from "./LevelCompleteScreenView.ts";
 
 /**
  * LevelCompleteScreenController - Handles level completion screen interactions

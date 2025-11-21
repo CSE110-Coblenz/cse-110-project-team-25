@@ -33,7 +33,7 @@ export default class MenuScreenView extends BaseMenuView {
         // Create start button
         
         const levelSelectBtn = this.createButton({
-            text: "LEVEL SELECT",
+            text: "PLANET SELECT",
             width: 200,
             height: 60,
             fill: "blue",

@@ -10,7 +10,7 @@ export default class MenuScreenController extends BaseMenuController {
 		super(screenSwitcher);
 		this.view = new MenuScreenView(
 			() => this.handleStartClick()
-			, () => this.handleLevelSelectClick()
+			, () => this.handlePlanetSelectClick()
 			// , () => this.handleDebugClick() // DEBUG: Commented out for production
 		);
 	}
@@ -20,14 +20,14 @@ export default class MenuScreenController extends BaseMenuController {
 	 */
 	private handleStartClick(): void {
 		console.log("Start button clicked!");
-		this.screenSwitcher.switchToScreen({type: "planetSelect"});
+		this.screenSwitcher.switchToScreen({type: "game", levelNumber: undefined});
 	}
 
 	/**
 	 * Handle level select click
 	 */
-	private handleLevelSelectClick(): void {
-		console.log("Level Select button clicked!");
+	private handlePlanetSelectClick(): void {
+		console.log("Planet Selectbutton clicked!");
 		this.screenSwitcher.switchToScreen({type: "planetSelect"});
 	}
 

@@ -1,4 +1,4 @@
-import { WordBank, Bank } from '../../src/words/wordBank';
+import { WordBank, type Bank } from '../../src/words/wordBank';
 
 // Mock fetch
 global.fetch = jest.fn();

@@ -5,9 +5,8 @@ module.exports = {
   roots: ['<rootDir>/test'],
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  globals: {
-    'ts-jest': {
-      isolatedModules: true,
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
@@ -15,7 +14,7 @@ module.exports = {
         module: 'commonjs',
         moduleResolution: 'node',
       }
-    }
+    }]
   },
   collectCoverageFrom: [
     'src/**/*.ts',
