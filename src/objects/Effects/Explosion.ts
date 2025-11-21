@@ -18,7 +18,7 @@ class Explosion extends Effect {
         };
 
         const baseObj = new Image();
-        baseObj.src = "/explosion_base.png";
+        baseObj.src = "./explosion_base.png";
         baseObj.onload = function() {
             const scale = Math.min(80 / 480, 80 / 220);
             const explosion_base = new Konva.Sprite({
@@ -38,7 +38,7 @@ class Explosion extends Effect {
         }
 
         const glowObj = new Image();
-        glowObj.src = "/explosion_emission.png";
+        glowObj.src = "./explosion_emission.png";
         glowObj.onload = function() {
             const scale = Math.min(80 / 480, 80 / 220);
             const explosion_glow = new Konva.Sprite({

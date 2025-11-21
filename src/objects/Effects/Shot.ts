@@ -12,7 +12,7 @@ class Shot extends Effect {
         };
 
         const imageObj = new Image();
-        imageObj.src = "/shot.png";
+        imageObj.src = "./shot.png";
         imageObj.onload = function() {
             const scale = Math.min(80 / 480, 80 / 220);
             const shot = new Konva.Sprite({

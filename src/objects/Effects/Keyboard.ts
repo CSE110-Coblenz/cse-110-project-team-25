@@ -12,7 +12,7 @@ class Keyboard extends Effect {
     constructor(){
         const Group = new Konva.Group({ width: 80, height: 80 });
         const keyboard = new Image();
-        keyboard.src = "/keyboard.png";
+        keyboard.src = "./keyboard.png";
         const animations = {
             idle: [
                 0, 0, 1080, 390,    
@@ -118,7 +118,7 @@ class Keyboard extends Effect {
             apostrophe: [480*12, 0, 480, 480]
         };
         
-        leftHand.src = "/leftHand.png";
+        leftHand.src = "./leftHand.png";
         leftHand.onload = function() {
             const hand = new Konva.Sprite({
                 x: 50,
@@ -136,7 +136,7 @@ class Keyboard extends Effect {
             Group.add(hand);
             Group.getLayer()?.batchDraw?.();
         }
-        rightHand.src = "/rightHand.png";
+        rightHand.src = "./rightHand.png";
         rightHand.onload = function() {
             const hand = new Konva.Sprite({
                 x: 520,

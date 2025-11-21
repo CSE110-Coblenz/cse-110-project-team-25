@@ -129,7 +129,7 @@ class EnemyFactory {
 
     /**
      * Load a wave from an external JSON file
-     * @param url - The URL or path to the JSON file (e.g., '/waveConfig.json')
+     * @param url - The URL or path to the JSON file (e.g., './waveConfig.json')
      * @returns Promise that resolves to a Wave object
      */
     async loadWaveFromJSON(url: string): Promise<Wave> {
@@ -324,7 +324,7 @@ class EnemyFactory {
     
     /**
      * Load a LevelConfig from an external JSON file
-     * @param url - The URL or path to the JSON file (e.g., '/levels/level1.json')
+     * @param url - The URL or path to the JSON file (e.g., './levels/level1.json')
      * @returns Promise that resolves to a LevelConfig object
      */
     async loadLevelConfigFromJSON(url: string): Promise<LevelConfig> {

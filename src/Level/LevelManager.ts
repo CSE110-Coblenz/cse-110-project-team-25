@@ -320,7 +320,7 @@ class LevelManager {
     /**
      * Load level configuration from JSON, 
      * generate random wave if none provided.
-     * @param url - Path to the level JSON file (e.g., '/levels/level1.json')
+     * @param url - Path to the level JSON file (e.g., './levels/level1.json')
      */
     async loadLevelFromJSON(url: string): Promise<void> {
         if (url){

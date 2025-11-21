@@ -23,7 +23,7 @@ class Comet extends Enemy {
         };
 
         const imageObj = new Image();
-        imageObj.src = "/comet.png";
+        imageObj.src = "./comet.png";
         imageObj.onload = function() {
             const scale = (80*3)/480;
             const comet = new Konva.Sprite({

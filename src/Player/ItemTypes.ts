@@ -51,7 +51,7 @@ export interface ItemData {
   price: number;
 
   // Sprite/Animation properties (optional - same pattern as enemies)
-  spriteSheet?: string;           // Path to sprite sheet image (e.g., "/items/health_potion.png")
+  spriteSheet?: string;           // Path to sprite sheet image (e.g., "./items/health_potion.png")
   animations?: ItemAnimations;    // Animation frames
   frameRate?: number;             // FPS for animation (default 10)
   frameWidth?: number;            // Width of single frame (default 32)

@@ -31,7 +31,7 @@ export class GameScreenView implements View {
 
   constructor() {
     this.group = new Konva.Group({ visible: false });
-	Konva.Image.fromURL("/space.png", (bg) => {
+	Konva.Image.fromURL("./space.png", (bg) => {
 		this.group.add(bg);
 		bg.moveToBottom();
 	});
