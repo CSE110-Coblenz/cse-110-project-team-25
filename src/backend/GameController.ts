@@ -55,8 +55,9 @@ export class GameController {
     /**
      * Initialize and start the game
      * @param levelNumber - Optional level number to load (defaults to level 1)
+     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
+    async startGame(isTutorial: boolean | null, levelNumber?: number): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -68,11 +69,16 @@ export class GameController {
         console.log("Loaded money:" + player.getMoney());
 
         this.resetGameState();
-        isTutorial = isTutorial ?? false;
+        
+        // For tutorial/campaign modes, set the specific level before initializing
+        if (isTutorial !== null && levelNumber !== undefined) {
+            this.levelManager.setLevel(levelNumber);
+        }
+        
+        // Initialize level (generates random waves for endless mode, loads JSON for others)
         await this.levelManager.initializeLevel(isTutorial);
         this.keyboardController.setupInput();
         this.addSampleItems(); // Add sample items for testing
-        // this.levelManager.initializeLevel(isTutorial);
 
         // Set up pause menu callbacks
         this.view.setPauseMenuCallbacks(
@@ -85,14 +91,14 @@ export class GameController {
             }
         );
       
-        this.addSampleItems(); // Add sample items for testing
+        // this.addSampleItems(); // Add sample items for testing
 
-        if (levelNumber !== undefined) {
-            this.levelManager.setLevel(levelNumber);
-        }
+        // if (levelNumber !== undefined) {
+        //     this.levelManager.setLevel(levelNumber);
+        // }
 
         // await this.levelManager.initializeLevel(isTutorial);
-        this.keyboardController.setupInput();
+        // this.keyboardController.setupInput();
         this.startGameLoop();
     }
 

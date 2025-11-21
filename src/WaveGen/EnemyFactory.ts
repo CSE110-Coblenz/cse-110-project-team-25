@@ -267,7 +267,7 @@ class EnemyFactory {
         speedMultiplier: number = 1,
         manager: LevelManager
     ): Wave {
-        const keyboardIncluded = true;
+        const keyboardIncluded = false;
         const wave = new Wave();
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {

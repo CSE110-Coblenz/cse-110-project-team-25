@@ -21,7 +21,7 @@ class LevelManager {
     private screenSwitcher: ScreenSwitcher;
     private letterToId: Map<string, number> = new Map();
     private _isTransitioning: boolean = false;
-    private isTutorial: boolean = false;
+    private isTutorial: boolean | null = null;
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
         this.enemyFactory = new EnemyFactory();
@@ -97,37 +97,40 @@ class LevelManager {
     }
 
     /**
-     * Generate a new set of random waves for the current level
+     * Generate a new set of random waves for the current level (endless mode)
      */
-    // private generateNewLevel(difficulty?: number): void {
-    //     const wavesPerLevel = 3; // Number of waves per level
-    //     const baseEnemyCount = 3;
-    //     const speedMultiplier = 1 + (this._currentLevel * 0.2);
+    private generateRandomLevel(): void {
+        const wavesPerLevel = 3; // Number of waves per level
+        const baseEnemyCount = 3;
+        const speedMultiplier = 1 + (this._currentLevel * 0.2);
 
-    //     for (let i = 0; i < wavesPerLevel; i++) {
-    //         const enemyCount = baseEnemyCount + this._currentLevel + i;
-    //         const wave = this.enemyFactory.generateRandomWave(
-    //             enemyCount,
-    //             speedMultiplier,
-    //             this
-    //         );
-    //         this._waves.push(wave);
-    //     }
-    // }
+        for (let i = 0; i < wavesPerLevel; i++) {
+            const enemyCount = baseEnemyCount + this._currentLevel + i;
+            const wave = this.enemyFactory.generateRandomWave(
+                enemyCount,
+                speedMultiplier,
+                this
+            );
+            this._waves.push(wave);
+        }
+    }
 
     /**
-     * Generate a new level from config
+     * Generate a new level from config or random (for endless mode)
      */
     async generateNewLevel(): Promise<void> {
-        // Try to load a level file matching the current level number, fallback to random
+        // Endless mode: generate random waves
+        if (this.isTutorial === null) {
+            this.generateRandomLevel();
+            return;
+        }
+        
+        // Tutorial or campaign mode: load from JSON
         if (this.isTutorial) {
             await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
         } else {
             await this.loadLevelFromJSON(`./levels/campaign/level${this.currentLevel}.json`)
         }
-        // await this.loadLevelFromJSON(`./levels/level5.json`).catch(() => {
-        //     this.generateNewLevel();
-        // });
     }
 
     /**
@@ -156,9 +159,11 @@ class LevelManager {
 
     /**
      * Initialize the first level
+     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async initializeLevel(isTutorial: boolean): Promise<void> {
+    async initializeLevel(isTutorial: boolean | null): Promise<void> {
         this.isTutorial = isTutorial;
+        console.log(this.isTutorial);
         await this.generateNewLevel();
         await this.popNextWave();
         if (this._currentWave) {

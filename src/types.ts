@@ -52,7 +52,7 @@ export type Screen =
 	| { type: "planetSelect" }
 	| { type: "levelSelect"; planetType: planetName }
 	| { type: planetName }
-	| { type: "game"; levelNumber?: number, isTutorial?: boolean};
+	| { type: "game"; levelNumber?: number, isTutorial: boolean | null };
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {
