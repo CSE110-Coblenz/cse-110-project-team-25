@@ -56,7 +56,7 @@ export class GameController {
      * Initialize and start the game
      * @param levelNumber - Optional level number to load (defaults to level 1)
      */
-    async startGame(levelNumber?: number): Promise<void> {
+    async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -68,10 +68,11 @@ export class GameController {
         console.log("Loaded money:" + player.getMoney());
 
         this.resetGameState();
-        await this.levelManager.initializeLevel();
+        isTutorial = isTutorial ?? false;
+        await this.levelManager.initializeLevel(isTutorial);
         this.keyboardController.setupInput();
         this.addSampleItems(); // Add sample items for testing
-        this.levelManager.initializeLevel();
+        // this.levelManager.initializeLevel(isTutorial);
 
         // Set up pause menu callbacks
         this.view.setPauseMenuCallbacks(
@@ -90,7 +91,7 @@ export class GameController {
             this.levelManager.setLevel(levelNumber);
         }
 
-        await this.levelManager.initializeLevel();
+        // await this.levelManager.initializeLevel(isTutorial);
         this.keyboardController.setupInput();
         this.startGameLoop();
     }

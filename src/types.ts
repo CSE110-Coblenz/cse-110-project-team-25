@@ -50,8 +50,9 @@ export interface View {
 export type Screen =
 	| { type: "menu" }
 	| { type: "planetSelect" }
+	| { type: "levelSelect"; planetType: planetName }
 	| { type: planetName }
-	| { type: "game"; levelNumber?: number };
+	| { type: "game"; levelNumber?: number, isTutorial?: boolean};
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {

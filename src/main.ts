@@ -1,6 +1,7 @@
-import type { ScreenSwitcher, Screen } from "./types.ts";
+import type { ScreenSwitcher, Screen, planetName } from "./types.ts";
 import MenuScreenController from "./screens/MenuScreen/MenuScreenController.ts";
 import PlanetSelectScreenController from "./screens/PlanetSelectScreen/PlanetSelectScreenController.ts";
+import { LevelSelectScreenController } from "./screens/PlanetSelectScreen/LevelSelectScreen/LevelSelectScreenController.ts";
 import GameScreenController from "./screens/GameScreen/GameScreenController.ts";
 // import { DebugScreenController } from "./screens/debug-screen/DebugScreenController.ts"; // DEBUG: Commented out for production
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
@@ -12,9 +13,9 @@ import { testPlayerSystem } from "./testPlayerSystem.ts";
 
 class App implements ScreenSwitcher {
   private renderer: GameRenderer;
-
   private menuController: MenuScreenController;
   private planetSelectController: PlanetSelectScreenController;
+  private levelSelectControllers: Map<planetName, LevelSelectScreenController> = new Map();
   private gameController: GameScreenController;
   // private debugController: DebugScreenController; // DEBUG: Commented out for production
 
@@ -47,12 +48,11 @@ class App implements ScreenSwitcher {
     this.menuController.getView().show();
   }
 
-
-
   switchToScreen(screen: Screen): void {
     // Hide all screens
     this.menuController.hide();
     this.planetSelectController.hide();
+    this.levelSelectControllers.forEach(controller => controller.hide());
     this.gameController.hide();
     // this.debugController.hide(); // DEBUG: Commented out for production
 
@@ -61,17 +61,32 @@ class App implements ScreenSwitcher {
         this.menuController.show();
         break;
       case "game":
-        this.gameController.startGame(screen.levelNumber); // shows game screen inside
+        this.gameController.startGame(screen.levelNumber, screen.isTutorial); // shows game screen inside
         break;
       case "planetSelect":
         // Use regular show - transition should be triggered explicitly if needed
         this.planetSelectController.getView().showWithTransition();
+        break;
+      case "levelSelect":
+        this.switchToLevelSelect(screen.planetType);
         break;
       // DEBUG: Debug case commented out for production
       // case "debug":
       //   this.debugController.show();
       //   break;
     }
+  }
+
+  private switchToLevelSelect(planetType: planetName) {
+    // Get or create level select controller for this planet
+    let levelSelectController = this.levelSelectControllers.get(planetType);
+    if (!levelSelectController) {
+      levelSelectController = new LevelSelectScreenController(this, planetType);
+      this.levelSelectControllers.set(planetType, levelSelectController);
+      // Add to layer
+      this.renderer.getLayer().add(levelSelectController.getView().getGroup());
+    }
+    levelSelectController.show();
   }
 }
 
@@ -87,3 +102,4 @@ class App implements ScreenSwitcher {
   }
   console.log("Run testPlayerSystem() in console to test the Player system!");
 })();
+

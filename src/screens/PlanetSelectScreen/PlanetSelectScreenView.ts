@@ -10,7 +10,7 @@ import Background from "../../objects/Background.ts";
 export default class PlanetSelectScreenView extends BaseMenuView {
     private onBackClick: () => void; 
     private onPlanetClick: (planetName: planetName) => void;
-    private planets: Konva.Group[] = [];
+    private planets: Map<planetName, Konva.Group> = new Map();
     private planetData: Array<{ name: planetName; label: string; x: number; y: number }> = [
         { name: "tutorial_planet", label: "Earth", x: STAGE_WIDTH * 0.2, y: STAGE_HEIGHT * 0.35 },
         { name: "campaign_planet", label: "L'maarxion", x: STAGE_WIDTH * 0.8, y: STAGE_HEIGHT * 0.55 },
@@ -120,8 +120,8 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                     width: 120,
                     height: 120,
                     listening: true,
-                    x: planet.x,
-                    y: planet.y,
+                    x: planet.x,  // Use the planet's specific x position from planetData
+                    y: planet.y,  // Use the planet's specific y position from planetData
                 });
                 planetGroup.offsetX(60);
                 planetGroup.offsetY(60);
@@ -171,8 +171,11 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                     planetGroup.getLayer()?.batchDraw();
                 });
 
+                // Add the planet group with a label for debugging
+                planetGroup.name(planet.name);
                 this.group.add(planetGroup);
-                this.planets.push(planetGroup);
+                this.planets.set(planet.name, planetGroup);
+                this.uiElements.push(planetGroup);
                 this.group.getLayer()?.batchDraw();
             });
         });
@@ -272,8 +275,8 @@ export default class PlanetSelectScreenView extends BaseMenuView {
                 this.isTransitioning = false;
                 
                 // Ensure planets are at their final positions
-                this.planetData.forEach((planetInfo, index) => {
-                    const planet = this.planets[index];
+                this.planetData.forEach((planetInfo) => {
+                    const planet = this.planets.get(planetInfo.name);
                     if (planet) {
                         planet.x(planetInfo.x);
                     }
@@ -297,8 +300,8 @@ export default class PlanetSelectScreenView extends BaseMenuView {
         }
         
         // Move planets back to their final positions
-        this.planetData.forEach((planetInfo, index) => {
-            const planet = this.planets[index];
+        this.planetData.forEach((planetInfo) => {
+            const planet = this.planets.get(planetInfo.name);
             if (planet) {
                 planet.x(planetInfo.x);
             }

@@ -21,7 +21,7 @@ class LevelManager {
     private screenSwitcher: ScreenSwitcher;
     private letterToId: Map<string, number> = new Map();
     private _isTransitioning: boolean = false;
-
+    private isTutorial: boolean = false;
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
         this.enemyFactory = new EnemyFactory();
@@ -120,9 +120,11 @@ class LevelManager {
      */
     async generateNewLevel(): Promise<void> {
         // Try to load a level file matching the current level number, fallback to random
-        await this.loadLevelFromJSON(`./levels/level${this.currentLevel}.json`).catch(() => {
-            this.generateNewLevel();
-        });
+        if (this.isTutorial) {
+            await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
+        } else {
+            await this.loadLevelFromJSON(`./levels/campaign/level${this.currentLevel}.json`)
+        }
         // await this.loadLevelFromJSON(`./levels/level5.json`).catch(() => {
         //     this.generateNewLevel();
         // });
@@ -155,7 +157,8 @@ class LevelManager {
     /**
      * Initialize the first level
      */
-    async initializeLevel(): Promise<void> {
+    async initializeLevel(isTutorial: boolean): Promise<void> {
+        this.isTutorial = isTutorial;
         await this.generateNewLevel();
         await this.popNextWave();
         if (this._currentWave) {
