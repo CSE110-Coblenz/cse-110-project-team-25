@@ -8,7 +8,7 @@ export class WordBank {
 
     async load(): Promise<void> {
         if (this.banks) return;
-        const res = await fetch("/wordbank.json");
+        const res = await fetch("./wordbank.json");
         this.banks = await res.json();
     }
 
