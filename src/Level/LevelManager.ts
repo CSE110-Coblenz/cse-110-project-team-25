@@ -120,10 +120,10 @@ class LevelManager {
      */
     async generateNewLevel(): Promise<void> {
         // Try to load a level file matching the current level number, fallback to random
-        await this.loadLevelFromJSON(`/levels/level${this.currentLevel}.json`).catch(() => {
+        await this.loadLevelFromJSON(`./levels/level${this.currentLevel}.json`).catch(() => {
             this.generateNewLevel();
         });
-        // await this.loadLevelFromJSON(`/levels/level5.json`).catch(() => {
+        // await this.loadLevelFromJSON(`./levels/level5.json`).catch(() => {
         //     this.generateNewLevel();
         // });
     }
