@@ -2,11 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - '**'
   pull_request:
-    branches:
-      - '**'
 
 permissions:
   contents: read
@@ -37,7 +33,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
     
     environment:
       name: github-pages
@@ -58,9 +54,7 @@ jobs:
     
       - name: Build site
         run: npm run build
-      - name: List build output
-        run: ls -R . 
-        
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
     
