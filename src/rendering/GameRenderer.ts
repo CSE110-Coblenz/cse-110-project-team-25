@@ -1,5 +1,4 @@
 import Konva from "konva";
-import 'konva/canvas-backend';
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
 import ObjectClass from "../objects/Object"; // your class named `Object`
 
