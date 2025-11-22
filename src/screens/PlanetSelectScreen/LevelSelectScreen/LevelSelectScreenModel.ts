@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
-import { BaseMenuView } from "../base/BaseMenuView.ts";
-=======
 /**
  * LevelSelectScreenModel - Data model for level select screen
  * Tracks available levels and selected level
@@ -22,4 +18,3 @@ export class LevelSelectScreenModel {
         }
     }
 }
->>>>>>> a75aa57e0126830395aa410617705b04eba1c791
