@@ -1,6 +1,8 @@
-import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
-import { BaseMenuView } from "../base/BaseMenuView.ts";
 import Konva from "konva";
+import { STAGE_WIDTH, STAGE_HEIGHT } from "../../../constants.ts";
+import { BaseMenuView } from "../../base/BaseMenuView.ts";
+import type { planetName } from "../../../types.ts";
+import Background from "../../../objects/Background.ts";
 
 /**
  * LevelSelectScreenView - Renders the level select screen with image-based level representations
@@ -21,7 +23,6 @@ export class LevelSelectScreenView extends BaseMenuView {
     }
 
     protected buildLayout(): void {
-        // Create title
         const title = this.createTitle("SELECT LEVEL", {
             fontSize: 48,
             fontFamily: "Arial",
@@ -43,25 +44,9 @@ export class LevelSelectScreenView extends BaseMenuView {
             const pos = positions[level - 1] || { x: 640, y: 360 };
             this.loadLevelImage(level, pos.x, pos.y);
         }
-
-        // Create back button
-        const backBtn = this.createButton({
-            text: "BACK",
-            fontFamily: "Arial",
-            width: 150,
-            height: 50,
-            fill: "#666",
-            hoverFill: "#888",
-            stroke: "#333",
-            strokeWidth: 2,
-            fontSize: 20,
-            onClick: this.onBackClick,
-        });
-        this.positionElement(backBtn, STAGE_WIDTH / 2, STAGE_HEIGHT - 80);
     }
 
-    /**
-     * Load and display a level image from /public
+    /* Load and display a level image from /public
      * Expects image files named level1.png, level2.png,...
      */
     private loadLevelImage(level: number, x: number, y: number): void {
@@ -121,4 +106,4 @@ export class LevelSelectScreenView extends BaseMenuView {
             this.group.getLayer()?.batchDraw();
         });
     }
-}
+} 

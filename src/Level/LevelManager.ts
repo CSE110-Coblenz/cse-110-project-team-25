@@ -1,6 +1,6 @@
 import { Wave } from "../WaveGen/Wave";
 import EnemyFactory from "../WaveGen/EnemyFactory";
-import type { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import type GameScreenView from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
 import Enemy from "../objects/Enemy"
 import Effect from "../objects/Effect"

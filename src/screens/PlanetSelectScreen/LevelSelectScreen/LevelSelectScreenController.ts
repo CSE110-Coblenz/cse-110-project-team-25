@@ -1,5 +1,5 @@
-import { ScreenController } from "../../types.ts";
-import type { ScreenSwitcher } from "../../types.ts";
+import { ScreenController } from "../../../types.ts";
+import type { ScreenSwitcher } from "../../../types.ts";
 import { LevelSelectScreenModel } from "./LevelSelectScreenModel.ts";
 import { LevelSelectScreenView } from "./LevelSelectScreenView.ts";
 

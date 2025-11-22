@@ -1,13 +1,14 @@
 import Konva from "konva";
-import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
-import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import GameScreenModel from "../screens/GameScreen/GameScreenModel";
+import GameScreenView from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher } from "../types";
-import { Money } from "../Money";
+import { KeyboardController } from "./KeyboardController";
 import LevelManager from "../Level/LevelManager";
+import { Health } from "../Health";
+import { Money } from "../Money";
 import { Save } from "./Save";
 import { Player } from "../Player/Player.ts";
 import ItemRegistry from "../Player/ItemRegistry.ts";
-import { KeyboardController } from "./KeyboardController";
 
 /**
  * GameController handles the core game logic including:
@@ -60,6 +61,17 @@ export class GameController {
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
         console.log("Loaded money:" + Money.getInstance().amount);
+
+        // Sync Player with saved money
+        const player = Player.getInstance();
+        player.setMoney(Save.money);
+        console.log("Loaded money:" + player.getMoney());
+
+        this.resetGameState();
+        await this.levelManager.initializeLevel();
+        this.keyboardController.setupInput();
+        this.addSampleItems(); // Add sample items for testing
+        this.levelManager.initializeLevel();
 
         // Set up pause menu callbacks
         this.view.setPauseMenuCallbacks(
@@ -190,6 +202,10 @@ export class GameController {
     private resetGameState(): void {
         this.keyboardController.reset();
         this.clearAllEnemies();
+        this.view.updateMoney(Money.getInstance().amount);
+        Health.getInstance().reset();
+        this.view.updateHealth(Health.getInstance().maxLives);
+        this.view.setTarget(null);
 
         // Reset Player health
         const player = Player.getInstance();

@@ -5,11 +5,11 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
-import { PauseMenuView } from "../PauseMenuScreen/PauseMenuView.ts";
+import PauseMenuView from "../PauseMenuScreen/PauseMenuView.ts";
 import { InventoryUI } from "../../ui/InventoryUI.ts";
 import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
-export class GameScreenView implements View {
+export default class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
   private moneyText: Konva.Text;
