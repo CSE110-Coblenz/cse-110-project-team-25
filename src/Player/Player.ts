@@ -39,7 +39,7 @@ export class Player {
   private baseDamage: number = 1; // Base damage per correct word
 
   // Max health cap
-  private static readonly ABSOLUTE_MAX_HEALTH = 6;
+  private static readonly ABSOLUTE_MAX_HEALTH = 5;
 
   private constructor() {
     this.health = 3;

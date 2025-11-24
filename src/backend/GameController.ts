@@ -119,6 +119,8 @@ export class GameController {
         const greaterHealthPotion = registry.getItem("greater_health_potion");
         const heartContainer = registry.getItem("heart_container");
         const moneyBag = registry.getItem("money_bag");
+        const timeFreeze = registry.getItem("time_freeze");
+        const megaExplosion = registry.getItem("mega_explosion");
 
         if (healthPotion) {
             player.addConsumable(healthPotion, 3);
@@ -131,6 +133,12 @@ export class GameController {
         }
         if (moneyBag) {
             player.addConsumable(moneyBag, 2);
+        }
+        if (timeFreeze) {
+            player.addConsumable(timeFreeze, 2);
+        }
+        if (megaExplosion) {
+            player.addConsumable(megaExplosion, 2);
         }
 
         // Add some upgrades
@@ -375,7 +383,10 @@ export class GameController {
      */
     private useConsumableItem(slot: number): void {
         const player = Player.getInstance();
+        // Read the item before consuming the slot, because consuming may remove the slot
+        const preUseItem = player.getConsumableInventory().getSlot(slot)?.item;
         const success = player.useConsumable(slot);
+        let currentWave = this.levelManager.currentWave;
 
         if (success) {
             // Update health and money displays
@@ -386,9 +397,41 @@ export class GameController {
             this.view.updateInventoryUI();
 
             console.log(`Used item in slot ${slot + 1}`);
+
+            if (preUseItem?.id === "time_freeze") {
+                console.log("Time Freeze activated!");
+
+                if (currentWave) {
+                    // Save original speeds so we can restore them accurately
+                    const originalSpeeds = new Map<number, number>();
+                    currentWave.forEachEnemy((enemy) => {
+                        originalSpeeds.set(enemy.id, enemy.speed ?? 0);
+                        enemy.pause();
+                        enemy.speed = 0;
+                    });
+
+                    setTimeout(() => {
+                        currentWave.forEachEnemy((enemy) => {
+                            enemy.unpause();
+                            const orig = originalSpeeds.get(enemy.id);
+                            if (orig !== undefined) {
+                                enemy.speed = orig;
+                            } else if (enemy.type !== "dummy") {
+                                enemy.speed = 6;
+                            }
+                        });
+                    }, 5000);
+                }
+            }
+            else if (preUseItem?.id === "mega_explosion") {
+                console.log("Mega Explosion activated!");
+
+                currentWave?.forEachEnemy((enemy) => {
+                    this.onEnemyDefeated(enemy.id);
+                });
+            }
         }
     }
-
     // ---------- Utility Methods ----------
 
     /**

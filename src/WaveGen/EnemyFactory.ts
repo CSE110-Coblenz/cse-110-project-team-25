@@ -275,7 +275,7 @@ class EnemyFactory {
             const lane = Math.floor(Math.random() * 7) - 3; // -3..+3 lanes
             const distance = 40 + Math.random() * 30;  // 40..70
             const speed = (5 + Math.random() * 4) * speedMultiplier;
-            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle", "textbox"];
+            const types = ["meteor", "ufo", "comet"];
             const type = types[Math.floor(Math.random() * types.length)];
             const health = Math.random() < 0.8 ? 1 : 2;
 
