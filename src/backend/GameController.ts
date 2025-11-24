@@ -402,7 +402,7 @@ export class GameController {
                 console.log("Time Freeze activated!");
 
                 if (currentWave) {
-                    // Save original speeds so we can restore them accurately
+                    
                     const originalSpeeds = new Map<number, number>();
                     currentWave.forEachEnemy((enemy) => {
                         originalSpeeds.set(enemy.id, enemy.speed ?? 0);
@@ -416,8 +416,6 @@ export class GameController {
                             const orig = originalSpeeds.get(enemy.id);
                             if (orig !== undefined) {
                                 enemy.speed = orig;
-                            } else if (enemy.type !== "dummy") {
-                                enemy.speed = 6;
                             }
                         });
                     }, 5000);
