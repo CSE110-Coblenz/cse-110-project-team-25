@@ -25,8 +25,8 @@ export default class PlanetSelectScreenController extends BaseMenuController {
     }
 
     private handlePlanetClick(planet: planetName): void {
-        console.log(`Level selected: ${planet}`);
-        this.screenSwitcher.switchToScreen({type: planet});
+        console.log(`Planet selected: ${planet}`);
+        this.screenSwitcher.switchToScreen({type: "levelSelect", planetType: planet});
         this.model.setSelectedPlanet(planet);
     }
 

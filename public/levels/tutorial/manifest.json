@@ -1,0 +1,9 @@
+{
+    "homerow": [
+        "tutorial/level1.json",
+        "tutorial/level2.json",
+        "tutorial/level3.json",
+        "tutorial/level4.json",
+        "tutorial/level5.json"
+    ]
+}
