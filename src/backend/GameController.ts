@@ -85,15 +85,27 @@ export class GameController {
 
     /**
      * Add sample items to player inventory for testing
-     * TODO: Remove this when shop is implemented
+     * Only adds items if inventory is empty (preserves shop changes)
+     * TODO: Remove this when shop is fully implemented
      */
     private addSampleItems(): void {
         const player = Player.getInstance();
-        const registry = ItemRegistry.getInstance();
+        const inventory = player.getConsumableInventory();
+        const upgradeInv = player.getUpgradeInventory();
 
-        // Clear existing items first (prevents duplicates on restart)
-        player.getConsumableInventory().clear();
-        player.getUpgradeInventory().clear();
+        // Only add sample items if inventory is completely empty
+        const hasItems = inventory.getHotbarSlots().some(slot => slot !== null) ||
+                        inventory.getStorageSlots().some(slot => slot !== null) ||
+                        upgradeInv.getEquippedUpgrades().length > 0;
+
+        if (hasItems) {
+            // Inventory already has items (from shop or previous session)
+            this.view.updatePlayerUI();
+            return;
+        }
+
+        // Add sample items only if inventory is empty
+        const registry = ItemRegistry.getInstance();
 
         // Add some consumable items to inventory
         const healthPotion = registry.getItem("health_potion");

@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { ItemType, type ItemModifiers, type ItemData, type ItemAnimations } from "./ItemTypes.ts";
+import { ItemType, ItemRarity, type ItemModifiers, type ItemData, type ItemAnimations } from "./ItemTypes.ts";
 
 /**
  * Item class represents both consumable and upgrade items
@@ -12,6 +12,7 @@ export class Item {
   readonly description: string;
   readonly iconColor: string;     // Placeholder color until we have sprites
   readonly type: ItemType;
+  readonly rarity: ItemRarity;
   readonly stackable: boolean;
   readonly maxStack: number;
   readonly modifiers: ItemModifiers;
@@ -30,6 +31,7 @@ export class Item {
     this.description = data.description;
     this.iconColor = data.iconColor;
     this.type = data.type;
+    this.rarity = data.rarity;
     this.stackable = data.stackable;
     this.maxStack = data.maxStack;
     this.modifiers = data.modifiers;
@@ -159,6 +161,7 @@ export class Item {
       description: this.description,
       iconColor: this.iconColor,
       type: this.type,
+      rarity: this.rarity,
       stackable: this.stackable,
       maxStack: this.maxStack,
       modifiers: this.modifiers,

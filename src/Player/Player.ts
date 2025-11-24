@@ -190,7 +190,7 @@ export class Player {
    * Remove consumable from specific slot
    */
   removeConsumable(slotIndex: number): Item | null {
-    return this.consumableInventory.removeItem(slotIndex);
+    return this.consumableInventory.removeHotbarItem(slotIndex);
   }
 
   /**

@@ -9,6 +9,7 @@ import Konva from "konva";
 export class LevelSelectScreenView extends BaseMenuView {
     private onLevelSelect: (level: number) => void;
     private onBackClick: () => void;
+    private onShopClick?: () => void;
     private levelGroups: Map<number, Konva.Group> = new Map();
     private levelHighlights: Map<number, Konva.Image> = new Map();
 
@@ -18,6 +19,13 @@ export class LevelSelectScreenView extends BaseMenuView {
         this.onBackClick = onBackClick;
         this.buildLayout(); // Build after callbacks are assigned
         this.group.visible(true);
+    }
+
+    /**
+     * Set shop button callback (optional)
+     */
+    setShopCallback(callback: () => void): void {
+        this.onShopClick = callback;
     }
 
     protected buildLayout(): void {
@@ -57,7 +65,26 @@ export class LevelSelectScreenView extends BaseMenuView {
             fontSize: 20,
             onClick: this.onBackClick,
         });
-        this.positionElement(backBtn, STAGE_WIDTH / 2, STAGE_HEIGHT - 80);
+        this.positionElement(backBtn, STAGE_WIDTH / 2 - 100, STAGE_HEIGHT - 80);
+
+        // Create shop button
+        const shopBtn = this.createButton({
+            text: "SHOP",
+            fontFamily: "Arial",
+            width: 150,
+            height: 50,
+            fill: "#DAA520",
+            hoverFill: "#FFD700",
+            stroke: "#B8860B",
+            strokeWidth: 2,
+            fontSize: 20,
+            onClick: () => {
+                if (this.onShopClick) {
+                    this.onShopClick();
+                }
+            },
+        });
+        this.positionElement(shopBtn, STAGE_WIDTH / 2 + 100, STAGE_HEIGHT - 80);
     }
 
     /**

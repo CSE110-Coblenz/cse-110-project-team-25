@@ -19,6 +19,9 @@ export class LevelSelectScreenController extends ScreenController {
             (level) => this.selectLevel(level),
             () => this.goBackToMenu()
         );
+
+        // Set up shop button callback
+        this.view.setShopCallback(() => this.goToShop());
     }
 
     /**
@@ -35,6 +38,13 @@ export class LevelSelectScreenController extends ScreenController {
      */
     private goBackToMenu(): void {
         this.screenSwitcher.switchToScreen({ type: "menu" });
+    }
+
+    /**
+     * Handle shop button
+     */
+    private goToShop(): void {
+        this.screenSwitcher.switchToScreen({ type: "shop" });
     }
 
     /**

@@ -40,11 +40,13 @@ export interface View {
  * - "menu": Main menu screen
  * - "levelSelect": Level selection screen
  * - "game": Gameplay screen with optional levelNumber
+ * - "shop": Shop screen for purchasing items
  */
 export type Screen =
 	| { type: "menu" }
 	| { type: "levelSelect" }
-	| { type: "game"; levelNumber?: number };
+	| { type: "game"; levelNumber?: number }
+	| { type: "shop" };
 
 export abstract class ScreenController {
 	abstract getView(): View;
