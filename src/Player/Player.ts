@@ -27,6 +27,7 @@ export class Player {
   private health: number;
   private maxHealth: number;
   private money: number;
+  private invincible = false;
 
   // Inventory systems
   private consumableInventory: Inventory;
@@ -77,6 +78,18 @@ export class Player {
     return this.maxHealth;
   }
 
+  toggleInvincibility(): void {
+    if (this.invincible === false) {
+      this.invincible = true;
+    } else {
+      this.invincible = false;
+    }
+  }
+
+  invincibleStatus(): boolean {
+    return this.invincible;
+  }
+
   /**
    * Get max health with upgrade bonuses applied
    */
@@ -102,6 +115,9 @@ export class Player {
    * Take damage (reduces health)
    */
   takeDamage(amount: number): void {
+    if (this.invincible) {
+      return;
+    }
     this.health = Math.max(0, this.health - amount);
   }
 

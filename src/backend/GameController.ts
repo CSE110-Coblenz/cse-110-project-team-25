@@ -121,6 +121,7 @@ export class GameController {
         const moneyBag = registry.getItem("money_bag");
         const timeFreeze = registry.getItem("time_freeze");
         const megaExplosion = registry.getItem("mega_explosion");
+        const invincibilityPotion = registry.getItem("invincibility_potion");
 
         if (healthPotion) {
             player.addConsumable(healthPotion, 3);
@@ -139,6 +140,9 @@ export class GameController {
         }
         if (megaExplosion) {
             player.addConsumable(megaExplosion, 2);
+        }
+        if (invincibilityPotion) {
+            player.addConsumable(invincibilityPotion, 2);
         }
 
         // Add some upgrades
@@ -428,6 +432,18 @@ export class GameController {
                     this.onEnemyDefeated(enemy.id);
                 });
             }
+            else if (preUseItem?.id === "invincibility_potion") {
+                console.log("Invincibility Potion activated!");
+
+                if (player.invincibleStatus() === false) {
+                    player.toggleInvincibility();
+
+                    setTimeout(() => {
+                        player.toggleInvincibility();
+                    }, 5000);
+                }
+            }
+            
         }
     }
     // ---------- Utility Methods ----------

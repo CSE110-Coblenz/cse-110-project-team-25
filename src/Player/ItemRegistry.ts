@@ -197,6 +197,19 @@ class ItemRegistry {
       price: 1000,
     });
 
+    //Invincibility - temporary invincibility
+    this.registerItem({
+      id: "invincibility_potion",
+      name: "Invincibility",
+      description: "invincible for 5 seconds",
+      iconColor: "#7FFF00", // Chartreuse
+      type: ItemType.CONSUMABLE,
+      stackable: true,
+      maxStack: 3,
+      modifiers: {},
+      price: 600,
+    }); 
+
     // Ultimate Power - Multiple bonuses
     this.registerItem({
       id: "ultimate_power",
