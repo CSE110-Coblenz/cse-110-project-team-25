@@ -4,6 +4,65 @@
   "waves": [
     {
       "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "speed": [1],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "speed": [1],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "amiiba"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "speed": [1],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "shooter"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "speed": [1],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "comet"
+      },
+      "health": [1],
+      "words": ["fj fj fj fj"],
+      "y": [200],
+      "speed": [1],
+      "keyboard": true
+    },
+    {
+      "types": {
         "1": "textbox"
       },
       "text": ["Place your hands on the keyboard just like the blue hands on the screen."],
@@ -100,7 +159,7 @@
       },
       "health": [1, 1],
       "words": ["fjfj"],
-      "speed": [2],
+      "speed": [1],
       "distance": [40],
       "x": [700],
       "y": [100],
@@ -113,7 +172,7 @@
       },
       "health": [1, 1],
       "words": ["jf", "fj"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -126,7 +185,7 @@
       },
       "health": [1, 1],
       "words": ["jjj", "fff"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -138,7 +197,7 @@
       },
       "health": [1],
       "words": ["fjfj jfjf"],
-      "speed": [2],
+      "speed": [1],
       "distance": [40],
       "x": [700],
       "y": [100],
@@ -151,7 +210,7 @@
       },
       "health": [1, 1],
       "words": ["fjfj", "jfjf"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -164,7 +223,7 @@
       },
       "health": [1, 1],
       "words": ["ff jj", "jj ff"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -177,7 +236,7 @@
       },
       "health": [1, 1],
       "words": ["ff", "jj"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],

@@ -1,0 +1,291 @@
+{
+  "levelNumber": 2,
+  "difficulty": 1,
+  "waves": [
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["The next keys are the S and L keys."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Make sure to press these with your ring fingers like on the keyboard below."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let’s try it!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["sl sl sl sl"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["ls ls ls ls"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["slll slll slll"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["lss lsss slll"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re getting good at this."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Lets try this against some real enemies."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["slsl"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["ls", "sl"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["sss", "lll"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["slsl lsls"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["lsls", "slsl"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["ss ll", "ll ss"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["ss", "ll"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Nice Job!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let's make it harder by using all the keys we’ve learned."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Good Luck!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["dkls"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["ksld"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["ls", "dk"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["sf", "fl"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["ssj", "jlk"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["fd jk ld ds"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor",
+        "3": "meteor",
+        "4": "meteor"
+      },
+      "health": [1,1,1,1],
+      "words": ["ll","ss","df","fj"],
+      "speed": [1, 1, 1, 1],
+      "distance": [40,45,40,50],
+      "x": [700, 500, 700, 500],
+      "y": [100, 250, 250, 100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Finished!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’ve mastered 6 keys already. You’re ready for the next challenge."],
+      "keyboard": true
+    }
+  ]
+}

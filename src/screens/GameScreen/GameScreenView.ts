@@ -174,7 +174,7 @@ export class GameScreenView implements View {
     this.enemies.delete(id);
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
-    this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
+    if(En.type != "textbox")this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
   }
 
   destroyEffect(id: number): void {
