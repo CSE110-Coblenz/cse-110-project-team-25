@@ -42,9 +42,9 @@ export abstract class BaseMenuView implements View {
   protected group: Konva.Group;
   protected background!: Background; // Definite assignment assertion - initialized in createBackground
 
-  constructor(backgroundColor: string = "#0f0f23", autoBuild: boolean = true, buildbackground: boolean = true) {
+  constructor(backgroundColor: string = "#0f0f23", autoBuild: boolean = true, buildbackground: boolean = true, space: boolean) {
     this.group = new Konva.Group({ visible: false });
-    this.createBackground(backgroundColor, buildbackground);
+    this.createBackground(backgroundColor, buildbackground, space);
     // Only auto-build if requested (subclasses can override this)
     if (autoBuild) {
       this.buildLayout();
@@ -54,7 +54,7 @@ export abstract class BaseMenuView implements View {
   /**
    * Create the background for the menu
    */
-  protected createBackground(color: string, tocreate?: boolean): void {
+  protected createBackground(color: string, tocreate?: boolean, space: boolean = false): void {
     if (tocreate === false) return;
     const bgGroup = new Konva.Group({
       x: 0,
@@ -72,6 +72,11 @@ export abstract class BaseMenuView implements View {
       fill: color,
     });
     bgGroup.add(bgRect);
+    Konva.Image.fromURL("./space.png", (bg) => {
+        bgGroup.add(bg);
+        // bgGroup.moveToTop();
+    });
+
 
     this.background = new Background(bgGroup);
     this.group.add(this.background.image);
