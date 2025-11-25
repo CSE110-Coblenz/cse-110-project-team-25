@@ -430,12 +430,10 @@ export class ShopScreenView implements View {
    */
   displayNPCItems(items: Item[], onItemClick: (index: number) => void): void {
     // Clear only item groups, not the back button
-    const children = this.npcSelectionGroup.getChildren();
-    children.forEach((child, index) => {
-      // Skip first child (back button)
-      if (index > 0) {
-        child.destroy();
-      }
+    // Get all children except the first one (back button)
+    const children = this.npcSelectionGroup.getChildren().slice(1);
+    children.forEach((child) => {
+      child.destroy();
     });
 
     // Back button is already added to npcSelectionGroup in constructor
