@@ -9,7 +9,7 @@ import { PauseMenuView } from "../PauseMenuScreen/PauseMenuView.ts";
 import { InventoryUI } from "../../ui/InventoryUI.ts";
 import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
-export class GameScreenView implements View {
+class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
   private moneyText: Konva.Text;
@@ -432,3 +432,6 @@ export class GameScreenView implements View {
   hide(): void { this.group.visible(false); this.group.getLayer()?.draw(); }
   getGroup(): Konva.Group { return this.group; }
 }
+
+export default GameScreenView;
+export { GameScreenView };

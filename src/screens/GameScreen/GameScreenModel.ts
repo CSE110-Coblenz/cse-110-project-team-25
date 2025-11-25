@@ -1,7 +1,7 @@
 /**
  * GameScreenModel - Manages game state
  */
-export class GameScreenModel {
+class GameScreenModel {
   private score: number;
   private level: number;
   private lives: number;
@@ -34,3 +34,6 @@ export class GameScreenModel {
   setTargetWord(word: string): void { this.targetWord = word; }
   getTargetWord(): string | null { return this.targetWord; }
 }
+
+export default GameScreenModel;
+export { GameScreenModel };

@@ -1,6 +1,6 @@
 import Konva from "konva";
-import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
-import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import GameScreenModel from "../screens/GameScreen/GameScreenModel.ts";
+import GameScreenView from "../screens/GameScreen/GameScreenView.ts";
 import type { ScreenSwitcher } from "../types";
 import { Money } from "../Money";
 import LevelManager from "../Level/LevelManager";
@@ -53,9 +53,10 @@ export class GameController {
 
     /**
      * Initialize and start the game
+     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      * @param levelNumber - Optional level number to load (defaults to level 1)
      */
-    async startGame(levelNumber?: number): Promise<void> {
+    async startGame(isTutorial: boolean | null, levelNumber?: number): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -78,7 +79,7 @@ export class GameController {
             this.levelManager.setLevel(levelNumber);
         }
 
-        await this.levelManager.initializeLevel();
+        await this.levelManager.initializeLevel(isTutorial);
         this.keyboardController.setupInput();
 
         // Initialize health display

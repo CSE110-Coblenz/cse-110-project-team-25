@@ -1,5 +1,5 @@
-import { GameScreenModel } from "../screens/GameScreen/GameScreenModel";
-import { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import GameScreenModel from "../screens/GameScreen/GameScreenModel.ts";
+import GameScreenView from "../screens/GameScreen/GameScreenView.ts";
 import LevelManager from "../Level/LevelManager";
 import { Player } from "../Player/Player.ts";
 

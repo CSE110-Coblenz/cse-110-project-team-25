@@ -1,5 +1,11 @@
 import type { Group } from "konva/lib/Group";
 
+
+/**
+ * Type for level screens.
+ */
+export type planetName = "tutorial_planet" | "campaign_planet"
+
 /**
  * Wave configuration JSON format
  * Format: {"1": "type", "2": "type", ...}, {"health": [1, 2, ...], "speed": [...], ...}
@@ -40,13 +46,15 @@ export interface View {
  * - "menu": Main menu screen
  * - "levelSelect": Level selection screen
  * - "game": Gameplay screen with optional levelNumber
- * - "shop": Shop screen for purchasing items
  */
 export type Screen =
 	| { type: "menu" }
-	| { type: "levelSelect" }
-	| { type: "game"; levelNumber?: number }
-	| { type: "shop" };
+	| { type: "planetSelect" }
+	| { type: "levelSelect"; planetType: planetName }
+	| { type: planetName }
+	| { type: "shop"; returnTo?: { type: "levelSelect"; planetType: planetName } | { type: "planetSelect" } | { type: "menu" } }
+	| { type: "game"; levelNumber?: number, isTutorial: boolean | null };
+	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {
 	abstract getView(): View;

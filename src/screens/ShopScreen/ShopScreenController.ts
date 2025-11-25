@@ -1,4 +1,4 @@
-import { ScreenController, type ScreenSwitcher } from "../../types.ts";
+import { ScreenController, type ScreenSwitcher, type Screen } from "../../types.ts";
 import { ShopScreenModel } from "./ShopScreenModel.ts";
 import { ShopScreenView } from "./ShopScreenView.ts";
 import { ShopInventory } from "../../Shop/ShopInventory.ts";
@@ -17,6 +17,7 @@ export class ShopScreenController extends ScreenController {
   private shopInventory: ShopInventory;
   private barteringSystem: BarteringSystem;
   private keydownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private returnScreen: Screen = { type: "planetSelect" };
 
   // Bartering state
   private currentOfferAmount: number = 0;
@@ -54,7 +55,8 @@ export class ShopScreenController extends ScreenController {
   /**
    * Show shop screen and initialize shop
    */
-  show(): void {
+  show(returnScreen?: Screen): void {
+    this.returnScreen = returnScreen ?? { type: "planetSelect" };
     // Reset and generate new shop inventory
     this.model.reset();
     this.model.podiumItems = this.shopInventory.generatePodiumItems();
@@ -128,7 +130,7 @@ export class ShopScreenController extends ScreenController {
    * Go back to level select
    */
   private goBack(): void {
-    this.screenSwitcher.switchToScreen({ type: "levelSelect" });
+    this.screenSwitcher.switchToScreen(this.returnScreen);
   }
 
   /**

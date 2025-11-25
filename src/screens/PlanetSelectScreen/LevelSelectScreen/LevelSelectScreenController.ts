@@ -1,5 +1,5 @@
-import { ScreenController } from "../../types.ts";
-import type { ScreenSwitcher } from "../../types.ts";
+import { ScreenController } from "../../../types.ts";
+import type { ScreenSwitcher, planetName } from "../../../types.ts";
 import { LevelSelectScreenModel } from "./LevelSelectScreenModel.ts";
 import { LevelSelectScreenView } from "./LevelSelectScreenView.ts";
 
@@ -11,17 +11,16 @@ export class LevelSelectScreenController extends ScreenController {
     private view: LevelSelectScreenView;
     private screenSwitcher: ScreenSwitcher;
 
-    constructor(screenSwitcher: ScreenSwitcher) {
+    constructor(screenSwitcher: ScreenSwitcher, planetType: planetName) {
         super();
         this.screenSwitcher = screenSwitcher;
-        this.model = new LevelSelectScreenModel();
+        this.model = new LevelSelectScreenModel(planetType);
         this.view = new LevelSelectScreenView(
             (level) => this.selectLevel(level),
-            () => this.goBackToMenu()
+            () => this.goBackToMenu(),
+            () => this.goToShop(),
+            planetType
         );
-
-        // Set up shop button callback
-        this.view.setShopCallback(() => this.goToShop());
     }
 
     /**
@@ -30,21 +29,24 @@ export class LevelSelectScreenController extends ScreenController {
     private selectLevel(level: number): void {
         this.model.setSelectedLevel(level);
  
-        this.screenSwitcher.switchToScreen({ type: "game", levelNumber: level });
+        this.screenSwitcher.switchToScreen({ type: "game", levelNumber: level, isTutorial: this.model.getPlanetType() === "tutorial_planet" });
     }
 
     /**
      * Handle back button
      */
     private goBackToMenu(): void {
-        this.screenSwitcher.switchToScreen({ type: "menu" });
+        this.screenSwitcher.switchToScreen({ type: "planetSelect" });
     }
 
     /**
      * Handle shop button
      */
     private goToShop(): void {
-        this.screenSwitcher.switchToScreen({ type: "shop" });
+        this.screenSwitcher.switchToScreen({
+            type: "shop",
+            returnTo: { type: "levelSelect", planetType: this.model.getPlanetType() }
+        });
     }
 
     /**
