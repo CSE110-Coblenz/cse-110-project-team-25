@@ -57,7 +57,7 @@ export class GameController {
      * @param levelNumber - Optional level number to load (defaults to level 1)
      * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async startGame(isTutorial: boolean | null, levelNumber?: number): Promise<void> {
+    async startGame(isTutorial: boolean | undefined, levelNumber?: number): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -353,7 +353,6 @@ export class GameController {
             }
         }
         this.levelManager.onWaveCheck();
-
         //update effects
         let word = this.keyboardController.nextLetter()
         if(word === ';') word = "semicolon";
