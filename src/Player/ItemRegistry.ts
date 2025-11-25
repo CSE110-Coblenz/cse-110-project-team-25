@@ -60,7 +60,7 @@ class ItemRegistry {
       description: "Restores 2 health",
       iconColor: "#FF4444", // Dark Red
       type: ItemType.CONSUMABLE,
-      rarity: ItemRarity.COMMON,
+      rarity: ItemRarity.RARE,
       stackable: true,
       maxStack: 3,
       modifiers: { healAmount: 2 },
@@ -81,18 +81,49 @@ class ItemRegistry {
       price: 80,
     });
 
-    // Heart Container - Permanently increases max health
+    // Time Freeze - Enemies stop moving for 5 seconds
     this.registerItem({
-      id: "heart_container",
-      name: "Heart Container",
-      description: "Permanently +1 Max Health",
-      iconColor: "#FF69B4", // Hot Pink
+      id: "time_freeze",
+      name: "Time Freeze",
+      description: "Enemies stop moving",
+      iconColor: "#00CED1", // Dark Turquoise
       type: ItemType.CONSUMABLE,
-      rarity: ItemRarity.UNCOMMON,
+      rarity: ItemRarity.RARE,
       stackable: true,
-      maxStack: 5,
-      modifiers: { maxHealthBonus: 1 },
-      price: 150,
+      maxStack: 3,
+      modifiers: {},
+      price: 400,
+      spriteSheet: "./item_textures/iceCube.png",
+    });
+
+    // Mega Explosion - Defeat all enemies on screen
+    this.registerItem({
+      id: "mega_explosion",
+      name: "Mega Explosion",
+      description: "Defeat all enemies on screen",
+      iconColor: "#FF8C00", // Dark Orange
+      type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.EPIC,
+      stackable: true,
+      maxStack: 2,
+      modifiers: {},
+      price: 1000,
+      spriteSheet: "./item_textures/dynamite.png",
+    });
+
+    // Invincibility - Temporary invincibility for 5 seconds
+    this.registerItem({
+      id: "invincibility_potion",
+      name: "Invincibility",
+      description: "Invincible for 5 seconds",
+      iconColor: "#7FFF00", // Chartreuse
+      type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.RARE,
+      stackable: true,
+      maxStack: 3,
+      modifiers: {},
+      price: 600,
+      spriteSheet: "./item_textures/invincible.png",
     });
 
     // ==================== UPGRADE ITEMS ====================
@@ -109,20 +140,6 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { maxHealthBonus: 1 },
       price: 300,
-    });
-
-    // Damage Amplifier - 50% more damage
-    this.registerItem({
-      id: "damage_amplifier",
-      name: "Damage Amplifier",
-      description: "Deal 50% more damage",
-      iconColor: "#FF4500", // Orange Red
-      type: ItemType.UPGRADE,
-      rarity: ItemRarity.UNCOMMON,
-      stackable: false,
-      maxStack: 1,
-      modifiers: { damageMultiplier: 1.5 },
-      price: 250,
     });
 
     // Double Damage - 2x damage
@@ -179,6 +196,7 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { enemySpeedMultiplier: 0.75 },
       price: 350,
+      spriteSheet: "./item_textures/hourglass.png",
     });
 
     // Ultimate Power - Multiple bonuses
@@ -253,24 +271,9 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { enemySpeedMultiplier: 0.6 },
       price: 1200,
+      spriteSheet: "./item_textures/time_crystal.png",
     });
 
-    // Glass Cannon - 3x damage, enemies 50% faster
-    this.registerItem({
-      id: "glass_cannon",
-      name: "Glass Cannon",
-      description: "3x damage, but enemies move 50% faster!",
-      iconColor: "#FF00FF", // Magenta
-      type: ItemType.UPGRADE,
-      rarity: ItemRarity.RARE,
-      stackable: false,
-      maxStack: 1,
-      modifiers: {
-        damageMultiplier: 3.0,
-        enemySpeedMultiplier: 1.5,
-      },
-      price: 500,
-    });
   }
 
   /**

@@ -63,7 +63,11 @@ export class ShopScreenController extends ScreenController {
     // Update view
     const player = Player.getInstance();
     this.view.updateMoney(player.getMoney());
-    this.view.displayPodiumItems(this.model.podiumItems, (item) => this.handlePurchase(item));
+    this.view.displayPodiumItems(
+      this.model.podiumItems,
+      (item) => this.handlePurchase(item),
+      (item) => this.shopInventory.getPodiumPrice(item)
+    );
     this.view.displayNPCItems(this.model.npcItems, (index) => this.selectNPCItem(index));
 
     // Initialize inventory UI with player's inventory
@@ -141,27 +145,51 @@ export class ShopScreenController extends ScreenController {
     const player = Player.getInstance();
     const price = this.shopInventory.getPodiumPrice(item);
 
-    // Check if player has enough money
-    if (!player.spendMoney(price)) {
-      console.log("Not enough gold!");
+    // Check if player has enough money (simple comparison)
+    if (player.getMoney() < price) {
+      console.log(`Not enough gold! Need ${price}g, have ${player.getMoney()}g`);
       return;
     }
+
+    // Deduct money
+    player.spendMoney(price);
 
     // Add item to player inventory
     if (item.type === 0) {
       // Consumable
       player.addConsumable(item, 1);
     } else {
-      // Upgrade - for now, just log (we'll implement upgrade purchase later)
-      console.log("Upgrade purchase not yet implemented");
-      player.addMoney(price); // Refund for now
-      return;
+      // Upgrade - find first empty slot
+      const upgradeInv = player.getUpgradeInventory();
+      let emptySlot = -1;
+      for (let i = 0; i < 3; i++) {
+        if (upgradeInv.getSlot(i) === null) {
+          emptySlot = i;
+          break;
+        }
+      }
+      if (emptySlot !== -1) {
+        player.equipUpgrade(item, emptySlot);
+      } else {
+        console.log("No empty upgrade slots! Cannot equip upgrade.");
+        // Refund the money
+        player.addMoney(price);
+        return;
+      }
     }
 
     // Update money display and refresh inventory
     this.view.updateMoney(player.getMoney());
     this.view.refreshInventory();
-    console.log(`Purchased ${item.name} for ${price}g`);
+
+    // Redisplay podium items to refresh button handlers
+    this.view.displayPodiumItems(
+      this.model.podiumItems,
+      (item) => this.handlePurchase(item),
+      (item) => this.shopInventory.getPodiumPrice(item)
+    );
+
+    console.log(`Purchased ${item.name} for ${price}g. Remaining: ${player.getMoney()}g`);
   }
 
   /**

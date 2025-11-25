@@ -315,7 +315,7 @@ export class ShopScreenView implements View {
   /**
    * Display podium items on shelves (2 items per shelf)
    */
-  displayPodiumItems(items: Item[], onPurchase: (item: Item) => void): void {
+  displayPodiumItems(items: Item[], onPurchase: (item: Item) => void, getPriceFunc?: (item: Item) => number): void {
     this.podiumItemsGroup.destroyChildren();
     this.podiumItemsGroup.visible(true);
 
@@ -360,11 +360,12 @@ export class ShopScreenView implements View {
       itemGroup.add(icon);
 
       // Price label below item
+      const displayPrice = getPriceFunc ? getPriceFunc(item) : item.price;
       const priceText = new Konva.Text({
         x: 0,
         y: itemSize + 5,
         width: itemSize,
-        text: `${item.price}g`,
+        text: `${displayPrice}g`,
         fontSize: 14,
         fontFamily: "Arial",
         fill: "#FFD700",

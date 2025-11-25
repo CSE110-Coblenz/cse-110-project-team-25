@@ -31,6 +31,7 @@ interface NegotiationState {
   lastPlayerOffer: number;
   lastNPCCounter?: number;
   round: number;
+  hasStoodFirm: boolean; // Track if player already stood firm once
 }
 
 /**
@@ -50,6 +51,7 @@ export class BarteringSystem {
       lastPlayerOffer: 0,
       lastNPCCounter: undefined,
       round: 0,
+      hasStoodFirm: false,
     };
   }
 
@@ -118,21 +120,18 @@ export class BarteringSystem {
         };
 
       case 'medium_high': {
-        // 100-109%: NPC tries to push a bit higher
-        const counter = Math.floor(state.basePrice * 1.07); // Counter at 107%
-        state.lastNPCCounter = counter;
+        // 100-109%: NPC accepts immediately (was too stingy before)
         return {
           tier,
-          message: `${playerOffer} gold is close, but I was thinking more like ${counter} gold for this ${item.name}.`,
-          counterOffer: counter,
-          accepted: false,
+          message: `${playerOffer} gold for ${item.name}? That's fair. You got a deal!`,
+          accepted: true,
           rejected: false,
         };
       }
 
       case 'medium': {
-        // 85-99%: NPC counters at base price
-        const counter = Math.floor(state.basePrice);
+        // 85-99%: NPC counters at 92% of base (more willing to negotiate)
+        const counter = Math.floor(state.basePrice * 0.92);
         state.lastNPCCounter = counter;
         return {
           tier,
@@ -144,8 +143,8 @@ export class BarteringSystem {
       }
 
       case 'lowball': {
-        // 60-84%: NPC counters at 95-98% of base
-        const counter = Math.floor(state.basePrice * 0.96);
+        // 60-84%: NPC counters at 88% of base (was 96%, now more generous)
+        const counter = Math.floor(state.basePrice * 0.88);
         state.lastNPCCounter = counter;
         return {
           tier,
@@ -224,8 +223,44 @@ export class BarteringSystem {
       };
     }
 
-    // Player is NOT making progress (lowballing again) → NPC gets frustrated
-    if (playerOffer <= state.lastPlayerOffer) {
+    // Player stands firm (offers same amount as before)
+    if (playerOffer === state.lastPlayerOffer) {
+      // If player already stood firm once, kick them out
+      if (state.hasStoodFirm) {
+        return {
+          tier: 'counter_response',
+          message: `You're wasting my time! I already told you my price. GET OUT!`,
+          accepted: false,
+          rejected: true,
+        };
+      }
+
+      // First time standing firm - chance-based acceptance
+      state.hasStoodFirm = true;
+      const acceptChance = this.calculateStandFirmChance(playerWPM);
+      const roll = Math.random();
+
+      if (roll < acceptChance) {
+        // Shopkeeper accepts!
+        return {
+          tier: 'counter_response',
+          message: `*sigh* You're stubborn, I'll give you that. ${playerOffer} gold it is. Deal!`,
+          accepted: true,
+          rejected: false,
+        };
+      } else {
+        // Shopkeeper rejects and kicks out
+        return {
+          tier: 'counter_response',
+          message: `I've made my offer clear. If you're not willing to negotiate, then we're done here. GET OUT!`,
+          accepted: false,
+          rejected: true,
+        };
+      }
+    }
+
+    // Player is lowballing (offered less than last time) → NPC gets frustrated
+    if (playerOffer < state.lastPlayerOffer) {
       const increasedCounter = Math.floor(npcCounter * 1.1); // Increase by 10%
       state.lastNPCCounter = increasedCounter;
       return {
@@ -302,6 +337,19 @@ export class BarteringSystem {
     if (playerWPM >= 60) return 0.2;  // 20% bonus
     if (playerWPM >= 40) return 0.1;  // 10% bonus
     return 0; // No bonus
+  }
+
+  /**
+   * Calculate chance of shopkeeper accepting when player stands firm
+   * Based on WPM: higher WPM = higher chance
+   */
+  private calculateStandFirmChance(playerWPM?: number): number {
+    if (!playerWPM) return 0.33; // 33% base chance
+
+    if (playerWPM >= 80) return 0.90; // 90% chance
+    if (playerWPM >= 60) return 0.75; // 75% chance
+    if (playerWPM >= 40) return 0.50; // 50% chance
+    return 0.33; // 33% chance for low WPM
   }
 
   /**

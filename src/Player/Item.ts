@@ -56,29 +56,45 @@ export class Item {
       height: size,
     });
 
-    // Use sprite sheet if available (same pattern as enemies)
-    if (this.spriteSheet && this.animations) {
+    // Use sprite sheet if available
+    if (this.spriteSheet) {
       const imageObj = new Image();
       imageObj.src = this.spriteSheet;
       imageObj.onload = () => {
-        const frameW = this.frameWidth || 32;
-        const frameH = this.frameHeight || 32;
-        const scale = Math.min(size / frameW, size / frameH);
+        // If animations are defined, use Konva.Sprite (for animated sprites)
+        if (this.animations) {
+          const frameW = this.frameWidth || 32;
+          const frameH = this.frameHeight || 32;
+          const scale = Math.min(size / frameW, size / frameH);
 
-        const sprite = new Konva.Sprite({
-          x: size / 2,
-          y: size / 2,
-          scale: { x: scale, y: scale },
-          offset: { x: frameW / 2, y: frameH / 2 },
-          image: imageObj,
-          animation: 'idle',
-          animations: this.animations,
-          frameRate: this.frameRate || 10,
-          frameIndex: 0
-        });
+          const sprite = new Konva.Sprite({
+            x: size / 2,
+            y: size / 2,
+            scale: { x: scale, y: scale },
+            offset: { x: frameW / 2, y: frameH / 2 },
+            image: imageObj,
+            animation: 'idle',
+            animations: this.animations,
+            frameRate: this.frameRate || 10,
+            frameIndex: 0
+          });
 
-        sprite.start();
-        group.add(sprite);
+          sprite.start();
+          group.add(sprite);
+        } else {
+          // For static images, use Konva.Image
+          const scale = Math.min(size / imageObj.width, size / imageObj.height);
+          const konvaImage = new Konva.Image({
+            x: size / 2,
+            y: size / 2,
+            image: imageObj,
+            scaleX: scale,
+            scaleY: scale,
+            offsetX: imageObj.width / 2,
+            offsetY: imageObj.height / 2,
+          });
+          group.add(konvaImage);
+        }
         group.getLayer()?.batchDraw?.();
       };
     } else {

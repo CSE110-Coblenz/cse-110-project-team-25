@@ -80,6 +80,11 @@ export class GameController {
 
         await this.levelManager.initializeLevel();
         this.keyboardController.setupInput();
+
+        // Initialize health display
+        const player = Player.getInstance();
+        this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
+
         this.startGameLoop();
     }
 
@@ -110,8 +115,10 @@ export class GameController {
         // Add some consumable items to inventory
         const healthPotion = registry.getItem("health_potion");
         const greaterHealthPotion = registry.getItem("greater_health_potion");
-        const heartContainer = registry.getItem("heart_container");
         const moneyBag = registry.getItem("money_bag");
+        const timeFreeze = registry.getItem("time_freeze");
+        const megaExplosion = registry.getItem("mega_explosion");
+        const invincibility = registry.getItem("invincibility_potion");
 
         if (healthPotion) {
             player.addConsumable(healthPotion, 3);
@@ -119,19 +126,25 @@ export class GameController {
         if (greaterHealthPotion) {
             player.addConsumable(greaterHealthPotion, 2);
         }
-        if (heartContainer) {
-            player.addConsumable(heartContainer, 2);
-        }
         if (moneyBag) {
             player.addConsumable(moneyBag, 2);
         }
+        if (timeFreeze) {
+            player.addConsumable(timeFreeze, 3);
+        }
+        if (megaExplosion) {
+            player.addConsumable(megaExplosion, 2);
+        }
+        if (invincibility) {
+            player.addConsumable(invincibility, 3);
+        }
 
         // Add some upgrades
-        const damageAmp = registry.getItem("damage_amplifier");
+        const doubleDamage = registry.getItem("double_damage");
         const luckyToken = registry.getItem("money_multiplier");
 
-        if (damageAmp) {
-            player.equipUpgrade(damageAmp, 0);
+        if (doubleDamage) {
+            player.equipUpgrade(doubleDamage, 0);
         }
         if (luckyToken) {
             player.equipUpgrade(luckyToken, 1);
@@ -364,7 +377,10 @@ export class GameController {
      */
     private useConsumableItem(slot: number): void {
         const player = Player.getInstance();
+        // Read the item before consuming the slot, because consuming may remove the slot
+        const preUseItem = player.getConsumableInventory().getSlot(slot)?.item;
         const success = player.useConsumable(slot);
+        const currentWave = this.levelManager.currentWave;
 
         if (success) {
             // Update health and money displays
@@ -375,6 +391,46 @@ export class GameController {
             this.view.updateInventoryUI();
 
             console.log(`Used item in slot ${slot + 1}`);
+
+            // Handle special item effects
+            if (preUseItem?.id === "time_freeze") {
+                console.log("Time Freeze activated!");
+
+                if (currentWave) {
+                    const originalSpeeds = new Map<number, number>();
+                    currentWave.forEachEnemy((enemy) => {
+                        originalSpeeds.set(enemy.id, enemy.speed ?? 0);
+                        enemy.pause();
+                        enemy.speed = 0;
+                    });
+
+                    setTimeout(() => {
+                        currentWave.forEachEnemy((enemy) => {
+                            enemy.unpause();
+                            const orig = originalSpeeds.get(enemy.id);
+                            if (orig !== undefined) {
+                                enemy.speed = orig;
+                            }
+                        });
+                    }, 5000);
+                }
+            } else if (preUseItem?.id === "mega_explosion") {
+                console.log("Mega Explosion activated!");
+
+                currentWave?.forEachEnemy((enemy) => {
+                    this.onEnemyDefeated(enemy.id);
+                });
+            } else if (preUseItem?.id === "invincibility_potion") {
+                console.log("Invincibility Potion activated!");
+
+                if (player.invincibleStatus() === false) {
+                    player.toggleInvincibility();
+
+                    setTimeout(() => {
+                        player.toggleInvincibility();
+                    }, 5000);
+                }
+            }
         }
     }
 
