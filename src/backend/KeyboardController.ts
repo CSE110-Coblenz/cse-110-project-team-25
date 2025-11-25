@@ -80,9 +80,9 @@ export class KeyboardController {
                     return;
                 }
 
-                //check for textboxes
+                //check for textboxes (adjusted to only be )
                 let id = this.levelManager.getEnemyIdByInitial(" ");
-                if(id != null) this.fireAtEnemy();
+                if(id != null && e.key.length == 1) this.fireAtEnemy();
                 if (e.key === "Backspace") {
                     e.preventDefault(); // Prevent default browser backspace behavior
                     this.handleBackspace();

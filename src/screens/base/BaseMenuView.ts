@@ -99,7 +99,61 @@ export abstract class BaseMenuView implements View {
       height: titleText.height(),
       listening: false,
     });
-    titleGroup.add(titleText);
+    if(text === "Cosmic Keyboard Captain"){
+      const animations = {
+          idle: [
+              0, 0, 720, 188,    
+          ]
+      };
+
+      const imageObj = new Image();
+      imageObj.src = "/titleBase.png";
+      imageObj.onload = function() {
+          const scale = 1;
+          const shot = new Konva.Sprite({
+              x: 0,
+              y: 0,
+              scale: { x: scale, y: scale},
+              offset: { x: 720/2, y: 0},
+              image: imageObj,
+              animation: 'idle',
+              animations: animations,
+              frameRate: 15,
+              frameIndex: 0,
+              rotation: 0//Math.random()*360
+          });
+          shot.start();
+          titleGroup.add(shot);
+          shot.moveToBottom();
+          titleGroup.getLayer()?.batchDraw?.();
+          shot.moveToBottom();
+      }
+      const imageObjGlow = new Image();
+      imageObjGlow.src = "/titleGlow.png";
+      imageObjGlow.onload = function() {
+          const scale = 1;
+          const shot = new Konva.Sprite({
+              x: 0,
+              y: 0,
+              scale: { x: scale, y: scale},
+              offset: { x: 720/2, y: 0},
+              image: imageObjGlow,
+              animation: 'idle',
+              animations: animations,
+              frameRate: 15,
+              frameIndex: 0,
+              globalCompositeOperation: 'lighter',
+              rotation: 0//Math.random()*360
+          });
+          shot.start();
+          titleGroup.add(shot);
+          shot.moveToTop();
+          titleGroup.getLayer()?.batchDraw?.();
+          shot.moveToTop();
+      }
+    } else {
+      titleGroup.add(titleText);
+    }
 
     return new Ui(titleGroup, false);
   }

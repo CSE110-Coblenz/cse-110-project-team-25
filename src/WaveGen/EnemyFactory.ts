@@ -302,7 +302,7 @@ class EnemyFactory {
         }
         const word = wordBank.getRandomWordExcludingInitials(
             activeInitials,
-            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
+            [ "bn", "vm", "c,", "x.", "z/", "ty", "ru", "ei", "wo", "qp", "gh", "a;", "sl", "dk", "fj" ],
             len
         );
         return word || "default";
@@ -316,7 +316,7 @@ class EnemyFactory {
     getRandomWordByDifficulty(activeInitials: Set<string>, difficulty: number): string {
         const word = wordBank.getRandomWordByDifficulty(
             difficulty,
-            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
+            [ "bn", "vm", "c,", "x.", "z/", "ty", "ru", "ei", "wo", "qp", "gh", "a;", "sl", "dk", "fj" ],
             activeInitials
         );
         return word || "default";
