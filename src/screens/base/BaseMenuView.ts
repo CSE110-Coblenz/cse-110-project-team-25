@@ -42,7 +42,7 @@ export abstract class BaseMenuView implements View {
   protected group: Konva.Group;
   protected background!: Background; // Definite assignment assertion - initialized in createBackground
 
-  constructor(backgroundColor: string = "#0f0f23", autoBuild: boolean = true, buildbackground: boolean = true, space: boolean) {
+  constructor(backgroundColor: string = "#0f0f23", autoBuild: boolean = true, buildbackground: boolean = true, space: boolean = false) {
     this.group = new Konva.Group({ visible: false });
     this.createBackground(backgroundColor, buildbackground, space);
     // Only auto-build if requested (subclasses can override this)
