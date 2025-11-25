@@ -1,0 +1,17 @@
+{
+  "levelNumber": 1,
+  "difficulty": 1,
+  "waves": [
+    {
+      "types": {
+        "1": "meteor",
+        "2": "ufo"
+      },
+      "health": [2, 2],
+      "speed": [5, 5],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150]
+    }
+  ]
+}

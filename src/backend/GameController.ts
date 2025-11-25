@@ -48,13 +48,20 @@ export class GameController {
 
     /**
      * Initialize and start the game
+     * @param levelNumber - Optional level number to load (defaults to 1)
      */
-    async startGame(): Promise<void> {
+    async startGame(levelNumber?: number): Promise<void> {
+
         Save.load();
+        Save.loaded = true;
         Money.getInstance().amount = Save.money;
         console.log("Loaded money:" + Money.getInstance().amount);
+        
         this.resetGameState();
-        this.levelManager.initializeLevel();
+        if (levelNumber !== undefined) {
+            this.levelManager.setLevel(levelNumber);
+        }
+        await this.levelManager.initializeLevel();
         this.keyboardController.setupInput();
         this.startGameLoop();
     }
@@ -63,8 +70,11 @@ export class GameController {
      * Stop the game and clean up resources
      */
     stopGame(): void {
-        Save.money = Money.getInstance().amount;
-        Save.save();
+
+        if (Save.loaded) {
+            Save.money = Money.getInstance().amount;
+            Save.save();
+        }
         this.stopGameLoop();
         this.keyboardController.cleanup();
         this.clearAllEnemies();
@@ -85,10 +95,14 @@ export class GameController {
      * pause all timely elements
      */
     pauseGame(): void {
+        if (Save.loaded) {
+            Save.money = Money.getInstance().amount;
+            Save.save();
+        }
         this.stopGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.pause();
             });
         }
@@ -102,7 +116,7 @@ export class GameController {
         this.startGameLoop();
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 enemy.unpause();
             });
         }
@@ -126,9 +140,12 @@ export class GameController {
     private clearAllEnemies(): void {
         const currentWave = this.levelManager.currentWave;
         if (currentWave) {
-            currentWave.forEach((enemy) => {
+            currentWave.forEachEnemy((enemy) => {
                 this.view.destroyEnemy(enemy.id);
             });
+            currentWave.forEachEffect((effect) => {
+                this.view.destroyEffect(effect.id);
+            })
             currentWave.clear();
         }
     }
@@ -213,7 +230,7 @@ export class GameController {
         if (!currentWave) return;
     
         // Update all enemies
-        currentWave.forEach((enemy) => {
+        currentWave.forEachEnemy((enemy) => {
             enemy.distance = Math.max(0, enemy.distance - enemy.speed * dt);
             this.view.updateEnemyTransform(enemy, dt);
             
@@ -238,7 +255,13 @@ export class GameController {
         this.levelManager.onWaveCheck();
 
         //update effects
-        this.view.updateEffects(dt);
+        let word = this.keyboardController.nextLetter()
+        if(word === ';') word = "semicolon";
+        if(word === '.') word = "period";
+        if(word === ',') word = "comma";
+        if(word === '/') word = "forwardSlash"
+        if(word === "'") word = "apostrophe"
+        this.view.updateEffects(dt, word);
     }
 
     /**
