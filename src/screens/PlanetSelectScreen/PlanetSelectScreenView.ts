@@ -13,7 +13,7 @@ export default class PlanetSelectScreenView extends BaseMenuView {
     private planets: Map<planetName, Konva.Group> = new Map();
     private planetData: Array<{ name: planetName; label: string; x: number; y: number }> = [
         { name: "tutorial_planet", label: "Earth", x: STAGE_WIDTH * 0.2, y: STAGE_HEIGHT * 0.35 },
-        { name: "campaign_planet", label: "L'maarxion", x: STAGE_WIDTH * 0.8, y: STAGE_HEIGHT * 0.55 },
+        { name: "campaign_planet", label: "Aradise", x: STAGE_WIDTH * 0.8, y: STAGE_HEIGHT * 0.55 },
     ];
     private panoramicBackground: Konva.Group | null = null;
     private isTransitioning: boolean = false;

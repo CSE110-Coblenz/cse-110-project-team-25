@@ -32,7 +32,7 @@ export class CampaignLevelSelectView extends BaseLevelSelectView {
 
     protected buildLayout(): void {
         // Create title
-        const title = this.createTitle("SELECT LEVEL - L'MAARXION", {
+        const title = this.createTitle("SELECT LEVEL - ARADISE", {
             fontSize: 48,
             fontFamily: "Arial",
             fill: "white"
