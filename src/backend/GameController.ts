@@ -61,17 +61,18 @@ export class GameController {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
-        console.log("Loaded money:" + Money.getInstance().amount);
+        // console.log("Loaded money:" + Money.getInstance().amount);
 
         // Sync Player with saved money
         const player = Player.getInstance();
         player.setMoney(Save.money);
-        console.log("Loaded money:" + player.getMoney());
+        // console.log("Loaded money:" + player.getMoney());
 
         this.resetGameState();
         
         // For tutorial/campaign modes, set the specific level before initializing
         if (isTutorial !== null && levelNumber !== undefined) {
+            // console.log("SET LEVEL")
             this.levelManager.setLevel(levelNumber);
         }
         
@@ -385,7 +386,7 @@ export class GameController {
             // Update inventory UI to reflect changes
             this.view.updateInventoryUI();
 
-            console.log(`Used item in slot ${slot + 1}`);
+            // console.log(`Used item in slot ${slot + 1}`);
         }
     }
 

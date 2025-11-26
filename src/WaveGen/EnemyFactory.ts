@@ -168,14 +168,14 @@ class EnemyFactory {
                 x = decodedConfig.x[i];
             }
             else{
-                console.log("Warning: x positions are undefined in wave config JSON.");
+                // console.log("Warning: x positions are undefined in wave config JSON.");
             }
           
             if (config.y !== undefined){
                 y = decodedConfig.y[i];
             }
             else{
-                console.log("Warning: y positions are undefined in wave config JSON.");
+                //console.log("Warning: y positions are undefined in wave config JSON.");
             }
 
             // createEnemy(type, word, health=1, distance=40, speed=6, x, y)

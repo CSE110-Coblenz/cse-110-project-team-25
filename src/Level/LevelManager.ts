@@ -26,7 +26,7 @@ class LevelManager {
     private _completedWavesInLevel: number = 0;
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
-        this._difficultyUtil = new DifficultyUtil(100);
+        this._difficultyUtil = new DifficultyUtil(8);
         this.enemyFactory = new EnemyFactory(this._difficultyUtil);
         this.view = view;
         this.screenSwitcher = screenSwitcher;
@@ -75,7 +75,7 @@ class LevelManager {
     advanceLevel(): void {
         this._currentLevel += 1;
         this._difficultyUtil.increaseDifficulty(this._currentLevel);
-        console.log(this._difficultyUtil.difficulty)
+        // console.log(this._difficultyUtil.difficulty)
     }
 
     /** Sets the current level (for testing) */
@@ -143,6 +143,8 @@ class LevelManager {
      */
     async generateNewLevel(): Promise<void> {
         // Endless mode: generate random waves
+        // console.log(this._isEndless)
+        // console.log(this._isTutorial)
         if (this._isEndless) {
             this.generateRandomLevel();
             return;
@@ -185,11 +187,12 @@ class LevelManager {
      * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
     async initializeLevel(isTutorial: boolean | null): Promise<void> {
-        if (this._isTutorial === null) {
+        if (isTutorial === null) {
             this._isEndless = true;
         } else {
             this._isEndless = false;
         }
+        this._isTutorial = isTutorial;
         await this.generateNewLevel();
         await this.popNextWave();
         if (this._currentWave) {

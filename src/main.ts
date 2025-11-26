@@ -100,6 +100,6 @@ class App implements ScreenSwitcher {
   if (typeof window !== "undefined") {
     (window as any).testPlayerSystem = testPlayerSystem;
   }
-  console.log("Run testPlayerSystem() in console to test the Player system!");
+  // console.log("Run testPlayerSystem() in console to test the Player system!");
 })();
 
