@@ -5,8 +5,11 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
+import PauseMenuView from "../PauseMenuScreen/PauseMenuView.ts";
+import { InventoryUI } from "../../ui/InventoryUI.ts";
+import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
-export class GameScreenView implements View {
+export default class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
   private moneyText: Konva.Text;
@@ -16,14 +19,19 @@ export class GameScreenView implements View {
   private enemiesLeftText: Konva.Text;
   enemyContainer: Konva.Group;
   effectContainer: Konva.Group;
-  private hudContainer: Konva.Group; 
+  private hudContainer: Konva.Group;
+  private pauseMenuView: PauseMenuView;
   enemies = new Map<number, Enemy>();
   effects = new Map<number, Effect>();
   private targetedId: number | null = null;
 
+  // Player UI components
+  private inventoryUI: InventoryUI;
+  private upgradeUI: UpgradeUI;
+
   constructor() {
     this.group = new Konva.Group({ visible: false });
-	Konva.Image.fromURL("/space.png", (bg) => {
+	Konva.Image.fromURL("./space.png", (bg) => {
 		this.group.add(bg);
 		bg.moveToBottom();
 	});
@@ -75,12 +83,25 @@ export class GameScreenView implements View {
       fontSize: 20, fontFamily: "Courier New", fill: "white", align: "left", listening: false,
     });
     
-    this.hudContainer.add(this.typedText);
+    // this.hudContainer.add(this.typedText);
     this.hudContainer.add(this.moneyText);
     this.hudContainer.add(this.healthText);
     this.hudContainer.add(this.levelText);
     this.hudContainer.add(this.waveText);
     this.hudContainer.add(this.enemiesLeftText);
+
+    // Initialize pause menu (hidden by default)
+    this.pauseMenuView = new PauseMenuView(
+      () => {}, // Resume callback - will be set by GameController
+      () => {}  // Quit callback - will be set by GameController
+    );
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
+    // Initialize player UI components
+    this.inventoryUI = new InventoryUI();
+    this.upgradeUI = new UpgradeUI();
+    this.hudContainer.add(this.inventoryUI.getGroup());
+    this.hudContainer.add(this.upgradeUI.getGroup());
   }
 
   // Spawn enemy visuals (no world coords here yet)
@@ -153,7 +174,7 @@ export class GameScreenView implements View {
     this.enemies.delete(id);
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
-    this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
+    if(En.type != "textbox")this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
   }
 
   destroyEffect(id: number): void {
@@ -332,9 +353,16 @@ export class GameScreenView implements View {
     this.group.getLayer()?.batchDraw();
   }
 
-  updateHealth(lives: number): void {
-    const hearts = "♥".repeat(lives);
-    this.healthText.text(`Health: ${hearts}`);
+  /**
+   * Update health display with current/max hearts
+   * @param currentHealth Current health value
+   * @param maxHealth Maximum health value (optional, defaults to currentHealth)
+   */
+  updateHealth(currentHealth: number, maxHealth?: number): void {
+    const max = maxHealth ?? currentHealth;
+    const filledHearts = "♥".repeat(Math.max(0, currentHealth));
+    const emptyHearts = "♡".repeat(Math.max(0, max - currentHealth));
+    this.healthText.text(`Health: ${filledHearts}${emptyHearts}`);
     this.group.getLayer()?.batchDraw();
   }
 
@@ -351,6 +379,53 @@ export class GameScreenView implements View {
   updateEnemiesLeft(enemiesLeft: number): void {
     this.enemiesLeftText.text(`Enemies: ${enemiesLeft}`);
     this.group.getLayer()?.batchDraw();
+  }
+
+  showPauseMenu(): void {
+    this.pauseMenuView.show();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  hidePauseMenu(): void {
+    this.pauseMenuView.hide();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  setPauseMenuCallbacks(onResume: () => void, onQuit: () => void): void {
+    // Recreate pause menu with new callbacks
+    this.pauseMenuView.getGroup().destroy();
+    this.pauseMenuView = new PauseMenuView(onResume, onQuit);
+    this.group.add(this.pauseMenuView.getGroup());
+    this.pauseMenuView.hide();
+  }
+  /**
+   * Update inventory UI to reflect Player's current inventory
+   */
+  updateInventoryUI(): void {
+    this.inventoryUI.update();
+  }
+
+  /**
+   * Update upgrade UI to reflect Player's equipped upgrades
+   */
+  updateUpgradeUI(): void {
+    this.upgradeUI.update();
+  }
+
+  /**
+   * Update both inventory and upgrade UI
+   */
+  updatePlayerUI(): void {
+    this.inventoryUI.update();
+    this.upgradeUI.update();
+  }
+
+  /**
+   * Toggle inventory UIs visibility with animation
+   */
+  toggleInventoryUI(): void {
+    this.inventoryUI.toggle();
+    this.upgradeUI.toggle();
   }
 
   show(): void { this.group.visible(true); this.group.getLayer()?.draw(); }

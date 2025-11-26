@@ -23,7 +23,7 @@ class Dummy extends Enemy {
         };
 
         const imageObj = new Image();
-        imageObj.src = "/dummy.png";
+        imageObj.src = "./dummy.png";
         imageObj.onload = function() {
             const scale = Math.min(80 / 480, 80 / 220);
             const meteor = new Konva.Sprite({

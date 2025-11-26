@@ -1,7 +1,7 @@
 import { Wave } from "../WaveGen/Wave";
 import DifficultyUtil from "../backend/difficulty/DifficultyUtil";
 import EnemyFactory from "../WaveGen/EnemyFactory";
-import type { GameScreenView } from "../screens/GameScreen/GameScreenView";
+import type GameScreenView from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
 import Enemy from "../objects/Enemy"
 import Effect from "../objects/Effect"
@@ -22,6 +22,7 @@ class LevelManager {
     private screenSwitcher: ScreenSwitcher;
     private letterToId: Map<string, number> = new Map();
     private _isTransitioning: boolean = false;
+    private isTutorial: boolean | null = null;
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
         this._difficultyUtil = new DifficultyUtil(10);
@@ -108,9 +109,9 @@ class LevelManager {
     }
 
     /**
-     * Generate a new set of random waves for the current level
+     * Generate a new set of random waves for the current level (endless mode)
      */
-    private generateNewLevel(): void {
+    private generateRandomLevel(): void {
         const wavesPerLevel = 3; // Number of waves per level
 
         for (let i = 0; i < wavesPerLevel; i++) {
@@ -131,13 +132,21 @@ class LevelManager {
     }
 
     /**
-     * Generate a new level from config
+     * Generate a new level from config or random (for endless mode)
      */
     async generateNewLevel(): Promise<void> {
-        // Try to load a level file matching the current level number, fallback to random
-        await this.loadLevelFromJSON(`/levels/level${this.currentLevel}.json`).catch(() => {
-            this.generateNewRandomLevel();
-        });
+        // Endless mode: generate random waves
+        if (this.isTutorial === null) {
+            this.generateRandomLevel();
+            return;
+        }
+        
+        // Tutorial or campaign mode: load from JSON
+        if (this.isTutorial) {
+            await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
+        } else {
+            await this.loadLevelFromJSON(`./levels/campaign/level${this.currentLevel}.json`)
+        }
     }
 
     /**
@@ -166,8 +175,11 @@ class LevelManager {
 
     /**
      * Initialize the first level
+     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async initializeLevel(): Promise<void> {
+    async initializeLevel(isTutorial: boolean | null): Promise<void> {
+        this.isTutorial = isTutorial;
+        console.log(this.isTutorial);
         await this.generateNewLevel();
         await this.popNextWave();
         if (this._currentWave) {
@@ -207,7 +219,13 @@ class LevelManager {
         this.view!.updateEnemyTransform(enemy, 0);
 
         // Track for targeting
-        this.letterToId.set(enemy.initial.toLowerCase(), enemy.id);
+        let initial;
+        if(enemy.initial != undefined){
+            initial = enemy.initial.toLowerCase()
+        } else {
+            initial = " "
+        }
+        this.letterToId.set(initial, enemy.id);
 
         // Set draw order based on distance
         const sortedIds = this.getIdsSortedByDistance(this._currentWave);
@@ -245,7 +263,13 @@ class LevelManager {
             const enemy = this._currentWave.getEnemy(id);
             if (enemy) {
                 // Remove from letterToId map
-                this.letterToId.delete(enemy.initial.toLowerCase());
+                let initial;
+                if(enemy.initial != undefined){
+                    initial = enemy.initial.toLowerCase()
+                } else {
+                    initial = " "
+                }
+                this.letterToId.delete(initial);
                 // Remove from wave
                 this._currentWave.removeEnemy(id);
                 
@@ -301,21 +325,11 @@ class LevelManager {
         }
         return "CANT USE GET WORD WITHOUT CURRENTWAVE"
     }
-
-
-
-<<<<<<< HEAD
-=======
-    changeWord(En: Enemy, word: string): void {
-        this.letterToId.delete(En.word[0]);
-        En.word = word;
-        this.letterToId.set(word[0], En.id);
-    }
   
     /**
      * Load level configuration from JSON, 
      * generate random wave if none provided.
-     * @param url - Path to the level JSON file (e.g., '/levels/level1.json')
+     * @param url - Path to the level JSON file (e.g., './levels/level1.json')
      */
     async loadLevelFromJSON(url: string): Promise<void> {
         if (url){
@@ -328,7 +342,6 @@ class LevelManager {
             }
         }
     }
->>>>>>> ce6449fc6f53963f588fdb2edd5dba7063861ce1
 
 }
 

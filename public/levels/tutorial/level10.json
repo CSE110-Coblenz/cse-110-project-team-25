@@ -1,0 +1,298 @@
+{
+  "levelNumber": 1,
+  "difficulty": 1,
+  "waves": [
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["For the T and Y keys, you need to use your pointer fingers."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Make sure to put your pointer fingers back onto F or J when you're finished."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["If you get confused just look at what the blue hands are doing."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let’s try it!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["ft ft ft ft"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["jy jy jy jy"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["fttt jyyy"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["tftf yjyj tyfj"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re getting good at this."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Lets try this against some real enemies."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["tyfj"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["fj", "ty"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["ftt", "ryy"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["tftf jyjy"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["fftt", "yjyj"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["ff tt", "jj yy"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["tt", "yy"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Nice Job!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let's make it harder by using all the keys we’ve learned."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Good Luck!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["the"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["you"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["out", "that"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["this", "day"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["with", "your"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["they used joy"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor",
+        "3": "meteor",
+        "4": "meteor"
+      },
+      "health": [1,1,1,1],
+      "words": ["too","set","way","art"],
+      "speed": [1, 1, 1, 1],
+      "distance": [40,45,40,50],
+      "x": [700, 500, 700, 500],
+      "y": [100, 250, 250, 100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Finished!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re ready for the next challenge."],
+      "keyboard": true
+    }
+  ]
+}

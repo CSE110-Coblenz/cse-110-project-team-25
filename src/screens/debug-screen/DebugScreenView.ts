@@ -4,7 +4,7 @@ import { BaseMenuView } from "../base/BaseMenuView.ts";
 /**
  * DebugScreenView - A test screen for debugging and to see if new BaseMenuController and BaseMenuView actually work 
  */
-export class DebugScreenView extends BaseMenuView {
+export default class DebugScreenView extends BaseMenuView {
   private onBackClick: () => void;
 
   constructor(onBackClick: () => void) {

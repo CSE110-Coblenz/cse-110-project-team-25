@@ -21,7 +21,7 @@ class Ufo extends Enemy {
         };
         const enemyGroup = new Konva.Group({ width: 80, height: 80 });
         const imageObj = new Image();
-        imageObj.src = "/ufo.png";
+        imageObj.src = "./ufo.png";
         imageObj.onload = function() {
         const scale = Math.min(80 / 480, 80 / 220);
         const ufo = new Konva.Sprite({

@@ -1,6 +1,6 @@
 // const MAX_WORD_LENGTH = 18;
 
-export type Bank = "bnm,." | "zxcv" | "ty" | "uiop" | "qwer" | "gh" | "asdfjkl;";
+export type Bank = "bn" | "vm" | "c," | "x." | "z/" | "ty" | "ru" | "ei" | "wo" | "qp" | "gh" | "a;" | "sl" | "dk" | "fj"
 type SubBank = Record<number, string[]>;
 
 export class WordBank {
@@ -8,7 +8,7 @@ export class WordBank {
 
     async load(): Promise<void> {
         if (this.banks) return;
-        const res = await fetch("/wordbank.json");
+        const res = await fetch("./wordbank.json");
         this.banks = await res.json();
     }
 
@@ -77,8 +77,28 @@ export class WordBank {
         return Math.round(clampedAverage);
     }
 
+    /**
+     * Get a random word based on difficulty level (1-100)
+     * @param difficulty Difficulty level (1-100)
+     * @param categories Word categories to select from
+     * @param excludedInitials Optional set of initials to exclude
+     */
+    getRandomWordByDifficulty(
+        difficulty: number, 
+        categories: Bank[] = ["bn"], 
+        excludedInitials?: Set<string> | string[]
+    ): string | null {
+        const length = this.calculateWordLengthFromDifficulty(difficulty);
+        
+        if (excludedInitials) {
+            return this.getRandomWordExcludingInitials(excludedInitials, categories, length);
+        } else {
+            return this.getRandomWord(categories, length);
+        }
+    }
+
     // Original methods preserved for backward compatibility
-    getRandomWordExcludingInitials(excluded: Set<string> | string[], categories: Bank[] = ["bnm,."], length: number): string | null {
+    getRandomWordExcludingInitials(excluded: Set<string> | string[], categories: Bank[] = ["bn"], length: number): string | null {
         const ex = new Set(Array.from(excluded).map(c => c.toLowerCase()));
         const pool = this.pool(categories, length).filter(w => w && !ex.has(w[0].toLowerCase()));
         if (pool.length === 0) return this.getRandomWordExcludingInitials(excluded, categories, length+1);

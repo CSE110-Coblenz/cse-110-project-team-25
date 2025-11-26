@@ -1,7 +1,7 @@
 /**
  * GameScreenModel - Manages game state
  */
-export class GameScreenModel {
+export default class GameScreenModel {
   private score: number;
   private level: number;
   private lives: number;

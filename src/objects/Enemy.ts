@@ -90,7 +90,7 @@ class Enemy extends Object {
         this._word = word;
     }
 
-    get initial(): string { console.log("this:", this.prompt.word); return this._prompt.word[0] }
+    get initial(): string { return this._prompt.word[0] }
 
     get type(): string { return this._type }
 

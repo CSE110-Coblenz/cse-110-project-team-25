@@ -12,7 +12,7 @@ class Keyboard extends Effect {
     constructor(){
         const Group = new Konva.Group({ width: 80, height: 80 });
         const keyboard = new Image();
-        keyboard.src = "/keyboard.png";
+        keyboard.src = "./keyboard.png";
         const animations = {
             idle: [
                 0, 0, 1080, 390,    
@@ -118,7 +118,7 @@ class Keyboard extends Effect {
             apostrophe: [480*12, 0, 480, 480]
         };
         
-        leftHand.src = "/leftHand.png";
+        leftHand.src = "./leftHand.png";
         leftHand.onload = function() {
             const hand = new Konva.Sprite({
                 x: 50,
@@ -136,7 +136,7 @@ class Keyboard extends Effect {
             Group.add(hand);
             Group.getLayer()?.batchDraw?.();
         }
-        rightHand.src = "/rightHand.png";
+        rightHand.src = "./rightHand.png";
         rightHand.onload = function() {
             const hand = new Konva.Sprite({
                 x: 520,
@@ -247,19 +247,19 @@ class Keyboard extends Effect {
             ]
         };
         keyImg.src = 'keys/' +  key + '.png'
-        keyImg.onload = function() {
-            const keySprite = new Konva.Sprite({
-                x: 0,
-                y: 0,
-                image: keyImg,
-                animation: 'idle',
-                animations: animations,
-                frameRate: 1,
-                frameIndex: 0,
-                name: "zach"
-            });
-            Group.add(keySprite);
-        }
+        // keyImg.onload = function() {
+        //     const keySprite = new Konva.Sprite({
+        //         x: 0,
+        //         y: 0,
+        //         image: keyImg,
+        //         animation: 'idle',
+        //         animations: animations,
+        //         frameRate: 1,
+        //         frameIndex: 0,
+        //         name: "zach"
+        //     });
+        //     Group.add(keySprite);
+        // }
         return Group
     }
 
@@ -272,11 +272,12 @@ class Keyboard extends Effect {
             //put highlight
             let high = this.keyMap.get(nextLetter)
             if(high == undefined) return;
-
-            high.add(new Konva.Circle({
+            const circle = new Konva.Circle({
                     x: 36, y: 36, radius: 40,
                     fill: "#f0f04dff", stroke: "#0b5ea8", strokeWidth: 0, opacity: 0.5
-                }))
+                })
+            high.add(circle)
+            circle.moveToTop()
             this.nextLetter = nextLetter
 
             //change animation

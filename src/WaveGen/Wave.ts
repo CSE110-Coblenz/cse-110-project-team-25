@@ -7,13 +7,11 @@ import Effect from "../objects/Effect"
  */
 class Wave {
     private enemies: Map<number, Enemy>;
-    private objects: Map<number, Object>;
     private _activeLanes: Set<number> = new Set<number>();
     private effects: Map<number, Effect>;
     private _activeInitials: Set<string>;
     constructor() {
         this.enemies = new Map<number, Enemy>();
-        this.objects = new Map<number, Object>();
         this._activeInitials = new Set<string>();
         this.effects = new Map<number, Effect>();
     }
@@ -39,8 +37,15 @@ class Wave {
     removeEnemy(id: number): void {
         let temp = this.getEnemy(id);
         if(temp != undefined){
-            this.activeInitials.delete(temp.word[0]);
             this.enemies.delete(id);
+            // Only remove the initial if no other enemies start with it
+            const initial = temp.word[0];
+            const hasOtherEnemyWithInitial = Array.from(this.enemies.values()).some(
+                enemy => enemy.word[0] === initial
+            );
+            if (!hasOtherEnemyWithInitial) {
+                this.activeInitials.delete(initial);
+            }
         }
     }
 
@@ -78,6 +83,7 @@ class Wave {
     clear(): void {
         this.enemies.clear();
         this.effects.clear();
+        this._activeInitials.clear();
     }
 
     /**
@@ -111,6 +117,7 @@ class Wave {
     forEachEnemy(callback: (enemy: Enemy, id: number) => void): void {
         this.enemies.forEach(callback);
     }
+    
     /**
      * Iterate through all effects
      */

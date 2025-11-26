@@ -1,25 +1,34 @@
 import type { ScreenSwitcher } from "../../types.ts";
 import { BaseMenuController } from "../base/BaseMenuController.ts";
-import { MenuScreenView } from "./MenuScreenView.ts";
+import MenuScreenView from "./MenuScreenView.ts";
 
 /**
  * MenuScreenController - Handles menu interactions
  */
-export class MenuScreenController extends BaseMenuController {
+export default class MenuScreenController extends BaseMenuController {
 	constructor(screenSwitcher: ScreenSwitcher) {
 		super(screenSwitcher);
 		this.view = new MenuScreenView(
 			() => this.handleStartClick()
+			, () => this.handlePlanetSelectClick()
 			// , () => this.handleDebugClick() // DEBUG: Commented out for production
 		);
 	}
 
 	/**
-	 * Handle start button click
+	 * Handle start button click - starts endless mode
 	 */
 	private handleStartClick(): void {
-		console.log("Start button clicked!");
-		this.screenSwitcher.switchToScreen({type: "levelSelect"});
+		console.log("Endless mode started!");
+		this.screenSwitcher.switchToScreen({type: "game", levelNumber: undefined, isTutorial: null});
+	}
+
+	/**
+	 * Handle level select click
+	 */
+	private handlePlanetSelectClick(): void {
+		console.log("Planet Selectbutton clicked!");
+		this.screenSwitcher.switchToScreen({type: "planetSelect"});
 	}
 
 	// DEBUG: Debug handler commented out for production
