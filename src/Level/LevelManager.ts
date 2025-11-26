@@ -123,7 +123,7 @@ class LevelManager {
      */
     async generateNewLevel(): Promise<void> {
         // Endless mode: generate random waves
-        if (this.isTutorial === null) {
+        if (this.isTutorial === undefined) {
             this.generateRandomLevel();
             return;
         }
