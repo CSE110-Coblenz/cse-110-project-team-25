@@ -98,6 +98,7 @@ class Wave {
     forEachEnemy(callback: (enemy: Enemy, id: number) => void): void {
         this.enemies.forEach(callback);
     }
+    
     /**
      * Iterate through all effects
      */

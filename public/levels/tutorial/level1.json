@@ -3,6 +3,35 @@
   "difficulty": 1,
   "waves": [
     {
+      "types":
+        {
+          "1": "textbox"
+        },
+      "text": ["Welcome to the cosmic training grounds! To advance the text boxes, press any key to continue."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["In these upcoming tutorials, we will be teaching you proper typing techniques to help you become a typing master."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Afterwards, you will venture towards planet Aradise to put your skills to the test against real enemies."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let's start with the home row keys. These are the keys your fingers will rest on when you are not typing."],
+      "keyboard": true
+    },
+    {
       "types": {
         "1": "textbox"
       },
@@ -100,7 +129,7 @@
       },
       "health": [1, 1],
       "words": ["fjfj"],
-      "speed": [2],
+      "speed": [1],
       "distance": [40],
       "x": [700],
       "y": [100],
@@ -113,7 +142,7 @@
       },
       "health": [1, 1],
       "words": ["jf", "fj"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -126,7 +155,7 @@
       },
       "health": [1, 1],
       "words": ["jjj", "fff"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -138,7 +167,7 @@
       },
       "health": [1],
       "words": ["fjfj jfjf"],
-      "speed": [2],
+      "speed": [1],
       "distance": [40],
       "x": [700],
       "y": [100],
@@ -151,7 +180,7 @@
       },
       "health": [1, 1],
       "words": ["fjfj", "jfjf"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -164,7 +193,7 @@
       },
       "health": [1, 1],
       "words": ["ff jj", "jj ff"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],
@@ -177,7 +206,7 @@
       },
       "health": [1, 1],
       "words": ["ff", "jj"],
-      "speed": [2, 2],
+      "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
       "y": [100, 150],

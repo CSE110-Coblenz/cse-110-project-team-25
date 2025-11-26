@@ -10,7 +10,7 @@ export default class MenuScreenView extends BaseMenuView {
     private onPlanetSelectClick: () => void;
 
     constructor(onStartClick: () => void, onPlanetSelectClick: () => void /* , onDebugClick: () => void */) { // debug
-        super("#0f0f23", false); // Don't auto-build
+        super("#0f0f23", false, undefined, true); // Don't auto-build
         this.onStartClick = onStartClick;
         this.onPlanetSelectClick = onPlanetSelectClick;
         // this.onDebugClick = onDebugClick; //

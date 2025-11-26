@@ -6,21 +6,14 @@
       "types": {
         "1": "textbox"
       },
-      "text": ["The last keys for the home row are G and H."],
+      "text": ["For the Z and / keys, you need to use your pinky fingers."],
       "keyboard": true
     },
     {
       "types": {
         "1": "textbox"
       },
-      "text": ["For these two you're going to move your pointer fingers away from the bumps."],
-      "keyboard": true
-    },
-    {
-      "types": {
-        "1": "textbox"
-      },
-      "text": ["Make sure to put your pointer fingers back on the bumps once you're done typing G or H."],
+      "text": ["Make sure to put your pinky fingers back onto A or ; when you're finished."],
       "keyboard": true
     },
     {
@@ -42,7 +35,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["fg fg fg fg"],
+      "words": ["az az az az"],
       "y": [200],
       "keyboard": true
     },
@@ -51,7 +44,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["jh jh jh jh"],
+      "words": [";/ ;/ ;/ ;/"],
       "y": [200],
       "keyboard": true
     },
@@ -60,7 +53,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["fggg jhhh fggg"],
+      "words": ["azzz ;///"],
       "y": [200],
       "keyboard": true
     },
@@ -69,7 +62,7 @@
         "1": "dummy"
       },
       "health": [1],
-      "words": ["fjfj ghgh fghj"],
+      "words": ["azaz ;/;/ a;/z"],
       "y": [200],
       "keyboard": true
     },
@@ -92,7 +85,7 @@
         "1": "ufo"
       },
       "health": [1, 1],
-      "words": ["fgjh"],
+      "words": [";a/z"],
       "speed": [1],
       "distance": [40],
       "x": [700],
@@ -105,7 +98,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["fg", "jh"],
+      "words": ["za", "/;"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -118,7 +111,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["fgg", "jhh"],
+      "words": ["zaa", "/;;"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -130,7 +123,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["fgfg jhjh"],
+      "words": ["azaz ;/;/"],
       "speed": [1],
       "distance": [40],
       "x": [700],
@@ -143,7 +136,7 @@
         "2": "ufo"
       },
       "health": [1, 1],
-      "words": ["fgfg", "jhjh"],
+      "words": ["zzaa", ";//;"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -156,7 +149,7 @@
         "2": "ufo"
       },
       "health": [1, 1],
-      "words": ["ff gg", "hh jj"],
+      "words": ["aa zz", ";; //"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -169,7 +162,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["gg", "hh"],
+      "words": ["zz", "//"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -194,13 +187,6 @@
       "types": {
         "1": "textbox"
       },
-      "text": ["Now we have all the home row letters. You're almost at the end of World 1."],
-      "keyboard": true
-    },
-    {
-      "types": {
-        "1": "textbox"
-      },
       "text": ["Good Luck!"],
       "keyboard": true
     },
@@ -209,7 +195,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["had"],
+      "words": ["zip"],
       "speed": [1],
       "distance": [40],
       "x": [700],
@@ -221,7 +207,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["gas"],
+      "words": ["zoo"],
       "speed": [1],
       "distance": [40],
       "x": [700],
@@ -234,7 +220,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["half", "glad"],
+      "words": ["zero", "size"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -247,7 +233,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["agh", "fall"],
+      "words": ["jazz", "quiz"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -260,7 +246,7 @@
         "2": "meteor"
       },
       "health": [1, 1],
-      "words": ["hag", "add"],
+      "words": ["lazy", "prize"],
       "speed": [1, 1],
       "distance": [40, 45],
       "x": [700, 500],
@@ -272,7 +258,7 @@
         "1": "ufo"
       },
       "health": [1],
-      "words": ["half a glass"],
+      "words": ["large pizza"],
       "speed": [1],
       "distance": [40],
       "x": [700],
@@ -287,7 +273,7 @@
         "4": "meteor"
       },
       "health": [1,1,1,1],
-      "words": ["has","sad",";;;","glad"],
+      "words": ["liz","zap","bap","art"],
       "speed": [1, 1, 1, 1],
       "distance": [40,45,40,50],
       "x": [700, 500, 700, 500],
@@ -305,14 +291,7 @@
       "types": {
         "1": "textbox"
       },
-      "text": ["You’ve completed World 1."],
-      "keyboard": true
-    },
-    {
-      "types": {
-        "1": "textbox"
-      },
-      "text": ["You’ve mastered the home row keys. Take a break and buy some items for the next levels."],
+      "text": ["You’re ready for the next challenge."],
       "keyboard": true
     }
   ]
