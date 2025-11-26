@@ -1,0 +1,305 @@
+{
+  "levelNumber": 1,
+  "difficulty": 1,
+  "waves": [
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Now let's start learning the keys for the top row."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["For the Q and P keys, you need to use your pinky fingers."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Make sure to put your pinky fingers back onto a or ; when you're finished."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["If you get confused just look at what the blue hands are doing."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let’s try it!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["aq aq aq aq"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": [";p ;p ;p ;p"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["aqqq ;ppp aqqq"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "dummy"
+      },
+      "health": [1],
+      "words": ["aqaq ;p;p aq;p"],
+      "y": [200],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re getting good at this."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Lets try this against some real enemies."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["aqp;"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["p;", "qa"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["aqq", "p;;"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["qaqa p;p;p"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["qqaa", ";p;p"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "ufo"
+      },
+      "health": [1, 1],
+      "words": ["aa qq", "pp ;;"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["qq", "pp"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Nice Job!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Let's make it harder by using all the keys we’ve learned."],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Good Luck!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["sap"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["gps"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["pass", "gaps"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["lap", "pads"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo",
+        "2": "meteor"
+      },
+      "health": [1, 1],
+      "words": ["faqs", "gdp"],
+      "speed": [1, 1],
+      "distance": [40, 45],
+      "x": [700, 500],
+      "y": [100, 150],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "ufo"
+      },
+      "health": [1],
+      "words": ["pass a faq"],
+      "speed": [1],
+      "distance": [40],
+      "x": [700],
+      "y": [100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "meteor",
+        "2": "meteor",
+        "3": "meteor",
+        "4": "meteor"
+      },
+      "health": [1,1,1,1],
+      "words": ["fad","app","faq","pad"],
+      "speed": [1, 1, 1, 1],
+      "distance": [40,45,40,50],
+      "x": [700, 500, 700, 500],
+      "y": [100, 250, 250, 100],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["Finished!"],
+      "keyboard": true
+    },
+    {
+      "types": {
+        "1": "textbox"
+      },
+      "text": ["You’re ready for the next challenge."],
+      "keyboard": true
+    }
+  ]
+}

@@ -44,11 +44,15 @@ def contains(str, chars):
             return True
     return False
 
-types = ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"]
+types = [
+    "bn", "vm", "c,", "x.", "z/",
+    "ty", "ru", "ei", "wo", "qp",
+    "gh", "a;", "sl", "dk", "fj"
+    ]
 
 data = {}
 
-with open('./tools/1000MostCommon.txt', 'r') as f:
+with open('./tools/google-10000-english-no-swears.txt', 'r') as f:
     words = f.read().splitlines()
 
 for word in words:
@@ -66,5 +70,5 @@ for word in words:
 
 
 json_str = dumps_multiline(data, elements_per_line=4, indent_level=4)
-with open('./public/wordbankss.json', 'w') as f:
+with open('./public/wordbank.json', 'w') as f:
     f.write(json_str)

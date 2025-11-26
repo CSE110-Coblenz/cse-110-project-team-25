@@ -6,7 +6,7 @@ import Background from "../../objects/Background.ts";
 /**
  * PauseMenuView - Renders the pause menu overlay during gameplay
  */
-export class PauseMenuView extends BaseMenuView {
+export default class PauseMenuView extends BaseMenuView {
   private onResumeClick: () => void;
   private onQuitClick: () => void;
 

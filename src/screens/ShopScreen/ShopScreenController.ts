@@ -125,10 +125,10 @@ export class ShopScreenController extends ScreenController {
   }
 
   /**
-   * Go back to level select
+   * Go back to planet select
    */
   private goBack(): void {
-    this.screenSwitcher.switchToScreen({ type: "levelSelect" });
+    this.screenSwitcher.switchToScreen({ type: "planetSelect" });
   }
 
   /**

@@ -267,7 +267,7 @@ class EnemyFactory {
         speedMultiplier: number = 1,
         manager: LevelManager
     ): Wave {
-        const keyboardIncluded = true;
+        const keyboardIncluded = false;
         const wave = new Wave();
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
@@ -275,7 +275,7 @@ class EnemyFactory {
             const lane = Math.floor(Math.random() * 7) - 3; // -3..+3 lanes
             const distance = 40 + Math.random() * 30;  // 40..70
             const speed = (5 + Math.random() * 4) * speedMultiplier;
-            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle", "textbox"];
+            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"];
             const type = types[Math.floor(Math.random() * types.length)];
             const health = Math.random() < 0.8 ? 1 : 2;
 
@@ -302,7 +302,7 @@ class EnemyFactory {
         }
         const word = wordBank.getRandomWordExcludingInitials(
             activeInitials,
-            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
+            [ "bn", "vm", "c,", "x.", "z/", "ty", "ru", "ei", "wo", "qp", "gh", "a;", "sl", "dk", "fj" ],
             len
         );
         return word || "default";
@@ -316,7 +316,7 @@ class EnemyFactory {
     getRandomWordByDifficulty(activeInitials: Set<string>, difficulty: number): string {
         const word = wordBank.getRandomWordByDifficulty(
             difficulty,
-            ["bnm,.", "zxcv", "ty", "uiop", "qwer", "gh", "asdfjkl;"],
+            [ "bn", "vm", "c,", "x.", "z/", "ty", "ru", "ei", "wo", "qp", "gh", "a;", "sl", "dk", "fj" ],
             activeInitials
         );
         return word || "default";

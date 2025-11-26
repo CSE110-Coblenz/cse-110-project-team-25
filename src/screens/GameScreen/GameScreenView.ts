@@ -5,11 +5,11 @@ import Enemy from "../../objects/Enemy";
 import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
-import { PauseMenuView } from "../PauseMenuScreen/PauseMenuView.ts";
+import PauseMenuView from "../PauseMenuScreen/PauseMenuView.ts";
 import { InventoryUI } from "../../ui/InventoryUI.ts";
 import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
-export class GameScreenView implements View {
+export default class GameScreenView implements View {
   private group: Konva.Group;
   private typedText: Konva.Text;
   private moneyText: Konva.Text;
@@ -174,7 +174,7 @@ export class GameScreenView implements View {
     this.enemies.delete(id);
     if (this.targetedId === id) this.targetedId = null;
     this.group.getLayer()?.draw();
-    this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
+    if(En.type != "textbox")this.spawnEffectVisuals(new Explosion(En.x,En.y, En.image.scaleX()));
   }
 
   destroyEffect(id: number): void {
@@ -182,6 +182,14 @@ export class GameScreenView implements View {
     if (!Ef) return;
     Ef.destroy();
     this.effects.delete(id);
+  }
+
+  clearAllEffects(): void {
+    this.effects.forEach((effect) => {
+      effect.destroy();
+    });
+    this.effects.clear();
+    this.group.getLayer()?.draw();
   }
 
   setTarget(id: number | null): void {

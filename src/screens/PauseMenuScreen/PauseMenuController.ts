@@ -1,11 +1,11 @@
 import type { ScreenSwitcher } from "../../types.ts";
 import { BaseMenuController } from "../base/BaseMenuController.ts";
-import { PauseMenuView } from "./PauseMenuView.ts";
+import PauseMenuView from "./PauseMenuView.ts";
 
 /**
  * PauseMenuController - Handles pause menu interactions
  */
-export class PauseMenuController extends BaseMenuController {
+export default class PauseMenuController extends BaseMenuController {
   private onResume: () => void;
   private onQuit: () => void;
 

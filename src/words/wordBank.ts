@@ -1,6 +1,6 @@
 // const MAX_WORD_LENGTH = 18;
 
-export type Bank = "bnm,." | "zxcv" | "ty" | "uiop" | "qwer" | "gh" | "asdfjkl;";
+export type Bank = "bn" | "vm" | "c," | "x." | "z/" | "ty" | "ru" | "ei" | "wo" | "qp" | "gh" | "a;" | "sl" | "dk" | "fj"
 type SubBank = Record<number, string[]>;
 
 export class WordBank {
@@ -85,7 +85,7 @@ export class WordBank {
      */
     getRandomWordByDifficulty(
         difficulty: number, 
-        categories: Bank[] = ["bnm,."], 
+        categories: Bank[] = ["bn"], 
         excludedInitials?: Set<string> | string[]
     ): string | null {
         const length = this.calculateWordLengthFromDifficulty(difficulty);
@@ -98,7 +98,7 @@ export class WordBank {
     }
 
     // Original methods preserved for backward compatibility
-    getRandomWordExcludingInitials(excluded: Set<string> | string[], categories: Bank[] = ["bnm,."], length: number): string | null {
+    getRandomWordExcludingInitials(excluded: Set<string> | string[], categories: Bank[] = ["bn"], length: number): string | null {
         const ex = new Set(Array.from(excluded).map(c => c.toLowerCase()));
         const pool = this.pool(categories, length).filter(w => w && !ex.has(w[0].toLowerCase()));
         if (pool.length === 0) return this.getRandomWordExcludingInitials(excluded, categories, length+1);

@@ -316,7 +316,6 @@ export class ShopInventoryUI {
       stroke: "#FFF",
       strokeWidth: 2,
       cornerRadius: 3,
-      fill: null,
     });
     ghost.add(border);
 
