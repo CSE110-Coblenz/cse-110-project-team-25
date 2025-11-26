@@ -357,7 +357,6 @@ export class GameController {
             }
         }
         this.levelManager.onWaveCheck();
-
         //update effects
         let word = this.keyboardController.nextLetter()
         if(word === ';') word = "semicolon";
@@ -447,7 +446,6 @@ export class GameController {
             }
         }
     }
-
     // ---------- Utility Methods ----------
 
     /**

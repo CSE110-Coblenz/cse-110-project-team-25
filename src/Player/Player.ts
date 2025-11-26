@@ -40,7 +40,7 @@ export class Player {
   private baseDamage: number = 1; // Base damage per correct word
 
   // Max health cap
-  private static readonly ABSOLUTE_MAX_HEALTH = 6;
+  private static readonly ABSOLUTE_MAX_HEALTH = 5;
 
   private constructor() {
     this.health = 3;
@@ -76,6 +76,18 @@ export class Player {
 
   getMaxHealth(): number {
     return this.maxHealth;
+  }
+
+  toggleInvincibility(): void {
+    if (this.invincible === false) {
+      this.invincible = true;
+    } else {
+      this.invincible = false;
+    }
+  }
+
+  invincibleStatus(): boolean {
+    return this.invincible;
   }
 
   /**
