@@ -12,7 +12,6 @@ import Effect from "../objects/Effect"
  */
 class LevelManager {
     private _currentLevel: number = 1;
-    // private _waveLevels: Map<number, Wave[]> = new Map(); 
     private _isEndless: boolean = false;
     private _waves: Wave[] = [];
     private _currentWave: Wave | null = null;

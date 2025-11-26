@@ -200,4 +200,41 @@ export default class DifficultyUtil {
         // Fallback
         return 3;
     }
+
+    /**
+     * Select a random enemy type based on difficulty (1-100)
+     * Uses weighted bins to determine enemy type selection
+     * 
+     * Enemy difficulty ranking: meteor < ufo < shooter < amiiba
+     * Comet is a special case with no difficulty
+     * 
+     * Bins (based on random value * difficulty / 2):
+     * - comet:   [0, 1)
+     * - meteor:  (1, 35]
+     * - ufo:     (35, 70]
+     * - shooter: (70, 90]
+     * - amiiba:  (90, 100]
+     * 
+     * @returns The enemy type key: "amiiba" | "meteor" | "ufo" | "shooter" | "comet"
+     */
+    randEnemyType(): "amiiba" | "meteor" | "ufo" | "shooter" | "comet" {
+        // Generate random number between 0-2
+        const baseRandom = Math.random() * 2;
+        
+        // Multiply by difficulty / 1.5 to get scaled value
+        const scaledValue = baseRandom * (this._difficulty / 1.75);
+        
+        // Determine enemy type based on bin
+        if (scaledValue < 1) {
+            return "comet";
+        } else if (scaledValue <= 35) {
+            return "meteor";
+        } else if (scaledValue <= 70) {
+            return "ufo";
+        } else if (scaledValue <= 90) {
+            return "shooter";
+        } else {
+            return "amiiba";
+        }
+    }
 }
