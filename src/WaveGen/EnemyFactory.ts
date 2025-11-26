@@ -275,20 +275,20 @@ class EnemyFactory {
     ): Wave {
         const keyboardIncluded = false;
         const wave = new Wave();
-        const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
-            const word = this.getRandomWord(activeInitials);
-            const z = 40 + Math.random() * 30;  // 40..70
+            const word = this.getRandomWord(wave.activeInitials);
+            const z = 60 + Math.random() * 10;  // 60..70
             
-            const baseSpeed = 5 + Math.random() * 4;  // Base speed range: 5-9
+            const baseSpeed = 4 + Math.random() * 2;  // Base speed range: 4-6
             const speed = baseSpeed * speedMultiplier;
 
-            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle", "textbox"];
-            const type = types[Math.floor(Math.random() * types.length)];
-            const health = Math.random() < 0.8 ? 1 : 2;
-            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);
-            activeInitials.add(word[0].toLowerCase());
-            wave.addEnemy(enemy);
+            const type = manager.difficulty.randEnemyType();
+            const health = Math.random() < 0.9 ? 1 : 2;
+            const lane = wave.getInactiveLane();
+            const x = 1080 / 2 + (1080 * lane / 6) + 100;
+            const y = 720 / 2 * (Math.random() * (0.8 - 0.2) + 0.2);
+            const enemy = this.createEnemy(type, word, health, z, speed, x, y, 3, manager);
+            wave.addEnemy(enemy, lane);
         }
         const effect = this.createEffect("keyboard")
         if(keyboardIncluded) wave.addEffect(effect)

@@ -11,20 +11,22 @@ import Effect from "../objects/Effect"
  * Handles level counter, waves, and spawning enemies to the screen
  */
 class LevelManager {
-    private _currentLevel: number = 1;
-    private _isEndless: boolean = false;
-    private _waves: Wave[] = [];
-    private _currentWave: Wave | null = null;
     private _difficultyUtil: DifficultyUtil;
     private enemyFactory: EnemyFactory;
     private view: GameScreenView;
     private screenSwitcher: ScreenSwitcher;
-    private letterToId: Map<string, number> = new Map();
+    private _currentLevel: number = 1;
+    private _isEndless: boolean = false;
+    private _waves: Wave[] = [];
+    private _currentWave: Wave | null = null;
+    private _letterToId: Map<string, number> = new Map();
     private _isTransitioning: boolean = false;
-    private isTutorial: boolean | null = null;
+    private _isTutorial: boolean | null = null;
+    private _totalWavesInLevel: number = 0;
+    private _completedWavesInLevel: number = 0;
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
-        this._difficultyUtil = new DifficultyUtil(10);
+        this._difficultyUtil = new DifficultyUtil(100);
         this.enemyFactory = new EnemyFactory(this._difficultyUtil);
         this.view = view;
         this.screenSwitcher = screenSwitcher;
@@ -60,8 +62,8 @@ class LevelManager {
     /**
      * Get the current difficulty level
      */
-    get difficulty(): number {
-        return this._difficultyUtil.difficulty;
+    get difficulty(): DifficultyUtil {
+        return this._difficultyUtil;
     }
 
     /** Set the view for rendering enemies */
@@ -72,6 +74,8 @@ class LevelManager {
     /** Advances to the next level. */
     advanceLevel(): void {
         this._currentLevel += 1;
+        this._difficultyUtil.increaseDifficulty(this._currentLevel);
+        console.log(this._difficultyUtil.difficulty)
     }
 
     /** Sets the current level (for testing) */
@@ -97,12 +101,14 @@ class LevelManager {
     async popNextWave(): Promise<void> {
         if (this._waves.length > 0) {
             this._currentWave = this._waves.shift()!;
+            this._completedWavesInLevel++;
         } else {
             // No more waves, increment level and generate new waves
             this.advanceLevel();
             await this.generateNewLevel();
             if (this._waves.length > 0) {
                 this._currentWave = this._waves.shift()!;
+                this._completedWavesInLevel++;
             }
         }
     }
@@ -112,6 +118,8 @@ class LevelManager {
      */
     private generateRandomLevel(): void {
         const wavesPerLevel = 3; // Number of waves per level
+        this._totalWavesInLevel = wavesPerLevel;
+        this._completedWavesInLevel = 0;
 
         for (let i = 0; i < wavesPerLevel; i++) {
             // Use difficulty-based enemy count if available, otherwise use level scaling
@@ -135,13 +143,13 @@ class LevelManager {
      */
     async generateNewLevel(): Promise<void> {
         // Endless mode: generate random waves
-        if (this.isTutorial === null) {
+        if (this._isEndless) {
             this.generateRandomLevel();
             return;
         }
         
         // Tutorial or campaign mode: load from JSON
-        if (this.isTutorial) {
+        if (this._isTutorial) {
             await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
         } else {
             await this.loadLevelFromJSON(`./levels/campaign/level${this.currentLevel}.json`)
@@ -177,8 +185,11 @@ class LevelManager {
      * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
     async initializeLevel(isTutorial: boolean | null): Promise<void> {
-        this.isTutorial = isTutorial;
-        console.log(this.isTutorial);
+        if (this._isTutorial === null) {
+            this._isEndless = true;
+        } else {
+            this._isEndless = false;
+        }
         await this.generateNewLevel();
         await this.popNextWave();
         if (this._currentWave) {
@@ -193,7 +204,7 @@ class LevelManager {
     spawnNewWave(): void {
         if(this._currentWave == undefined) return
         // Clear tracking data
-        this.letterToId.clear();
+        this._letterToId.clear();
 
         // Iterate through all enemies in the wave
         this._currentWave.forEachEnemy((enemy) => {
@@ -224,7 +235,7 @@ class LevelManager {
         } else {
             initial = " "
         }
-        this.letterToId.set(initial, enemy.id);
+        this._letterToId.set(initial, enemy.id);
 
         // Set draw order based on distance
         const sortedIds = this.getIdsSortedByDistance(this._currentWave);
@@ -232,7 +243,7 @@ class LevelManager {
 
         // Update level and wave display
         this.view.updateLevel(this._currentLevel);
-        this.view.updateWaves(this._waves.length);
+        this.view.updateWaves(this._completedWavesInLevel, this._totalWavesInLevel);
         this.view.updateEnemiesLeft(this._currentWave.getCount());
     }
 
@@ -268,7 +279,7 @@ class LevelManager {
                 } else {
                     initial = " "
                 }
-                this.letterToId.delete(initial);
+                this._letterToId.delete(initial);
                 // Remove from wave
                 this._currentWave.removeEnemy(id);
                 
@@ -283,7 +294,7 @@ class LevelManager {
      * Returns null if no enemy starts with that character
      */
     getEnemyIdByInitial(char: string): number | null {
-        return this.letterToId.get(char.toLowerCase()) ?? null;
+        return this._letterToId.get(char.toLowerCase()) ?? null;
     }
 
     /**
@@ -304,9 +315,9 @@ class LevelManager {
     }
 
     changeWord(En: Enemy, word: string): void {
-        this.letterToId.delete(En.word[0]);
+        this._letterToId.delete(En.word[0]);
         En.word = word;
-        this.letterToId.set(word[0], En.id);
+        this._letterToId.set(word[0], En.id);
     }
     /**
      * Get a word based on current difficulty level
@@ -335,6 +346,8 @@ class LevelManager {
             try {
                 const waves = await this.enemyFactory.loadLevelFromJSON(url, this);
                 this._waves = waves;
+                this._totalWavesInLevel = waves.length;
+                this._completedWavesInLevel = 0;
                 return;
             } catch (error) {
                 throw new Error(`Failed to load level from ${url}: ${error}`);

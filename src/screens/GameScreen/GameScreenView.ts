@@ -83,7 +83,7 @@ export default class GameScreenView implements View {
       fontSize: 20, fontFamily: "Courier New", fill: "white", align: "left", listening: false,
     });
     
-    // this.hudContainer.add(this.typedText);
+    this.hudContainer.add(this.typedText);
     this.hudContainer.add(this.moneyText);
     this.hudContainer.add(this.healthText);
     this.hudContainer.add(this.levelText);
@@ -371,8 +371,8 @@ export default class GameScreenView implements View {
     this.group.getLayer()?.batchDraw();
   }
 
-  updateWaves(wavesRemaining: number): void {
-    this.waveText.text(`Waves: ${wavesRemaining}`);
+  updateWaves(completedWaves: number, totalWaves: number): void {
+    this.waveText.text(`Waves completed: ${completedWaves} / ${totalWaves}`);
     this.group.getLayer()?.batchDraw();
   }
 
