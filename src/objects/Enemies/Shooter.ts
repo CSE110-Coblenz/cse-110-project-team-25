@@ -8,7 +8,7 @@ class Shooter extends Enemy {
     private _bullet_speed: number;
     private _timer: number;
 
-    private readonly spawnRate = 3;   
+    private spawnRate = 3;   
 
     constructor(
         word: string,

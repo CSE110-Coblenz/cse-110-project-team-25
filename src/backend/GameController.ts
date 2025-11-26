@@ -57,7 +57,7 @@ export class GameController {
      * @param levelNumber - Optional level number to load (defaults to level 1)
      * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async startGame(isTutorial: boolean | null, levelNumber?: number): Promise<void> {
+    async startGame(isTutorial: boolean | undefined, levelNumber?: number): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -120,6 +120,9 @@ export class GameController {
         const greaterHealthPotion = registry.getItem("greater_health_potion");
         const heartContainer = registry.getItem("heart_container");
         const moneyBag = registry.getItem("money_bag");
+        const timeFreeze = registry.getItem("time_freeze");
+        const megaExplosion = registry.getItem("mega_explosion");
+        const invincibilityPotion = registry.getItem("invincibility_potion");
 
         if (healthPotion) {
             player.addConsumable(healthPotion, 3);
@@ -132,6 +135,15 @@ export class GameController {
         }
         if (moneyBag) {
             player.addConsumable(moneyBag, 2);
+        }
+        if (timeFreeze) {
+            player.addConsumable(timeFreeze, 2);
+        }
+        if (megaExplosion) {
+            player.addConsumable(megaExplosion, 2);
+        }
+        if (invincibilityPotion) {
+            player.addConsumable(invincibilityPotion, 2);
         }
 
         // Add some upgrades
@@ -342,7 +354,6 @@ export class GameController {
             }
         }
         this.levelManager.onWaveCheck();
-
         //update effects
         let word = this.keyboardController.nextLetter()
         if(word === ';') word = "semicolon";
@@ -376,7 +387,10 @@ export class GameController {
      */
     private useConsumableItem(slot: number): void {
         const player = Player.getInstance();
+        // Read the item before consuming the slot, because consuming may remove the slot
+        const preUseItem = player.getConsumableInventory().getSlot(slot)?.item;
         const success = player.useConsumable(slot);
+        let currentWave = this.levelManager.currentWave;
 
         if (success) {
             // Update health and money displays
@@ -386,10 +400,52 @@ export class GameController {
             // Update inventory UI to reflect changes
             this.view.updateInventoryUI();
 
-            // console.log(`Used item in slot ${slot + 1}`);
+            console.log(`Used item in slot ${slot + 1}`);
+
+            if (preUseItem?.id === "time_freeze") {
+                console.log("Time Freeze activated!");
+
+                if (currentWave) {
+                    
+                    const originalSpeeds = new Map<number, number>();
+                    currentWave.forEachEnemy((enemy) => {
+                        originalSpeeds.set(enemy.id, enemy.speed ?? 0);
+                        enemy.pause();
+                        enemy.speed = 0;
+                    });
+
+                    setTimeout(() => {
+                        currentWave.forEachEnemy((enemy) => {
+                            enemy.unpause();
+                            const orig = originalSpeeds.get(enemy.id);
+                            if (orig !== undefined) {
+                                enemy.speed = orig;
+                            }
+                        });
+                    }, 5000);
+                }
+            }
+            else if (preUseItem?.id === "mega_explosion") {
+                console.log("Mega Explosion activated!");
+
+                currentWave?.forEachEnemy((enemy) => {
+                    this.onEnemyDefeated(enemy.id);
+                });
+            }
+            else if (preUseItem?.id === "invincibility_potion") {
+                console.log("Invincibility Potion activated!");
+
+                if (player.invincibleStatus() === false) {
+                    player.toggleInvincibility();
+
+                    setTimeout(() => {
+                        player.toggleInvincibility();
+                    }, 5000);
+                }
+            }
+            
         }
     }
-
     // ---------- Utility Methods ----------
 
     /**
