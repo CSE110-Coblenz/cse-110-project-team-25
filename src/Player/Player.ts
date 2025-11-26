@@ -78,18 +78,6 @@ export class Player {
     return this.maxHealth;
   }
 
-  toggleInvincibility(): void {
-    if (this.invincible === false) {
-      this.invincible = true;
-    } else {
-      this.invincible = false;
-    }
-  }
-
-  invincibleStatus(): boolean {
-    return this.invincible;
-  }
-
   /**
    * Get max health with upgrade bonuses applied
    */

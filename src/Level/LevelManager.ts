@@ -172,7 +172,7 @@ class LevelManager {
      * Initialize the first level
      * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async initializeLevel(isTutorial: boolean | undefined): Promise<void> {
+    async initializeLevel(isTutorial?: boolean): Promise<void> {
         // Clear any existing state from previous game sessions
         if (this._currentWave) {
             // Clean up old effects

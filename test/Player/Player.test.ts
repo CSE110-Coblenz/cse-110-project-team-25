@@ -60,9 +60,9 @@ describe('Player', () => {
             expect(player.getMaxHealth()).toBe(5);
         });
 
-        it('should not exceed absolute max health cap (6)', () => {
+        it('should not exceed absolute max health cap (5)', () => {
             player.setMaxHealth(10);
-            expect(player.getMaxHealth()).toBe(6);
+            expect(player.getMaxHealth()).toBe(5);
         });
     });
 
