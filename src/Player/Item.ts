@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { ItemType, ItemRarity, type ItemModifiers, type ItemData, type ItemAnimations } from "./ItemTypes.ts";
+import type { Player } from "./Player.ts";
 
 /**
  * Item class represents both consumable and upgrade items
@@ -133,7 +134,7 @@ export class Item {
    * Use this item (only for CONSUMABLE items)
    * Returns true if item was successfully used
    */
-  use(player: any): boolean {
+  use(player: Player): boolean {
     if (!this.canUse()) {
       return false;
     }

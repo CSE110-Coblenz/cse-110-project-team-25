@@ -55,9 +55,9 @@ export class GameController {
     /**
      * Initialize and start the game
      * @param levelNumber - Optional level number to load (defaults to level 1)
-     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
+     * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async startGame(isTutorial: boolean | null, levelNumber?: number): Promise<void> {
+    async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -71,7 +71,7 @@ export class GameController {
         this.resetGameState();
 
         // For tutorial/campaign modes, set the specific level before initializing
-        if (isTutorial !== null && levelNumber !== undefined) {
+        if (isTutorial !== undefined && levelNumber !== undefined) {
             this.levelManager.setLevel(levelNumber);
         }
 

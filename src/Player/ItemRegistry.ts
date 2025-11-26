@@ -199,6 +199,48 @@ class ItemRegistry {
       spriteSheet: "./item_textures/hourglass.png",
     });
 
+    // Time freeze - Enemies stop moving for 5 seconds
+    this.registerItem({
+      id: "time_freeze",
+      name: "Time Freeze",
+      description: "Enemies stop moving",
+      iconColor: "#00CED1", // Dark Turquoise
+      type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.UNCOMMON,
+      stackable: true,
+      maxStack: 3,
+      modifiers: {},
+      price: 400,
+    });
+
+    // Mega explosion - Everything dies
+    this.registerItem({
+      id: "mega_explosion",
+      name: "Mega Explosion",
+      description: "Defeat all enemies on screen",
+      iconColor: "#FF8C00", // Dark Orange
+      type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.RARE,
+      stackable: true,
+      maxStack: 2,
+      modifiers: {},
+      price: 1000,
+    });
+
+    //Invincibility - temporary invincibility
+    this.registerItem({
+      id: "invincibility_potion",
+      name: "Invincibility",
+      description: "invincible for 5 seconds",
+      iconColor: "#7FFF00", // Chartreuse
+      type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.UNCOMMON,
+      stackable: true,
+      maxStack: 3,
+      modifiers: {},
+      price: 600,
+    }); 
+
     // Ultimate Power - Multiple bonuses
     this.registerItem({
       id: "ultimate_power",

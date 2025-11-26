@@ -54,7 +54,7 @@ export type Screen =
 	| { type: "planetSelect" }
 	| { type: "levelSelect"; planetType: planetName }
 	| { type: planetName }
-	| { type: "game"; levelNumber?: number, isTutorial: boolean | null }
+	| { type: "game"; levelNumber?: number, isTutorial?: boolean }
 	| { type: "shop" };
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
