@@ -20,7 +20,7 @@ export default class MenuScreenController extends BaseMenuController {
 	 */
 	private handleStartClick(): void {
 		console.log("Endless mode started!");
-		this.screenSwitcher.switchToScreen({type: "game", levelNumber: undefined, isTutorial: null});
+		this.screenSwitcher.switchToScreen({type: "game", levelNumber: undefined, isTutorial: undefined});
 	}
 
 	/**

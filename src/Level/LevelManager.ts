@@ -21,7 +21,7 @@ class LevelManager {
     private screenSwitcher: ScreenSwitcher;
     private letterToId: Map<string, number> = new Map();
     private _isTransitioning: boolean = false;
-    private isTutorial: boolean | null = null;
+    private isTutorial: boolean | undefined = undefined;
 
     constructor(view: GameScreenView, screenSwitcher: ScreenSwitcher) {
         this._difficultyUtil = new DifficultyUtil(10);
@@ -93,10 +93,12 @@ class LevelManager {
      * Pop the next wave from the waves array
      * When currentWave.isEmpty(), this is called to get the next wave
      * When waves array is empty, generate a new level
+     * returns true if new level was generated, false otherwise
      */
-    async popNextWave(): Promise<void> {
+    async popNextWave(): Promise<boolean> {
         if (this._waves.length > 0) {
             this._currentWave = this._waves.shift()!;
+            return false;
         } else {
             // No more waves, increment level and generate new waves
             this.advanceLevel();
@@ -104,6 +106,7 @@ class LevelManager {
             if (this._waves.length > 0) {
                 this._currentWave = this._waves.shift()!;
             }
+            return true;
         }
     }
 
@@ -135,7 +138,7 @@ class LevelManager {
      */
     async generateNewLevel(): Promise<void> {
         // Endless mode: generate random waves
-        if (this.isTutorial === null) {
+        if (this.isTutorial === undefined) {
             this.generateRandomLevel();
             return;
         }
@@ -151,6 +154,8 @@ class LevelManager {
     /**
      * Check if current wave is empty and handle wave/level progression
      * Call this when an enemy is defeated
+     * If newLevel wants to be generated from popNextWave(), switch to level select screen if isTutorial is true or false.
+     * If isTutorial is undefined (endless mode), just generate new level and continue.
      */
     async onWaveCheck(): Promise<void> {
         if (this._currentWave && this._currentWave.isEmpty()) {
@@ -162,8 +167,14 @@ class LevelManager {
             if (this._isTransitioning) return;
             this._isTransitioning = true;
             try {
-                await this.popNextWave();
-                if (this._currentWave) {
+                const newLevel = await this.popNextWave();
+                if (newLevel && this.isTutorial) {
+                    this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "tutorial_planet"});
+                }
+                else if (newLevel && this.isTutorial === false) {
+                    this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "campaign_planet"});
+                }
+                else if (this._currentWave) {
                     this.spawnNewWave();
                 }
             } finally {
@@ -176,7 +187,7 @@ class LevelManager {
      * Initialize the first level
      * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async initializeLevel(isTutorial: boolean | null): Promise<void> {
+    async initializeLevel(isTutorial: boolean | undefined): Promise<void> {
         this.isTutorial = isTutorial;
         console.log(this.isTutorial);
         await this.generateNewLevel();
