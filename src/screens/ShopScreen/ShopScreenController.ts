@@ -17,6 +17,8 @@ export class ShopScreenController extends ScreenController {
   private shopInventory: ShopInventory;
   private barteringSystem: BarteringSystem;
   private keydownHandler: ((e: KeyboardEvent) => void) | null = null;
+  private previousState: string;
+  private previousLevelNumber: number;
 
   // Bartering state
   private currentOfferAmount: number = 0;
@@ -49,6 +51,14 @@ export class ShopScreenController extends ScreenController {
       () => this.acceptDeal(),
       () => this.walkAway()
     );
+  }
+
+  /**
+   * Set parameters passed when opening the shop (call before show())
+   */
+  setParams(params: { previousState?: string; levelNumber?: number }): void {
+    if (params.previousState !== undefined) this.previousState = params.previousState;
+    if (params.levelNumber !== undefined) this.previousLevelNumber = params.levelNumber;
   }
 
   /**
@@ -128,7 +138,19 @@ export class ShopScreenController extends ScreenController {
    * Go back to planet select
    */
   private goBack(): void {
-    this.screenSwitcher.switchToScreen({ type: "planetSelect" });
+
+    if (this.previousState === "tutorial") {
+      this.screenSwitcher.switchToScreen({ type: "planetSelect" });
+    }
+    else if (this.previousState === "campaign") {
+      this.screenSwitcher.switchToScreen({ type: "planetSelect" });
+    }
+    else if (this.previousState === "endless") {
+      this.screenSwitcher.switchToScreen({ type: "game", levelNumber: this.previousLevelNumber, isTutorial: undefined});
+    }
+    else {
+      this.screenSwitcher.switchToScreen({ type: "planetSelect" });
+    }
   }
 
   /**

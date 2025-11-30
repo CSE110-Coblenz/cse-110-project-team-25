@@ -53,6 +53,10 @@ class LevelManager {
         return this._currentWave;
     }
 
+    get isTutorialMode(): boolean | undefined {
+        return this.isTutorial;
+    }
+
     /** Set the view for rendering enemies */
     setView(view: GameScreenView): void {
         this.view = view;
@@ -103,7 +107,7 @@ class LevelManager {
      * Generate a new set of random waves for the current level (endless mode)
      */
     private generateRandomLevel(): void {
-        const wavesPerLevel = 3; // Number of waves per level
+        const wavesPerLevel = 1; // Number of waves per level
         const baseEnemyCount = 3;
         const speedMultiplier = 1 + (this._currentLevel * 0.2);
 

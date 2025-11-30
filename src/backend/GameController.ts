@@ -27,9 +27,11 @@ export class GameController {
     // Game state
     private anim?: Konva.Animation;
     private paused: Boolean = false;
+    private beenToShop: Boolean = false;
 
     // Game parameters
     private readonly NEAR_GAME_OVER = 10;
+    private readonly ENDLESS_SHOP_INTERVAL = 3;
 
     constructor(model: GameScreenModel, view: GameScreenView, screenSwitcher: ScreenSwitcher) {
         this.model = model;
@@ -60,13 +62,11 @@ export class GameController {
     async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
         Save.load();
         Save.loaded = true;
-        Money.getInstance().amount = Save.money;
-        console.log("Loaded money:" + Money.getInstance().amount);
 
-        // Sync Player with saved money
+        // After Save.load(), Player state will be restored. Sync Money singleton with Player.
         const player = Player.getInstance();
-        player.setMoney(Save.money);
-        console.log("Loaded money:" + player.getMoney());
+        Money.getInstance().amount = player.getMoney();
+        console.log("Loaded money:" + Money.getInstance().amount);
 
         this.resetGameState();
 
@@ -169,7 +169,8 @@ export class GameController {
     stopGame(): void {
         // Save Player's money
         const player = Player.getInstance();
-        Save.money = player.getMoney();
+        // Persist current player and progress
+        Save.levelComplete = this.levelManager.currentLevel;
         Save.save();
 
         this.stopGameLoop();
@@ -354,9 +355,22 @@ export class GameController {
 
             if(player.isDead()){
                 this.gameOver();
+                return;
             }
         }
+        
         this.levelManager.onWaveCheck();
+        const currLevel = this.levelManager.currentLevel;
+        if (this.levelManager.isTutorialMode === undefined && currLevel % this.ENDLESS_SHOP_INTERVAL === 0 && this.beenToShop == false){
+            this.beenToShop = true;
+            this.stopGame();
+            this.screenSwitcher.switchToScreen({ type: "shop", previousState: "endless", levelNumber: currLevel});
+            return;
+        }
+        else if (currLevel % this.ENDLESS_SHOP_INTERVAL !== 0){
+            this.beenToShop = false;
+        }
+
         //update effects
         let word = this.keyboardController.nextLetter()
         if(word === ';') word = "semicolon";

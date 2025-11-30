@@ -9,6 +9,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 import GameRenderer from "./rendering/GameRenderer.ts";
 import { wordBank } from "./words/wordBank.ts";
 import ItemRegistry from "./Player/ItemRegistry.ts";
+import { Save } from "./backend/Save.ts";
 
 
 class App implements ScreenSwitcher {
@@ -68,6 +69,12 @@ class App implements ScreenSwitcher {
         this.gameController.startGame(screen.levelNumber, screen.isTutorial); // shows game screen inside
         break;
       case "shop":
+        if (screen.previousState !== undefined || screen.levelNumber !== undefined) {
+          this.shopController.setParams({
+            previousState: screen.previousState,
+            levelNumber: screen.levelNumber,
+          });
+        }
         this.shopController.show();
         break;
       case "planetSelect":
@@ -101,6 +108,17 @@ class App implements ScreenSwitcher {
 (async () => {
   await wordBank.load();        // load JSON once
   ItemRegistry.getInstance();   // Initialize item registry
-  new App("container");         // then boot your app
+  
+  Save.load();
+  const app = new App("container");         // then boot your app
+
+  // Ensure we save player state on page unload/refresh
+  window.addEventListener("beforeunload", () => {
+    try {
+      Save.save();
+    } catch (e) {
+      console.warn("Save on unload failed:", e);
+    }
+  });
 })();
 
