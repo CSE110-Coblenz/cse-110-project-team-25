@@ -93,7 +93,7 @@ export class InventoryUI {
 
     for (let i = 0; i < this.NUM_SLOTS; i++) {
       const slot = this.slots[i];
-      const inventorySlot = inventory.getSlot(i);
+      const inventorySlot = inventory.getHotbarSlot(i);
 
       // Clear existing item display (keep bg and number)
       const children = slot.getChildren();

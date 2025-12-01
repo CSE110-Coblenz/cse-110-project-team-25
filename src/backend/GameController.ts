@@ -55,9 +55,9 @@ export class GameController {
     /**
      * Initialize and start the game
      * @param levelNumber - Optional level number to load (defaults to level 1)
-     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
+     * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async startGame(isTutorial: boolean | undefined, levelNumber?: number): Promise<void> {
+    async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
         Save.load();
         Save.loaded = true;
         Money.getInstance().amount = Save.money;
@@ -69,12 +69,12 @@ export class GameController {
         console.log("Loaded money:" + player.getMoney());
 
         this.resetGameState();
-        
+
         // For tutorial/campaign modes, set the specific level before initializing
-        if (isTutorial !== null && levelNumber !== undefined) {
+        if (isTutorial !== undefined && levelNumber !== undefined) {
             this.levelManager.setLevel(levelNumber);
         }
-        
+
         // Initialize level (generates random waves for endless mode, loads JSON for others)
         await this.levelManager.initializeLevel(isTutorial);
         this.keyboardController.setupInput();
@@ -90,38 +90,44 @@ export class GameController {
                 this.screenSwitcher.switchToScreen({ type: "menu" });
             }
         );
-      
-        // this.addSampleItems(); // Add sample items for testing
 
-        // if (levelNumber !== undefined) {
-        //     this.levelManager.setLevel(levelNumber);
-        // }
+        // Initialize health display
+        this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
 
-        // await this.levelManager.initializeLevel(isTutorial);
-        // this.keyboardController.setupInput();
         this.startGameLoop();
     }
 
     /**
      * Add sample items to player inventory for testing
-     * TODO: Remove this when shop is implemented
+     * Only adds items if inventory is empty (preserves shop changes)
+     * TODO: Remove this when shop is fully implemented
      */
     private addSampleItems(): void {
         const player = Player.getInstance();
-        const registry = ItemRegistry.getInstance();
+        const inventory = player.getConsumableInventory();
+        const upgradeInv = player.getUpgradeInventory();
 
-        // Clear existing items first (prevents duplicates on restart)
-        player.getConsumableInventory().clear();
-        player.getUpgradeInventory().clear();
+        // Only add sample items if inventory is completely empty
+        const hasItems = inventory.getHotbarSlots().some(slot => slot !== null) ||
+                        inventory.getStorageSlots().some(slot => slot !== null) ||
+                        upgradeInv.getEquippedUpgrades().length > 0;
+
+        if (hasItems) {
+            // Inventory already has items (from shop or previous session)
+            this.view.updatePlayerUI();
+            return;
+        }
+
+        // Add sample items only if inventory is empty
+        const registry = ItemRegistry.getInstance();
 
         // Add some consumable items to inventory
         const healthPotion = registry.getItem("health_potion");
         const greaterHealthPotion = registry.getItem("greater_health_potion");
-        const heartContainer = registry.getItem("heart_container");
         const moneyBag = registry.getItem("money_bag");
         const timeFreeze = registry.getItem("time_freeze");
         const megaExplosion = registry.getItem("mega_explosion");
-        const invincibilityPotion = registry.getItem("invincibility_potion");
+        const invincibility = registry.getItem("invincibility_potion");
 
         if (healthPotion) {
             player.addConsumable(healthPotion, 3);
@@ -129,28 +135,25 @@ export class GameController {
         if (greaterHealthPotion) {
             player.addConsumable(greaterHealthPotion, 2);
         }
-        if (heartContainer) {
-            player.addConsumable(heartContainer, 2);
-        }
         if (moneyBag) {
             player.addConsumable(moneyBag, 2);
         }
         if (timeFreeze) {
-            player.addConsumable(timeFreeze, 2);
+            player.addConsumable(timeFreeze, 3);
         }
         if (megaExplosion) {
             player.addConsumable(megaExplosion, 2);
         }
-        if (invincibilityPotion) {
-            player.addConsumable(invincibilityPotion, 2);
+        if (invincibility) {
+            player.addConsumable(invincibility, 3);
         }
 
         // Add some upgrades
-        const damageAmp = registry.getItem("damage_amplifier");
+        const doubleDamage = registry.getItem("double_damage");
         const luckyToken = registry.getItem("money_multiplier");
 
-        if (damageAmp) {
-            player.equipUpgrade(damageAmp, 0);
+        if (doubleDamage) {
+            player.equipUpgrade(doubleDamage, 0);
         }
         if (luckyToken) {
             player.equipUpgrade(luckyToken, 1);
@@ -172,6 +175,7 @@ export class GameController {
         this.stopGameLoop();
         this.keyboardController.cleanup();
         this.clearAllEnemies();
+        this.view.clearAllEffects(); // Clear all effects including keyboard overlays
     }
 
     /**
@@ -389,7 +393,7 @@ export class GameController {
         // Read the item before consuming the slot, because consuming may remove the slot
         const preUseItem = player.getConsumableInventory().getSlot(slot)?.item;
         const success = player.useConsumable(slot);
-        let currentWave = this.levelManager.currentWave;
+        const currentWave = this.levelManager.currentWave;
 
         if (success) {
             // Update health and money displays
@@ -401,11 +405,11 @@ export class GameController {
 
             console.log(`Used item in slot ${slot + 1}`);
 
+            // Handle special item effects
             if (preUseItem?.id === "time_freeze") {
                 console.log("Time Freeze activated!");
 
                 if (currentWave) {
-                    
                     const originalSpeeds = new Map<number, number>();
                     currentWave.forEachEnemy((enemy) => {
                         originalSpeeds.set(enemy.id, enemy.speed ?? 0);
@@ -423,15 +427,13 @@ export class GameController {
                         });
                     }, 5000);
                 }
-            }
-            else if (preUseItem?.id === "mega_explosion") {
+            } else if (preUseItem?.id === "mega_explosion") {
                 console.log("Mega Explosion activated!");
 
                 currentWave?.forEachEnemy((enemy) => {
                     this.onEnemyDefeated(enemy.id);
                 });
-            }
-            else if (preUseItem?.id === "invincibility_potion") {
+            } else if (preUseItem?.id === "invincibility_potion") {
                 console.log("Invincibility Potion activated!");
 
                 if (player.invincibleStatus() === false) {
@@ -442,7 +444,6 @@ export class GameController {
                     }, 5000);
                 }
             }
-            
         }
     }
     // ---------- Utility Methods ----------

@@ -10,15 +10,17 @@ import type { planetName } from "../../../types.ts";
 export abstract class BaseLevelSelectView extends BaseMenuView {
     protected onLevelSelect: (level: number) => void;
     protected onBackClick: () => void;
+    protected onShopClick?: () => void;
     protected levelGroups: Map<number, Konva.Group> = new Map();
     protected planetType: planetName;
 
-    constructor(onLevelSelect: (level: number) => void, onBackClick: () => void, planetType: planetName) {
+    constructor(onLevelSelect: (level: number) => void, onBackClick: () => void, planetType: planetName, onShopClick?: () => void) {
         super("#0f0f23", false, true);
         this.onLevelSelect = onLevelSelect;
         this.onBackClick = onBackClick;
+        this.onShopClick = onShopClick;
         this.planetType = planetType;
-        this.group.visible(true);
+        // Don't set visible(true) here - let show() handle it after layout is built
     }
 
     /**

@@ -44,15 +44,18 @@ export interface View {
  * Screen types for navigation
  *
  * - "menu": Main menu screen
- * - "levelSelect": Level selection screen
- * - "game": Gameplay screen with optional levelNumber
+ * - "planetSelect": Planet selection screen
+ * - "levelSelect": Level selection screen (with planet type)
+ * - "game": Gameplay screen with optional levelNumber and isTutorial flag
+ * - "shop": Shop screen for purchasing items
  */
 export type Screen =
 	| { type: "menu" }
 	| { type: "planetSelect" }
 	| { type: "levelSelect"; planetType: planetName }
 	| { type: planetName }
-	| { type: "game"; levelNumber?: number, isTutorial: boolean | undefined };
+	| { type: "game"; levelNumber?: number, isTutorial?: boolean }
+	| { type: "shop" };
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {

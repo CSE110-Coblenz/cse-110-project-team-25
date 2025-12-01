@@ -23,15 +23,9 @@ export default class GameScreenController extends ScreenController {
      * @param levelNumber - Optional level number to load (defaults to level 1)
      * @param isTutorial - true for tutorial, false for campaign, null for endless mode
      */
-    async startGame(levelNumber?: number, isTutorial: boolean | undefined = undefined): Promise<void> {
+    async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
         this.model.reset();
-        
-        if (isTutorial === undefined) {
-            await this.gameController.startGame(isTutorial, levelNumber);
-        } else {
-            await this.gameController.startGame(isTutorial, levelNumber);
-        }
-        
+        await this.gameController.startGame(levelNumber, isTutorial);
         this.view.show();
     }
 

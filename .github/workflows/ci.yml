@@ -32,7 +32,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/shop-pre'
     
     environment:
       name: github-pages
