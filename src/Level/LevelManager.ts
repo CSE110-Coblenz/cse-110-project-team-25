@@ -4,6 +4,7 @@ import type GameScreenView from "../screens/GameScreen/GameScreenView";
 import type { ScreenSwitcher, Screen } from "../types";
 import Enemy from "../objects/Enemy"
 import Effect from "../objects/Effect"
+import { Save } from "../backend/Save.ts";
 
 /**
  * LevelManager manages game progression through levels
@@ -157,11 +158,21 @@ class LevelManager {
             this._isTransitioning = true;
             try {
                 const newLevel = await this.popNextWave();
-                if (newLevel && this.isTutorial) {
-                    this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "tutorial_planet"});
-                }
-                else if (newLevel && this.isTutorial === false) {
-                    this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "campaign_planet"});
+                console.log(`onWaveCheck: newLevel=${newLevel}, isTutorial=${this.isTutorial}, currentLevel=${this._currentLevel}`);
+                if (newLevel && this.isTutorial !== undefined) {
+                    // Level completed - unlock the next level
+                    const planetType = this.isTutorial ? "tutorial_planet" : "campaign_planet";
+                    const completedLevel = this._currentLevel - 1;
+                    console.log(`Level completed in ${planetType}. Completed level: ${completedLevel}, current level: ${this._currentLevel}`);
+                    
+                    const unlockedLevel = Save.unlockNextLevel(planetType, completedLevel);
+                    console.log(`Unlock result: ${unlockedLevel}`);
+                    
+                    // Ensure the save persists
+                    Save.save();
+                    console.log(`Save called. Current unlocked levels:`, Save.unlockedLevels);
+                    
+                    this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: planetType });
                 }
                 else if (this._currentWave) {
                     this.spawnNewWave();
