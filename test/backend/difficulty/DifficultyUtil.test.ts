@@ -86,24 +86,24 @@ describe('DifficultyUtil', () => {
             difficultyUtil.difficulty = 10;
             mockRandomValue = 0.5;
             const speed = difficultyUtil.randSpeedMultiplier();
-            expect(speed).toBeGreaterThanOrEqual(0.5);
-            expect(speed).toBeLessThanOrEqual(0.7);
+            expect(speed).toBeGreaterThanOrEqual(0.3);
+            expect(speed).toBeLessThanOrEqual(0.5);
         });
 
         it('should return medium speed at difficulty 50', () => {
             difficultyUtil.difficulty = 50;
             mockRandomValue = 0.5;
             const speed = difficultyUtil.randSpeedMultiplier();
-            expect(speed).toBeGreaterThan(1.0);
-            expect(speed).toBeLessThan(3.0);
+            expect(speed).toBeGreaterThan(0.5);
+            expect(speed).toBeLessThan(1.5);
         });
 
         it('should return faster speed at difficulty 100', () => {
             difficultyUtil.difficulty = 100;
             mockRandomValue = 0.5;
             const speed = difficultyUtil.randSpeedMultiplier();
-            expect(speed).toBeGreaterThanOrEqual(3.0);
-            expect(speed).toBeLessThanOrEqual(4.0);
+            expect(speed).toBeGreaterThanOrEqual(1.5);
+            expect(speed).toBeLessThanOrEqual(2.0);
         });
 
         it('should return consistent result with same seed at difficulty 75', () => {
@@ -186,49 +186,49 @@ describe('DifficultyUtil', () => {
     describe('randEnemyType', () => {
         it('should return comet at very low scaled value', () => {
             difficultyUtil.difficulty = 10;
-            mockRandomValue = 0.05; // 0.05 * 2 * (10/1.75) ≈ 0.57
+            mockRandomValue = 0.05; // 0.05 * 1.3 * (10/1.3) ≈ 0.5
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('comet');
         });
 
         it('should return meteor at difficulty 20 with mid random', () => {
             difficultyUtil.difficulty = 20;
-            mockRandomValue = 0.5; // 0.5 * 2 * (20/1.75) ≈ 11.43
+            mockRandomValue = 0.5; // 0.5 * 1.3 * (20/1.3) = 10
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('meteor');
         });
 
         it('should return ufo at difficulty 50 with mid random', () => {
             difficultyUtil.difficulty = 50;
-            mockRandomValue = 0.6; // 0.6 * 2 * (50/1.75) ≈ 34.29
+            mockRandomValue = 0.6; // 0.6 * 1.3 * (50/1.3) = 30
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('meteor');
         });
 
         it('should return ufo at difficulty 70', () => {
             difficultyUtil.difficulty = 70;
-            mockRandomValue = 0.6; // 0.6 * 2 * (70/1.75) = 48
+            mockRandomValue = 0.6; // 0.6 * 1.3 * (70/1.3) = 42
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('ufo');
         });
 
         it('should return shooter at difficulty 85', () => {
             difficultyUtil.difficulty = 85;
-            mockRandomValue = 0.7; // 0.7 * 2 * (85/1.75) ≈ 68
+            mockRandomValue = 0.7; // 0.7 * 1.3 * (85/1.3) ≈ 59.5
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('ufo');
         });
 
         it('should return shooter at high difficulty', () => {
             difficultyUtil.difficulty = 90;
-            mockRandomValue = 0.8; // 0.8 * 2 * (90/1.75) ≈ 82.29
+            mockRandomValue = 0.8; // 0.8 * 1.3 * (90/1.3) = 72
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('shooter');
         });
 
         it('should return amiiba at very high scaled value', () => {
             difficultyUtil.difficulty = 100;
-            mockRandomValue = 0.9; // 0.9 * 2 * (100/1.75) ≈ 102.86
+            mockRandomValue = 0.9; // 0.9 * 1.3 * (100/1.3) = 90
             const type = difficultyUtil.randEnemyType();
             expect(type).toBe('amiiba');
         });
@@ -243,20 +243,20 @@ describe('DifficultyUtil', () => {
         it('should be able to return all enemy types at max difficulty', () => {
             difficultyUtil.difficulty = 100;
             
-            // Test each bin
-            mockRandomValue = 0.001; // Very low -> comet
+            // Test each bin (bins: comet ≤5, meteor ≤40, ufo ≤60, shooter ≤80, amiiba >80)
+            mockRandomValue = 0.03; // 0.03 * 1.3 * (100/1.3) = 3 -> comet
             expect(difficultyUtil.randEnemyType()).toBe('comet');
             
-            mockRandomValue = 0.1; // Low -> meteor
+            mockRandomValue = 0.2; // 0.2 * 1.3 * (100/1.3) = 20 -> meteor
             expect(difficultyUtil.randEnemyType()).toBe('meteor');
             
-            mockRandomValue = 0.5; // Mid -> ufo
+            mockRandomValue = 0.5; // 0.5 * 1.3 * (100/1.3) = 50 -> ufo
             expect(difficultyUtil.randEnemyType()).toBe('ufo');
             
-            mockRandomValue = 0.75; // High -> shooter
+            mockRandomValue = 0.7; // 0.7 * 1.3 * (100/1.3) = 70 -> shooter
             expect(difficultyUtil.randEnemyType()).toBe('shooter');
             
-            mockRandomValue = 0.95; // Very high -> amiiba
+            mockRandomValue = 0.9; // 0.9 * 1.3 * (100/1.3) = 90 -> amiiba
             expect(difficultyUtil.randEnemyType()).toBe('amiiba');
         });
     });

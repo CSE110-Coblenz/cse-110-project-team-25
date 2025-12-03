@@ -1,5 +1,7 @@
-import Enemy from "../objects/Enemy";
+import Enemy from "../objects/Enemy"
 import Effect from "../objects/Effect"
+
+const NUM_LANES = 6
 
 /**
  * Wave class holds a collection of enemies for a single wave
@@ -26,9 +28,12 @@ class Wave {
     /**
      * Add an enemy to the wave
      */
-    addEnemy(enemy: Enemy): void {
+    addEnemy(enemy: Enemy, lane?: number): void {
         this.enemies.set(enemy.id, enemy);
-        this.activeInitials.add(enemy.word[0]);
+        this._activeInitials.add(enemy.word[0]);
+        if (lane !== undefined) {
+            this._activeLanes.add(lane);
+        }
     }
 
     /**
@@ -44,7 +49,7 @@ class Wave {
                 enemy => enemy.word[0] === initial
             );
             if (!hasOtherEnemyWithInitial) {
-                this.activeInitials.delete(initial);
+                this._activeInitials.delete(initial);
             }
         }
     }
@@ -100,7 +105,7 @@ class Wave {
     getInactiveLane(): number {
         let tries = 0;
         while (tries < 100) {
-            const lane = Math.floor(Math.random() * 6) - 3; // -3 to +2
+            const lane = Math.floor(Math.random() * NUM_LANES) - 3; // -3 to +2
             if (!this._activeLanes.has(lane)) {
                 return lane;
             }
@@ -109,6 +114,7 @@ class Wave {
         // Fallback in case all lanes are active
         return 0;
     }
+
     /**
      * Iterate through all enemies
      */
@@ -149,7 +155,7 @@ class Wave {
 
     get activeLanes(): Set<number> { return this._activeLanes; }
 
-    set activeLanes(lanes: Set<number>) { this._activeLanes = lanes; }
+    set activeLanes(lanes: Set<number>) { this._activeLanes = lanes; }    
 
     get activeInitials(): Set<string> { return this._activeInitials; }
 }

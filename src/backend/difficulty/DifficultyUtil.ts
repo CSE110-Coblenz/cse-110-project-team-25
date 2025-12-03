@@ -9,12 +9,12 @@
 // Configure these values to adjust enemy speed multipliers
 
 // Difficulty 10 speed multiplier range
-const SPEED_MULTIPLIER_MIN_AT_DIFFICULTY_10 = 0.5;
-const SPEED_MULTIPLIER_MAX_AT_DIFFICULTY_10 = 0.7;
+const SPEED_MULTIPLIER_MIN_AT_DIFFICULTY_10 = 0.3;
+const SPEED_MULTIPLIER_MAX_AT_DIFFICULTY_10 = 0.5;
 
 // Difficulty 100 speed multiplier range
-const SPEED_MULTIPLIER_MIN_AT_DIFFICULTY_100 = 3.0;
-const SPEED_MULTIPLIER_MAX_AT_DIFFICULTY_100 = 4.0;
+const SPEED_MULTIPLIER_MIN_AT_DIFFICULTY_100 = 1.5;
+const SPEED_MULTIPLIER_MAX_AT_DIFFICULTY_100 = 2;
 
 // Reference difficulty levels for speed scaling
 const SPEED_LOW_DIFFICULTY_REF = 10;
@@ -75,15 +75,16 @@ export default class DifficultyUtil {
             // Adjust weights based on difficulty level
             if (this._difficulty <= 30) {
                 // Low difficulty: favor shorter words (3-5 letters)
+                if (length <= 3) weight *= 2;
                 if (length <= 5) weight *= 2;
-                if (length >= 7) weight *= 0.3;
+                if (length >= 6) weight *= 0.3;
             } else if (this._difficulty <= 60) {
                 // Medium difficulty: balanced distribution
-                if (length >= 6) weight *= 1 + varianceMultiplier;
+                if (length >= 5) weight *= 1 + varianceMultiplier;
             } else {
                 // High difficulty: favor longer words (6-10 letters)
-                if (length >= 6) weight *= 1.5 + varianceMultiplier;
-                if (length >= 8) weight *= 1 + varianceMultiplier;
+                if (length >= 5) weight *= 1.5 + varianceMultiplier;
+                if (length >= 7) weight *= 1 + varianceMultiplier;
                 if (length <= 3) weight *= 0.5;
             }
             
@@ -178,12 +179,11 @@ export default class DifficultyUtil {
             weights[4] = 0.36 * (1 - progress) + 0.35 * progress;
             weights[5] = 0.1 * (1 - progress) + 0.55 * progress;
         } else {
-            // Difficulty 100: avg 5 (sometimes 6, rarely 4)
+            // Difficulty 100: avg 5
             const progress = (difficulty - 70) / 30; // 0 to 1
             weights[3] = 0.1 * (1 - progress);
             weights[4] = 0.35 * (1 - progress) + 0.15 * progress;
             weights[5] = 0.55 * (1 - progress) + 0.6 * progress;
-            weights[6] = 0.25 * progress;
         }
 
         // Select count based on weighted random selection
@@ -219,22 +219,30 @@ export default class DifficultyUtil {
      */
     randEnemyType(): "amiiba" | "meteor" | "ufo" | "shooter" | "comet" {
         // Generate random number between 0-2
-        const baseRandom = Math.random() * 2;
+        const baseRandom = Math.random() * 1.3;
         
         // Multiply by difficulty / 1.5 to get scaled value
-        const scaledValue = baseRandom * (this._difficulty / 1.75);
+        const scaledValue = baseRandom * (this._difficulty / 1.3);
+        if (scaledValue > 80) {
+            console.log(scaledValue)
+        }
         
         // Determine enemy type based on bin
-        if (scaledValue < 1) {
+        if (scaledValue <= 5) {
             return "comet";
-        } else if (scaledValue <= 35) {
+        } else if (scaledValue <= 40) {
             return "meteor";
-        } else if (scaledValue <= 70) {
+        } else if (scaledValue <= 60) {
             return "ufo";
-        } else if (scaledValue <= 90) {
+        } else if (scaledValue <= 80) {
             return "shooter";
         } else {
             return "amiiba";
         }
+    }
+
+    increaseDifficulty(levels: number): void {
+        const increment = Math.floor(Math.min(1, Math.random() * 3));
+        this.difficulty += Math.floor(levels / 1.5) + increment;
     }
 }

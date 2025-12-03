@@ -80,10 +80,10 @@ class Amiiba extends Enemy {
         let length = Math.round(this.word.length / 2);
         if(this._split > 1){
             this._manager.spawnAdditionalEnemy(new Amiiba(this._manager.getWord(length),
-                                               this.distance,this.speed * 1.5, this._manager,
+                                               this.distance,this.speed * 1.15, this._manager,
                                                this.x - (32 * this._split), this.y, this._split - 1));
             this._manager.spawnAdditionalEnemy(new Amiiba(this._manager.getWord(length),
-                                               this.distance,this.speed * 1.5, this._manager,
+                                               this.distance,this.speed * 1.15, this._manager,
                                                this.x + (32 * this._split), this.y, this._split - 1));
 
         }
