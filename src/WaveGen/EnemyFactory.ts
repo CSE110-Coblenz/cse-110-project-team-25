@@ -290,19 +290,21 @@ class EnemyFactory {
             wave = waveDef;
         }
         for (let i = 0; i < n; i++) {
-            const word = this.getRandomWord(wave.activeInitials);
-            const z = 60 + Math.random() * 10;  // 60..70
-            
-            const baseSpeed = 4 + Math.random() * 2;  // Base speed range: 4-6
-            const speed = baseSpeed * speedMultiplier;
+            const word = this.getRandomWord(activeInitials);
+            const lane = Math.floor(Math.random() * 7) - 3; // -3..+3 lanes
+            const distance = 40 + Math.random() * 30;  // 40..70
+            const speed = (5 + Math.random() * 4) * speedMultiplier;
+            const types = ["meteor", "ufo"];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const health = Math.random() < 0.8 ? 1 : 2;
 
-            const type = manager.difficulty.randEnemyType();
-            const health = Math.random() < 0.9 ? 1 : 2;
-            const lane = wave.getInactiveLane();
-            const x = 1080 / 2 + (1080 * lane / 6) + 160;
-            const y = 720 / 2 * (Math.random() * (0.8 - 0.2) + 0.2);
-            const enemy = this.createEnemy(type, word, health, z, speed, x, y, 3, manager);
-            wave.addEnemy(enemy, lane);
+            const laneWidth = 60; // horizontal spacing for lanes
+            const x = STAGE_WIDTH / 2 + lane * laneWidth;
+            const y = 100 + Math.random() * 200;
+
+            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, 2, manager, ["test textbox"]);
+            activeInitials.add(word[0].toLowerCase());
+            wave.addEnemy(enemy);
         }
         const effect = this.createEffect("keyboard")
         if(keyboardIncluded) wave.addEffect(effect)

@@ -24,6 +24,19 @@ export class LevelSelectScreenController extends ScreenController {
     }
 
     /**
+     * Override show so we can refresh the view when the controller is shown.
+     */
+    show(): void {
+        // Rebuild view to pick up any unlocked level changes
+        try {
+            (this.view as any).refresh();
+        } catch (e) {
+            // ignore
+        }
+        super.show();
+    }
+
+    /**
      * Handle level selection
      */
     private selectLevel(level: number): void {

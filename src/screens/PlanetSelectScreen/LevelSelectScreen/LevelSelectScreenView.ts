@@ -29,4 +29,15 @@ export class LevelSelectScreenView {
     public hide(): void {
         this.view.hide();
     }
+
+    /**
+     * Refresh the underlying view (rebuild layout to pick up unlock changes)
+     */
+    public refresh(): void {
+        // Delegate to inner view which is a BaseLevelSelectView subclass
+        // @ts-ignore - subclasses implement rebuild
+        if (typeof (this.view as any).rebuild === 'function') {
+            (this.view as any).rebuild();
+        }
+    }
 }

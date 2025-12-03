@@ -1,6 +1,7 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../../constants.ts";
 import type { planetName } from "../../../types.ts";
 import { BaseLevelSelectView } from "./BaseLevelSelectView.ts";
+import { Save } from "../../../backend/Save.ts";
 
 interface CampaignManifest {
     levels?: string[];
@@ -63,7 +64,8 @@ export class CampaignLevelSelectView extends BaseLevelSelectView {
                 const row = Math.floor((level - 1) / buttonsPerRow);
                 const x = startX + col * (buttonSize + buttonSpacing) + buttonSize / 2;
                 const y = startY + row * (buttonSize + buttonSpacing) + buttonSize / 2;
-                this.createLevelButton(level, x, y, buttonSize);
+                const isLocked = !Save.isLevelUnlocked("campaign_planet", level);
+                this.createLevelButton(level, x, y, buttonSize, isLocked);
             }
         }
 

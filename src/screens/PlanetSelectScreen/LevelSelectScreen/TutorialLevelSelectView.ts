@@ -1,6 +1,7 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../../constants.ts";
 import type { planetName } from "../../../types.ts";
 import { BaseLevelSelectView } from "./BaseLevelSelectView.ts";
+import { Save } from "../../../backend/Save.ts";
 
 interface TutorialManifest {
     homerow?: string[];
@@ -58,7 +59,8 @@ export class TutorialLevelSelectView extends BaseLevelSelectView {
             
             this.manifest.homerow.forEach((_, index) => {
                 const x = startX + index * (buttonSize + buttonSpacing) + buttonSize / 2;
-                this.createLevelButton(currentLevel++, x, rowY, buttonSize);
+                const isLocked = !Save.isLevelUnlocked("tutorial_planet", currentLevel);
+                this.createLevelButton(currentLevel++, x, rowY, buttonSize, isLocked);
             });
         }
 
@@ -71,7 +73,8 @@ export class TutorialLevelSelectView extends BaseLevelSelectView {
             
             this.manifest.toprow.forEach((_, index) => {
                 const x = startX + index * (buttonSize + buttonSpacing) + buttonSize / 2;
-                this.createLevelButton(currentLevel++, x, rowY, buttonSize);
+                const isLocked = !Save.isLevelUnlocked("tutorial_planet", currentLevel);
+                this.createLevelButton(currentLevel++, x, rowY, buttonSize, isLocked);
             });
         }
 
@@ -84,7 +87,8 @@ export class TutorialLevelSelectView extends BaseLevelSelectView {
             
             this.manifest.botrow.forEach((_, index) => {
                 const x = startX + index * (buttonSize + buttonSpacing) + buttonSize / 2;
-                this.createLevelButton(currentLevel++, x, rowY, buttonSize);
+                const isLocked = !Save.isLevelUnlocked("tutorial_planet", currentLevel);
+                this.createLevelButton(currentLevel++, x, rowY, buttonSize, isLocked);
             });
         }
 

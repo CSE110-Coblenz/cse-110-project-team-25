@@ -1,0 +1,4 @@
+
+> space-typing-adventure@0.0.0 test
+> jest
+
