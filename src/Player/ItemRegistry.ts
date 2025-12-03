@@ -37,19 +37,15 @@ class ItemRegistry {
       maxStack: 5,
       modifiers: { healAmount: 1 },
       price: 50,
-      spriteSheet: "./ufo.png",
+      spriteSheet: "./items/healthbottle.png",
       animations: {
         idle: [
-          0, 0, 480, 220,
-          480, 0, 480, 220,
-          960, 0, 480, 220,
-          1440, 0, 480, 220,
-          1920, 0, 480, 220,
+          0, 0, 240,240
         ]
       },
       frameRate: 15,
-      frameWidth: 480,
-      frameHeight: 220,
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Greater Health Potion - Restores 2 health
@@ -63,6 +59,14 @@ class ItemRegistry {
       maxStack: 3,
       modifiers: { healAmount: 2 },
       price: 100,
+      spriteSheet: "./items/health2bottle.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Money Bag - Instant 100 coins
@@ -76,6 +80,14 @@ class ItemRegistry {
       maxStack: 10,
       modifiers: { instantMoney: 100 },
       price: 80,
+      spriteSheet: "./items/bag.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Heart Container - Permanently increases max health
@@ -89,6 +101,14 @@ class ItemRegistry {
       maxStack: 5,
       modifiers: { maxHealthBonus: 1 },
       price: 150,
+      spriteSheet: "./items/heart.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // ==================== UPGRADE ITEMS ====================
@@ -104,6 +124,14 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { maxHealthBonus: 1 },
       price: 300,
+      spriteSheet: "./items/heart.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Damage Amplifier - 50% more damage
@@ -117,6 +145,14 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { damageMultiplier: 1.5 },
       price: 250,
+      spriteSheet: "./items/doubleDamage.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Double Damage - 2x damage
@@ -130,6 +166,14 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { damageMultiplier: 2.0 },
       price: 500,
+      spriteSheet: "./items/tripleDamage.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Money Multiplier - 50% more money
@@ -143,6 +187,14 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { moneyMultiplier: 1.5 },
       price: 200,
+      spriteSheet: "./items/coin.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Enemy Weakener - Enemies have 20% less health
@@ -156,6 +208,14 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { enemyHealthMultiplier: 0.8 },
       price: 300,
+      spriteSheet: "./items/weakness.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Time Dilator - Enemies move 25% slower
@@ -169,6 +229,14 @@ class ItemRegistry {
       maxStack: 1,
       modifiers: { enemySpeedMultiplier: 0.75 },
       price: 350,
+      spriteSheet: "./items/hourglass.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Time freeze - Enemies stop moving for 5 seconds
@@ -182,6 +250,14 @@ class ItemRegistry {
       maxStack: 3,
       modifiers: {},
       price: 400,
+      spriteSheet: "./items/iceCube.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     // Mega explosion - Everything dies
@@ -195,6 +271,14 @@ class ItemRegistry {
       maxStack: 2,
       modifiers: {},
       price: 1000,
+      spriteSheet: "./items/dynamite.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
 
     //Invincibility - temporary invincibility
@@ -208,6 +292,14 @@ class ItemRegistry {
       maxStack: 3,
       modifiers: {},
       price: 600,
+      spriteSheet: "./items/star.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     }); 
 
     // Ultimate Power - Multiple bonuses
@@ -225,6 +317,14 @@ class ItemRegistry {
         enemySpeedMultiplier: 0.5,
       },
       price: 1000,
+      spriteSheet: "./items/ultimatePower.png",
+      animations: {
+        idle: [
+          0, 0, 240,240
+        ]
+      },
+      frameWidth: 240,
+      frameHeight: 240,
     });
   }
 
