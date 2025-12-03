@@ -59,7 +59,7 @@ export class GameController {
      * @param levelNumber - Optional level number to load (defaults to level 1)
      * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async startGame(levelNumber?: number, isTutorial: boolean | null = null): Promise<void> {
+    async startGame(levelNumber?: number, isTutorial: boolean | undefined = undefined): Promise<void> {
         Save.load();
         Save.loaded = true;
 

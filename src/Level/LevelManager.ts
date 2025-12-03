@@ -22,7 +22,7 @@ class LevelManager {
     private _currentWave: Wave | null = null;
     private _letterToId: Map<string, number> = new Map();
     private _isTransitioning: boolean = false;
-    private _isTutorial: boolean | null = null;
+    private isTutorial: boolean | undefined = undefined;
     private _totalWavesInLevel: number = 0;
     private _completedWavesInLevel: number = 0;
 
@@ -50,6 +50,7 @@ class LevelManager {
 
     get isTutorialMode(): boolean | undefined {
         return this.isTutorial;
+    }
     set difficulty(value: number) {
         this._difficultyUtil.difficulty = value;
     }
@@ -156,7 +157,7 @@ class LevelManager {
         }
         
         // Tutorial or campaign mode: load from JSON
-        if (this._isTutorial) {
+        if (this.isTutorial) {
             await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
         } else {
             await this.loadRandLevelJSON(`./levels/campaign/level${this.currentLevel}.json`)
@@ -209,7 +210,7 @@ class LevelManager {
      * Initialize the first level
      * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async initializeLevel(isTutorial: boolean | null): Promise<void> {
+    async initializeLevel(isTutorial: boolean | undefined): Promise<void> {
         if (isTutorial === null) {
             const seed = Math.floor(Math.random() * 100000);
             this._difficultyUtil.seed = seed;
@@ -219,7 +220,7 @@ class LevelManager {
             this.enemyFactory.disableWordBankSeed();
             this._isEndless = false;
         }
-        this._isTutorial = isTutorial;
+        this.isTutorial = isTutorial;
 
         if (this._currentWave) {
             // Clean up old effects

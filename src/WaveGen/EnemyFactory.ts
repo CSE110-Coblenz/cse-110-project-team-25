@@ -289,6 +289,7 @@ class EnemyFactory {
         } else {
             wave = waveDef;
         }
+        const activeInitials: Set<string> = new Set<string>();
         for (let i = 0; i < n; i++) {
             const word = this.getRandomWord(activeInitials);
             const lane = Math.floor(Math.random() * 7) - 3; // -3..+3 lanes
