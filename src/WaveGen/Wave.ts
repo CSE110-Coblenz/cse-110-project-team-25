@@ -115,7 +115,6 @@ class Wave {
         return 0;
     }
 
-
     /**
      * Iterate through all enemies
      */

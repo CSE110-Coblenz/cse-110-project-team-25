@@ -18,7 +18,8 @@ export class LevelSelectScreenController extends ScreenController {
         this.view = new LevelSelectScreenView(
             (level) => this.selectLevel(level),
             () => this.goBackToMenu(),
-            planetType
+            planetType,
+            () => this.goToShop()
         );
     }
 
@@ -36,6 +37,13 @@ export class LevelSelectScreenController extends ScreenController {
      */
     private goBackToMenu(): void {
         this.screenSwitcher.switchToScreen({ type: "planetSelect" });
+    }
+
+    /**
+     * Handle shop button
+     */
+    private goToShop(): void {
+        this.screenSwitcher.switchToScreen({ type: "shop" });
     }
 
     /**

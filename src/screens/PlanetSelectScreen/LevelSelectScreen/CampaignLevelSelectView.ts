@@ -13,8 +13,8 @@ interface CampaignManifest {
 export class CampaignLevelSelectView extends BaseLevelSelectView {
     private manifest: CampaignManifest = {};
 
-    constructor(onLevelSelect: (level: number) => void, onBackClick: () => void, planetType: planetName) {
-        super(onLevelSelect, onBackClick, planetType);
+    constructor(onLevelSelect: (level: number) => void, onBackClick: () => void, planetType: planetName, onShopClick?: () => void) {
+        super(onLevelSelect, onBackClick, planetType, onShopClick);
         this.loadManifestAndBuild();
     }
 
@@ -67,7 +67,7 @@ export class CampaignLevelSelectView extends BaseLevelSelectView {
             }
         }
 
-        // Create back button
+        // Create navigation buttons
         const backBtn = this.createButton({
             text: "BACK",
             width: 150,
@@ -79,6 +79,27 @@ export class CampaignLevelSelectView extends BaseLevelSelectView {
             fontSize: 20,
             onClick: this.onBackClick,
         });
-        this.positionElement(backBtn, STAGE_WIDTH / 2, STAGE_HEIGHT - 80);
+
+        if (this.onShopClick) {
+            // Position back button to the left
+            this.positionElement(backBtn, STAGE_WIDTH / 2 - 85, STAGE_HEIGHT - 80);
+
+            // Create shop button to the right
+            const shopBtn = this.createButton({
+                text: "SHOP",
+                width: 150,
+                height: 50,
+                fill: "darkblue",
+                hoverFill: "lightblue",
+                stroke: "blue",
+                strokeWidth: 3,
+                fontSize: 20,
+                onClick: this.onShopClick,
+            });
+            this.positionElement(shopBtn, STAGE_WIDTH / 2 + 85, STAGE_HEIGHT - 80);
+        } else {
+            // Center back button if no shop
+            this.positionElement(backBtn, STAGE_WIDTH / 2, STAGE_HEIGHT - 80);
+        }
     }
 }
