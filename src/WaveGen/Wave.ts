@@ -149,7 +149,7 @@ class Wave {
 
     get activeLanes(): Set<number> { return this._activeLanes; }
 
-    set activeLanes(lanes: Set<number>) { this._activeLanes = lanes; }    
+    set activeLanes(lanes: Set<number>) { this._activeLanes = lanes; }
 
     get activeInitials(): Set<string> { return this._activeInitials; }
 }
