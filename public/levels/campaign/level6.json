@@ -1,0 +1,48 @@
+{
+  "levelNumber": 6,
+  "difficulty": 33,
+  "waveCount": 5,
+  "seed": 581927,
+  "waves": [
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["world"],
+      "x": [500]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["space"],
+      "x": [650]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["force"],
+      "x": [750]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["power"],
+      "x": [550]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["alien"],
+      "x": [800]
+    }
+  ]
+}

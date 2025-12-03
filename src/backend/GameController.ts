@@ -59,7 +59,7 @@ export class GameController {
      * @param levelNumber - Optional level number to load (defaults to level 1)
      * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async startGame(levelNumber?: number, isTutorial?: boolean): Promise<void> {
+    async startGame(levelNumber?: number, isTutorial: boolean | null = null): Promise<void> {
         Save.load();
         Save.loaded = true;
 
@@ -71,7 +71,8 @@ export class GameController {
         this.resetGameState();
 
         // For tutorial/campaign modes, set the specific level before initializing
-        if (isTutorial !== undefined && levelNumber !== undefined) {
+        if (isTutorial !== null && levelNumber !== undefined) {
+            // console.log("SET LEVEL")
             this.levelManager.setLevel(levelNumber);
         }
 
@@ -90,6 +91,17 @@ export class GameController {
                 this.screenSwitcher.switchToScreen({ type: "menu" });
             }
         );
+        // Set up game over menu callbacks
+        this.view.setGameOverMenuCallbacks(
+            () => {
+                this.view.hideGameOverMenu();
+                this.paused = false; // Reset pause state
+                this.stopGame();
+                this.screenSwitcher.switchToScreen({ type: "menu" });
+            }
+        );
+      
+        // this.addSampleItems(); // Add sample items for testing
 
         // Initialize health display
         this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
@@ -386,8 +398,17 @@ export class GameController {
      * Handle game over
      */
     private gameOver(): void {
-        this.stopGame();
-        this.screenSwitcher.switchToScreen({ type: "menu" });
+        this.stopGameLoop();
+        const currentWave = this.levelManager.currentWave;
+        if (currentWave) {
+            currentWave.forEachEffect((effect) => {
+                effect.destroy()
+            });
+        }
+        this.paused = true;
+        this.view.clearEffectVisuals();
+        this.view.clearEnemyVisuals();
+        this.view.showGameOverMenu();
     }
 
     // ---------- Input Handling ----------

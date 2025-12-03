@@ -43,7 +43,7 @@ class Prompt extends Ui {
       this._word = "";
     } else {
       this._word = word;
-      console.log("this word was constructed to prompt:", this._word);
+      // console.log("this word was constructed to prompt:", this._word);
     }
 
     this._background = background;

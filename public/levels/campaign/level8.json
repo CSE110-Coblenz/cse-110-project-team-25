@@ -1,0 +1,48 @@
+{
+  "levelNumber": 8,
+  "difficulty": 43,
+  "waveCount": 5,
+  "seed": 348562,
+  "waves": [
+    {
+      "types": {"1": "ufo", "2": "shooter"},
+      "health": [1, 2],
+      "speed": [5, 4],
+      "distance": [40, 45],
+      "words": ["planet", "supernova"],
+      "x": [700, 450]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["orbit"],
+      "x": [550]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["galaxy"],
+      "x": [800]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["void"],
+      "x": [600]
+    },
+    {
+      "types": {"1": "ufo", "2": "shooter"},
+      "health": [1, 2],
+      "speed": [5, 4],
+      "distance": [40, 45],
+      "words": ["cosmic", "asteroid"],
+      "x": [650, 850]
+    }
+  ]
+}
