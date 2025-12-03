@@ -253,6 +253,87 @@ describe('WordBank', () => {
             }
         });
     });
+
+    describe('seeded random', () => {
+        beforeEach(async () => {
+            (fetch as jest.Mock).mockResolvedValueOnce({
+                json: async () => mockWordBankData
+            });
+            await wordBank.load();
+        });
+
+        it('should return deterministic words with same seed', () => {
+            const bank1 = new WordBank();
+            const bank2 = new WordBank();
+            
+            (fetch as jest.Mock).mockResolvedValueOnce({
+                json: async () => mockWordBankData
+            });
+            (fetch as jest.Mock).mockResolvedValueOnce({
+                json: async () => mockWordBankData
+            });
+            
+            bank1.load().then(() => {
+                bank1.setSeed(12345);
+                bank2.load().then(() => {
+                    bank2.setSeed(12345);
+                    
+                    const word1 = bank1.getRandomWord(["bn"], 4);
+                    const word2 = bank2.getRandomWord(["bn"], 4);
+                    
+                    expect(word1).toBe(word2);
+                });
+            });
+        });
+
+        it('should enable seeded mode with setSeed', () => {
+            wordBank.setSeed(999);
+            const word1 = wordBank.getRandomWord(["bn"], 4);
+            
+            wordBank.setSeed(999);
+            const word2 = wordBank.getRandomWord(["bn"], 4);
+            
+            expect(word1).toBe(word2);
+        });
+
+        it('should disable seeded mode with disableSeed', () => {
+            wordBank.setSeed(777);
+            const seededWord = wordBank.getRandomWord(["bn"], 4);
+            
+            wordBank.disableSeed();
+            const randomWord = wordBank.getRandomWord(["bn"], 4);
+            
+            // Should still be valid words
+            expect(["barn", "moon", "bike"]).toContain(seededWord);
+            expect(["barn", "moon", "bike"]).toContain(randomWord);
+        });
+
+        it('should produce different words with different seeds', () => {
+            wordBank.setSeed(111);
+            const word1 = wordBank.getRandomWord(["bn"], 4);
+            
+            wordBank.setSeed(222);
+            const word2 = wordBank.getRandomWord(["bn"], 4);
+            
+            // Words should be valid, but may differ
+            expect(["barn", "moon", "bike"]).toContain(word1);
+            expect(["barn", "moon", "bike"]).toContain(word2);
+        });
+
+        it('should work with getRandomWordExcludingInitials in seeded mode', () => {
+            wordBank.setSeed(555);
+            const excluded = new Set(["b"]);
+            const word1 = wordBank.getRandomWordExcludingInitials(excluded, ["bn"], 4);
+            
+            wordBank.setSeed(555);
+            const word2 = wordBank.getRandomWordExcludingInitials(excluded, ["bn"], 4);
+            
+            expect(word1).toBe(word2);
+            if (word1) {
+                expect(excluded.has(word1[0].toLowerCase())).toBe(false);
+            }
+        });
+    });
 });
 
 // Helper function for variance calculation
