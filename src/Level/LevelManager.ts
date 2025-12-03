@@ -157,7 +157,7 @@ class LevelManager {
         if (this._isTutorial) {
             await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
         } else {
-            await this.loadLevelFromJSON(`./levels/campaign/level${this.currentLevel}.json`)
+            await this.loadRandLevelJSON(`./levels/campaign/level${this.currentLevel}.json`)
         }
     }
 
@@ -388,6 +388,18 @@ class LevelManager {
         }
     }
 
-}
+    async loadRandLevelJSON(url: string): Promise<void> {
+        if (url) {
+            try {
+                const waves = await this.enemyFactory.loadRandLevelFromJSON(url, this);
+                this._waves = waves;
+                this._totalWavesInLevel = waves.length;
+                this._completedWavesInLevel = 0;
+                return;
+            }
+        }
 
+    }
+}
+    
 export default LevelManager;

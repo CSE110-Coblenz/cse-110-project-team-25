@@ -363,6 +363,25 @@ class EnemyFactory {
         return waves;
     }
 
+    async loadRandConfigFromJSON(url: string): Promise<LevelConfig> {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to load level config from ${url}: ${response.statusText}`);
+            }
+            const data = await response.json();
+            
+            // Validate that it has the required structure
+            if (!data.waves || !Array.isArray(data.waves)) {
+                throw new Error('Invalid level config: missing or invalid "waves" array');
+            }
+            
+            return data as LevelConfig;
+        } catch (error) {
+            throw new Error(`Error loading level config: ${error}`);
+        }
+    }
+
     /**
      * Load level from JSON file and return the waves
      * @param url - The URL or path to the level JSON file
@@ -370,6 +389,16 @@ class EnemyFactory {
      */
     async loadLevelFromJSON(url: string, manager?: LevelManager): Promise<Wave[]> {
         const config = await this.loadLevelConfigFromJSON(url);
+        return this.generateWavesFromLevelConfig(config, manager);
+    }
+
+    /**
+     * Load random level from JSON file and return the waves
+     * @param url - The URL or path to the level JSON file
+     * @returns Promise that resolves to an array of Wave objects
+     */
+    async loadRandLevelJSON(url: string, manager?: LevelManager): Promise<Wave[]> {
+        const config = await this.loadRandConfigFromJSON(url);
         return this.generateWavesFromLevelConfig(config, manager);
     }
 }

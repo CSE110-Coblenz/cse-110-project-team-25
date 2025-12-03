@@ -1,0 +1,28 @@
+{
+  "levelNumber": 13,
+  "difficulty": 68,
+  "waveCount": 6,
+  "seed": 536821,
+  "waves": [
+    {
+      "types": {"1": "amiiba", "2": "shooter"},
+      "health": [3, 2],
+      "speed": [4, 4],
+      "distance": [50, 45],
+      "words": ["amoeba", "intelligent"],
+      "x": [0, -2]
+    },
+    {},
+    {},
+    {},
+    {},
+    {
+      "types": {"1": "shooter"},
+      "health": [2],
+      "speed": [4],
+      "distance": [45],
+      "words": ["helicopter"],
+      "x": [2]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "levelNumber": 7,
+  "difficulty": 38,
+  "waveCount": 5,
+  "seed": 912456,
+  "waves": [
+    {
+      "types": {"1": "ufo", "2": "shooter"},
+      "health": [1, 2],
+      "speed": [5, 4],
+      "distance": [40, 45],
+      "words": ["rocket", "enemy"],
+      "x": [0, -2]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["comet"],
+      "x": [0]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["laser"],
+      "x": [0]
+    },
+    {
+      "types": {"1": "ufo", "2": "shooter"},
+      "health": [1, 2],
+      "speed": [5, 4],
+      "distance": [40, 45],
+      "words": ["storm", "enemy"],
+      "x": [0, 2]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["blast"],
+      "x": [0]
+    }
+  ]
+}

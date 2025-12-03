@@ -1,0 +1,21 @@
+{
+  "levelNumber": 11,
+  "difficulty": 58,
+  "waveCount": 6,
+  "seed": 827491,
+  "waves": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "types": {"1": "amiiba"},
+      "health": [3],
+      "speed": [4],
+      "distance": [50],
+      "words": ["amoeba"],
+      "x": [0]
+    }
+  ]
+}

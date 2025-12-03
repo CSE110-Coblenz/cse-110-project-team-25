@@ -31,6 +31,7 @@ export interface WaveConfig {
 export interface LevelConfig {
 	levelNumber?: number;            // Optional level number (defaults to 1)
 	difficulty?: number;             // Optional difficulty multiplier for speed/health
+	seed?: number;
 	waves: WaveConfig[];             // Array of wave configurations
 }
 
