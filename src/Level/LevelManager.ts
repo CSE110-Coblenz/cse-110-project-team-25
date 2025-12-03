@@ -119,7 +119,7 @@ class LevelManager {
      * Generate a new set of random waves for the current level (endless mode)
      */
     private generateRandomLevel(): void {
-        const wavesPerLevel = Math.floor(Math.random() * 5) + 1; // Number of waves per level
+        const wavesPerLevel = Math.floor(Math.random() * 3) + 1; // Number of waves per level
         this._totalWavesInLevel = wavesPerLevel;
         this._completedWavesInLevel = 0;
 
@@ -398,7 +398,7 @@ class LevelManager {
                 this._completedWavesInLevel = 0;
                 return;
             } catch (error) {
-            throw new Error(`Failed to load random level from ${url}: ${error}`);
+                throw new Error(`Failed to load random level from ${url}: ${error}`);
             }
         } 
     }

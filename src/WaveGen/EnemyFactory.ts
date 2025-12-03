@@ -279,6 +279,9 @@ class EnemyFactory {
         manager: LevelManager,
         waveDef?: Wave | null
     ): Wave {
+        if (n <= 0) {
+            return waveDef ? waveDef : new Wave();
+        }
         const keyboardIncluded = false;
         let wave: Wave;
         if (!waveDef) {
@@ -296,7 +299,7 @@ class EnemyFactory {
             const type = manager.difficulty.randEnemyType();
             const health = Math.random() < 0.9 ? 1 : 2;
             const lane = wave.getInactiveLane();
-            const x = 1080/2 + (1080 * lane / 6) + 160;
+            const x = 1080 / 2 + (1080 * lane / 6) + 160;
             const y = 720 / 2 * (Math.random() * (0.8 - 0.2) + 0.2);
             const enemy = this.createEnemy(type, word, health, z, speed, x, y, 3, manager);
             wave.addEnemy(enemy, lane);
@@ -394,7 +397,7 @@ class EnemyFactory {
         const unfinWaves = this.generateWavesFromLevelConfig(config, manager);
         const waves: Wave[] = [];
 
-        manager.difficulty = config.difficulty? config.difficulty : 8;
+        manager.difficulty = config.difficulty ? config.difficulty : 8;
         const seed = config.seed ? config.seed : 1;
         manager.setSeed(seed);
         
@@ -416,7 +419,7 @@ class EnemyFactory {
             const randWave = this.generateRandomWave(enemyNumber, speedMultiplier, manager);
             waves.push(randWave);
         }
-        return waves
+        return waves;
     }
 
     /**
