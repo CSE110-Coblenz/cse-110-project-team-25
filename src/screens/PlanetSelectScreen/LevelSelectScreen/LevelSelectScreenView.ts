@@ -9,12 +9,12 @@ import { BaseLevelSelectView } from "./BaseLevelSelectView.ts";
 export class LevelSelectScreenView {
     private view: BaseLevelSelectView;
 
-    constructor(onLevelSelect: (level: number) => void, onBackClick: () => void, planetType: planetName) {
+    constructor(onLevelSelect: (level: number) => void, onBackClick: () => void, planetType: planetName, onShopClick?: () => void) {
         // Create the appropriate view based on planet type
         if (planetType === "tutorial_planet") {
-            this.view = new TutorialLevelSelectView(onLevelSelect, onBackClick, planetType);
+            this.view = new TutorialLevelSelectView(onLevelSelect, onBackClick, planetType, onShopClick);
         } else {
-            this.view = new CampaignLevelSelectView(onLevelSelect, onBackClick, planetType);
+            this.view = new CampaignLevelSelectView(onLevelSelect, onBackClick, planetType, onShopClick);
         }
     }
 

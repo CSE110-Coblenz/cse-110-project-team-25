@@ -5,13 +5,15 @@
     "types": ["jest", "node"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": false,
     "skipLibCheck": true,
     "strict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noEmit": true
   },
-  "include": ["./**/*.ts"],
+  "include": ["./**/*.ts", "../src/**/*.ts"],
   "exclude": ["node_modules"]
 }
