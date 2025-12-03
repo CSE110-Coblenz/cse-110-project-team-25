@@ -146,6 +146,7 @@ class ItemRegistry {
       description: "Deal 50% more damage",
       iconColor: "#FF4500", // Orange Red
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.RARE,
       stackable: false,
       maxStack: 1,
       modifiers: { damageMultiplier: 1.5 },
@@ -256,6 +257,7 @@ class ItemRegistry {
       iconColor: "#00CED1", // Dark Turquoise
       type: ItemType.CONSUMABLE,
       stackable: true,
+      rarity: ItemRarity.RARE,
       maxStack: 3,
       modifiers: {},
       price: 400,
@@ -280,6 +282,7 @@ class ItemRegistry {
       maxStack: 2,
       modifiers: {},
       price: 1000,
+      rarity: ItemRarity.EPIC,
       spriteSheet: "./items/dynamite.png",
       animations: {
         idle: [
@@ -300,6 +303,7 @@ class ItemRegistry {
       stackable: true,
       maxStack: 3,
       modifiers: {},
+      rarity: ItemRarity.RARE,
       price: 600,
       spriteSheet: "./items/star.png",
       animations: {
