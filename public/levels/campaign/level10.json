@@ -10,7 +10,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["engine"],
-      "x": [0]
+      "x": [500]
     },
     {
       "types": {"1": "ufo"},
@@ -18,7 +18,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["weapon"],
-      "x": [0]
+      "x": [700]
     },
     {
       "types": {"1": "ufo"},
@@ -26,7 +26,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["nebula"],
-      "x": [0]
+      "x": [600]
     },
     {
       "types": {"1": "ufo"},
@@ -34,7 +34,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["fusion"],
-      "x": [0]
+      "x": [800]
     },
     {
       "types": {"1": "ufo"},
@@ -42,7 +42,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["quasar"],
-      "x": [0]
+      "x": [450]
     }
   ]
 }

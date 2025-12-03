@@ -10,7 +10,7 @@
       "speed": [4, 4],
       "distance": [50, 45],
       "words": ["amoeba", "intelligent"],
-      "x": [0, -2]
+      "x": [650, 450]
     },
     {},
     {},
@@ -22,7 +22,7 @@
       "speed": [4],
       "distance": [45],
       "words": ["helicopter"],
-      "x": [2]
+      "x": [850]
     }
   ]
 }

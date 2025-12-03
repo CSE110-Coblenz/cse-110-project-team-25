@@ -10,7 +10,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["world"],
-      "x": [0]
+      "x": [500]
     },
     {
       "types": {"1": "ufo"},
@@ -18,7 +18,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["space"],
-      "x": [0]
+      "x": [650]
     },
     {
       "types": {"1": "ufo"},
@@ -26,7 +26,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["force"],
-      "x": [0]
+      "x": [750]
     },
     {
       "types": {"1": "ufo"},
@@ -34,7 +34,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["power"],
-      "x": [0]
+      "x": [550]
     },
     {
       "types": {"1": "ufo"},
@@ -42,7 +42,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["alien"],
-      "x": [0]
+      "x": [800]
     }
   ]
 }

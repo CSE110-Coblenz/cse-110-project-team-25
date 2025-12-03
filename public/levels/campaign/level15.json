@@ -9,8 +9,8 @@
       "health": [3, 3],
       "speed": [4, 4],
       "distance": [50, 55],
-      "words": ["slimy", "slime"],
-      "x": [-2, 2]
+      "words": ["slimy", "blimey"],
+      "x": [450, 850]
     },
     {
       "types": {"1": "shooter", "2": "shooter"},
@@ -18,7 +18,7 @@
       "speed": [4, 4],
       "distance": [45, 50],
       "words": ["enemy", "warrior"],
-      "x": [-1, 1]
+      "x": [550, 750]
     },
     {},
     {},
@@ -29,7 +29,7 @@
       "speed": [4, 4, 4],
       "distance": [45, 50, 55],
       "words": ["legion", "attack", "wormhole"],
-      "x": [-2, 2, 0]
+      "x": [450, 850, 650]
     }
   ]
 }

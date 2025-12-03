@@ -10,7 +10,7 @@
       "speed": [5, 4],
       "distance": [40, 45],
       "words": ["rocket", "enemy"],
-      "x": [0, -2]
+      "x": [600, 450]
     },
     {
       "types": {"1": "ufo"},
@@ -18,7 +18,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["comet"],
-      "x": [0]
+      "x": [700]
     },
     {
       "types": {"1": "ufo"},
@@ -26,7 +26,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["laser"],
-      "x": [0]
+      "x": [550]
     },
     {
       "types": {"1": "ufo", "2": "shooter"},
@@ -34,7 +34,7 @@
       "speed": [5, 4],
       "distance": [40, 45],
       "words": ["storm", "enemy"],
-      "x": [0, 2]
+      "x": [650, 850]
     },
     {
       "types": {"1": "ufo"},
@@ -42,7 +42,7 @@
       "speed": [5],
       "distance": [40],
       "words": ["blast"],
-      "x": [0]
+      "x": [500]
     }
   ]
 }
