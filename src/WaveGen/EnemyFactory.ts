@@ -148,6 +148,11 @@ class EnemyFactory {
      * JSON format: {"types": {"1": "ufo", "2": "meteor"}, "health": [1, 2], "speed": [5, 6], ...}
      */
     generateWaveFromJSON(config: WaveConfig, manager?: LevelManager): Wave {
+        // Handle empty wave configurations
+        if (!config.types || Object.keys(config.types).length === 0) {
+            return new Wave(); // Return an empty wave
+        }
+        
         const decodedConfig = this.decodeJSON(config);
         const wave = new Wave();
 
@@ -271,10 +276,16 @@ class EnemyFactory {
     generateRandomWave(
         n: number = 1,
         speedMultiplier: number = 1,
-        manager: LevelManager
+        manager: LevelManager,
+        waveDef?: Wave | null
     ): Wave {
         const keyboardIncluded = false;
-        const wave = new Wave();
+        let wave: Wave;
+        if (!waveDef) {
+            wave = new Wave();
+        } else {
+            wave = waveDef;
+        }
         for (let i = 0; i < n; i++) {
             const word = this.getRandomWord(wave.activeInitials);
             const z = 60 + Math.random() * 10;  // 60..70
@@ -285,7 +296,7 @@ class EnemyFactory {
             const type = manager.difficulty.randEnemyType();
             const health = Math.random() < 0.9 ? 1 : 2;
             const lane = wave.getInactiveLane();
-            const x = 1080 / 2 + (1080 * lane / 6) + 100;
+            const x = 1080/2 + (1080 * lane / 6) + 160;
             const y = 720 / 2 * (Math.random() * (0.8 - 0.2) + 0.2);
             const enemy = this.createEnemy(type, word, health, z, speed, x, y, 3, manager);
             wave.addEnemy(enemy, lane);
@@ -363,25 +374,6 @@ class EnemyFactory {
         return waves;
     }
 
-    async loadRandConfigFromJSON(url: string): Promise<LevelConfig> {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed to load level config from ${url}: ${response.statusText}`);
-            }
-            const data = await response.json();
-            
-            // Validate that it has the required structure
-            if (!data.waves || !Array.isArray(data.waves)) {
-                throw new Error('Invalid level config: missing or invalid "waves" array');
-            }
-            
-            return data as LevelConfig;
-        } catch (error) {
-            throw new Error(`Error loading level config: ${error}`);
-        }
-    }
-
     /**
      * Load level from JSON file and return the waves
      * @param url - The URL or path to the level JSON file
@@ -397,9 +389,45 @@ class EnemyFactory {
      * @param url - The URL or path to the level JSON file
      * @returns Promise that resolves to an array of Wave objects
      */
-    async loadRandLevelJSON(url: string, manager?: LevelManager): Promise<Wave[]> {
-        const config = await this.loadRandConfigFromJSON(url);
-        return this.generateWavesFromLevelConfig(config, manager);
+    async loadRandLevelFromJSON(url: string, manager: LevelManager): Promise<Wave[]> {
+        const config = await this.loadLevelConfigFromJSON(url);
+        const unfinWaves = this.generateWavesFromLevelConfig(config, manager);
+        const waves: Wave[] = [];
+
+        manager.difficulty = config.difficulty? config.difficulty : 8;
+        const seed = config.seed ? config.seed : 1;
+        manager.setSeed(seed);
+        
+        // Set seed for wordBank to enable deterministic word selection
+        wordBank.setSeed(seed);
+        
+        const waveCount = config.waveCount ? config.waveCount : 5;
+
+        for (const wave of unfinWaves) {
+            const enemyNumber = manager.difficulty.randEnemyCount();
+            const speedMultiplier = manager.difficulty.randSpeedMultiplier();
+            const randWave = this.generateRandomWave(enemyNumber - wave.getCount(), speedMultiplier, manager, wave);
+            waves.push(randWave);
+        }
+
+        for (let i = unfinWaves.length; i < waveCount; i++) {
+            const enemyNumber = manager.difficulty.randEnemyCount();
+            const speedMultiplier = manager.difficulty.randSpeedMultiplier();
+            const randWave = this.generateRandomWave(enemyNumber, speedMultiplier, manager);
+            waves.push(randWave);
+        }
+        return waves
+    }
+
+    /**
+     * Set the seed for word selection
+     */
+    setWordBankSeed(seed: number): void {
+        wordBank.setSeed(seed);
+    }
+
+    disableWordBankSeed(): void {
+        wordBank.disableSeed();
     }
 }
 
