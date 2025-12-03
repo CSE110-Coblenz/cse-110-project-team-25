@@ -7,13 +7,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: {
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
-        verbatimModuleSyntax: false,
-        module: 'commonjs',
-        moduleResolution: 'node',
-      }
+      tsconfig: 'test/tsconfig.json'
     }]
   },
   collectCoverageFrom: [

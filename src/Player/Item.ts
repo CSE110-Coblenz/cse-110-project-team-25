@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { ItemType, type ItemModifiers, type ItemData, type ItemAnimations } from "./ItemTypes.ts";
+import { ItemType, ItemRarity, type ItemModifiers, type ItemData, type ItemAnimations } from "./ItemTypes.ts";
 import type { Player } from "./Player.ts";
 
 /**
@@ -13,6 +13,7 @@ export class Item {
   readonly description: string;
   readonly iconColor: string;     // Placeholder color until we have sprites
   readonly type: ItemType;
+  readonly rarity: ItemRarity;
   readonly stackable: boolean;
   readonly maxStack: number;
   readonly modifiers: ItemModifiers;
@@ -31,6 +32,7 @@ export class Item {
     this.description = data.description;
     this.iconColor = data.iconColor;
     this.type = data.type;
+    this.rarity = data.rarity;
     this.stackable = data.stackable;
     this.maxStack = data.maxStack;
     this.modifiers = data.modifiers;
@@ -55,29 +57,45 @@ export class Item {
       height: size,
     });
 
-    // Use sprite sheet if available (same pattern as enemies)
-    if (this.spriteSheet && this.animations) {
+    // Use sprite sheet if available
+    if (this.spriteSheet) {
       const imageObj = new Image();
       imageObj.src = this.spriteSheet;
       imageObj.onload = () => {
-        const frameW = this.frameWidth || 32;
-        const frameH = this.frameHeight || 32;
-        const scale = Math.min(size / frameW, size / frameH);
+        // If animations are defined, use Konva.Sprite (for animated sprites)
+        if (this.animations) {
+          const frameW = this.frameWidth || 32;
+          const frameH = this.frameHeight || 32;
+          const scale = Math.min(size / frameW, size / frameH);
 
-        const sprite = new Konva.Sprite({
-          x: size / 2,
-          y: size / 2,
-          scale: { x: scale, y: scale },
-          offset: { x: frameW / 2, y: frameH / 2 },
-          image: imageObj,
-          animation: 'idle',
-          animations: this.animations,
-          frameRate: this.frameRate || 10,
-          frameIndex: 0
-        });
+          const sprite = new Konva.Sprite({
+            x: size / 2,
+            y: size / 2,
+            scale: { x: scale, y: scale },
+            offset: { x: frameW / 2, y: frameH / 2 },
+            image: imageObj,
+            animation: 'idle',
+            animations: this.animations,
+            frameRate: this.frameRate || 10,
+            frameIndex: 0
+          });
 
-        sprite.start();
-        group.add(sprite);
+          sprite.start();
+          group.add(sprite);
+        } else {
+          // For static images, use Konva.Image
+          const scale = Math.min(size / imageObj.width, size / imageObj.height);
+          const konvaImage = new Konva.Image({
+            x: size / 2,
+            y: size / 2,
+            image: imageObj,
+            scaleX: scale,
+            scaleY: scale,
+            offsetX: imageObj.width / 2,
+            offsetY: imageObj.height / 2,
+          });
+          group.add(konvaImage);
+        }
         group.getLayer()?.batchDraw?.();
       };
     } else {
@@ -160,6 +178,7 @@ export class Item {
       description: this.description,
       iconColor: this.iconColor,
       type: this.type,
+      rarity: this.rarity,
       stackable: this.stackable,
       maxStack: this.maxStack,
       modifiers: this.modifiers,

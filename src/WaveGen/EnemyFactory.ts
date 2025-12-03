@@ -278,12 +278,10 @@ class EnemyFactory {
         const activeInitials: Set<string> = new Set();
         for (let i = 0; i < n; i++) {
             const word = this.getRandomWord(activeInitials);
-            const z = 40 + Math.random() * 30;  // 40..70
-            
-            const baseSpeed = 5 + Math.random() * 4;  // Base speed range: 5-9
-            const speed = baseSpeed * speedMultiplier;
-
-            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle", "textbox"];
+            const lane = Math.floor(Math.random() * 7) - 3; // -3..+3 lanes
+            const distance = 40 + Math.random() * 30;  // 40..70
+            const speed = (5 + Math.random() * 4) * speedMultiplier;
+            const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"];
             const type = types[Math.floor(Math.random() * types.length)];
             const health = Math.random() < 0.8 ? 1 : 2;
             const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);

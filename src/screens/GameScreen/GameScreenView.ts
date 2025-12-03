@@ -184,6 +184,14 @@ export default class GameScreenView implements View {
     this.effects.delete(id);
   }
 
+  clearAllEffects(): void {
+    this.effects.forEach((effect) => {
+      effect.destroy();
+    });
+    this.effects.clear();
+    this.group.getLayer()?.draw();
+  }
+
   setTarget(id: number | null): void {
     // clear old
     if (this.targetedId && this.enemies.get(this.targetedId)) {

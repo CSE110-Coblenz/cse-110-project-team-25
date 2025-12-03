@@ -185,11 +185,30 @@ class LevelManager {
 
     /**
      * Initialize the first level
-     * @param isTutorial - true for tutorial, false for campaign, null for endless mode
+     * @param isTutorial - true for tutorial, false for campaign, undefined for endless mode
      */
-    async initializeLevel(isTutorial: boolean | undefined): Promise<void> {
+    async initializeLevel(isTutorial?: boolean): Promise<void> {
+        // Clear any existing state from previous game sessions
+        if (this._currentWave) {
+            // Clean up old effects
+            this._currentWave.forEachEffect((effect) => {
+                this.view.destroyEffect(effect.id);
+            });
+            // Clean up old enemies
+            this._currentWave.forEachEnemy((enemy) => {
+                this.view.destroyEnemy(enemy.id);
+            });
+            this._currentWave.clear();
+        }
+        this._waves = [];
+        this._currentWave = null;
+        this.letterToId.clear();
+
+        // Set the tutorial mode
         this.isTutorial = isTutorial;
-        console.log(this.isTutorial);
+        console.log("Tutorial mode:", this.isTutorial);
+
+        // Generate and start new level
         await this.generateNewLevel();
         await this.popNextWave();
         if (this._currentWave) {
