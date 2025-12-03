@@ -11,6 +11,7 @@ import { STAGE_HEIGHT, STAGE_WIDTH } from "../constants";
 import Shooter from "../objects/Enemies/Shooter";
 import Comet from "../objects/Enemies/Comet";
 import Dummy from "../objects/Enemies/Dummy";
+import DifficultyUtil from "../backend/difficulty/DifficultyUtil";
 import TextBox from "../objects/Enemies/TextBox";
 import Keyboard from "../objects/Effects/Keyboard";
 import type Effect from "../objects/Effect";
@@ -20,6 +21,11 @@ import type Effect from "../objects/Effect";
  * Generates enemies with configurable attributes but does NOT render them
  */
 class EnemyFactory {
+    private difficultyUtil: DifficultyUtil | null;
+
+    constructor(difficulty: DifficultyUtil | null = null) {
+        this.difficultyUtil = difficulty;
+    }
     /**
      * Create a single enemy with all configurable attributes
      */
@@ -278,12 +284,7 @@ class EnemyFactory {
             const types = ["meteor", "ufo", "amiiba", "comet", "shooter", "dummy", "circle"];
             const type = types[Math.floor(Math.random() * types.length)];
             const health = Math.random() < 0.8 ? 1 : 2;
-
-            const laneWidth = 60; // horizontal spacing for lanes
-            const x = STAGE_WIDTH / 2 + lane * laneWidth;
-            const y = 100 + Math.random() * 200;
-
-            const enemy = this.createEnemy(type, word, health, distance, speed, x, y, 2, manager, ["test textbox"]);
+            const enemy = this.createEnemy(type, word, health, z, speed, 1280/2, 720/2, 3, manager);
             activeInitials.add(word[0].toLowerCase());
             wave.addEnemy(enemy);
         }
@@ -297,8 +298,10 @@ class EnemyFactory {
      */
     getRandomWord(activeInitials: Set<string>, length?: number): string {
         let len = Math.round(Math.random() * 4 + 1);
-        if(length != undefined){
+        if(length !== undefined){
             len = length;
+        } else if (this.difficultyUtil){
+            len = this.difficultyUtil.randWordLength();
         }
         const word = wordBank.getRandomWordExcludingInitials(
             activeInitials,
@@ -314,14 +317,9 @@ class EnemyFactory {
      * @param difficulty Difficulty level (1-100)
      */
     getRandomWordByDifficulty(activeInitials: Set<string>, difficulty: number): string {
-        const word = wordBank.getRandomWordByDifficulty(
-            difficulty,
-            [ "bn", "vm", "c,", "x.", "z/", "ty", "ru", "ei", "wo", "qp", "gh", "a;", "sl", "dk", "fj" ],
-            activeInitials
-        );
-        return word || "default";
+        return "";
     }
-    
+
     /**
      * Load a LevelConfig from an external JSON file
      * @param url - The URL or path to the JSON file (e.g., './levels/level1.json')
