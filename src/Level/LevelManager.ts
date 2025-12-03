@@ -178,10 +178,12 @@ class LevelManager {
             this._isTransitioning = true;
             try {
                 const newLevel = await this.popNextWave();
-                if (newLevel && this.isTutorial) {
+                if (newLevel && this._isTutorial
+) {
                     this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "tutorial_planet"});
                 }
-                else if (newLevel && this.isTutorial === false) {
+                else if (newLevel && this._isTutorial
+ === false) {
                     this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "campaign_planet"});
                 }
                 else if (this._currentWave) {
@@ -204,6 +206,7 @@ class LevelManager {
             this._isEndless = false;
         }
         this._isTutorial = isTutorial;
+
         if (this._currentWave) {
             // Clean up old effects
             this._currentWave.forEachEffect((effect) => {
@@ -217,11 +220,7 @@ class LevelManager {
         }
         this._waves = [];
         this._currentWave = null;
-        this.letterToId.clear();
-
-        // Set the tutorial mode
-        this.isTutorial = isTutorial;
-        console.log("Tutorial mode:", this.isTutorial);
+        this._letterToId.clear();
 
         // Generate and start new level
         await this.generateNewLevel();
