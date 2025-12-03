@@ -109,8 +109,6 @@ class Wave {
         // Fallback in case all lanes are active
         return 0;
     }
-
-
     /**
      * Iterate through all enemies
      */
