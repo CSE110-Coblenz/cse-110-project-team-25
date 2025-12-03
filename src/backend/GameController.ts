@@ -91,6 +91,17 @@ export class GameController {
                 this.screenSwitcher.switchToScreen({ type: "menu" });
             }
         );
+        // Set up game over menu callbacks
+        this.view.setGameOverMenuCallbacks(
+            () => {
+                this.view.hideGameOverMenu();
+                this.paused = false; // Reset pause state
+                this.stopGame();
+                this.screenSwitcher.switchToScreen({ type: "menu" });
+            }
+        );
+      
+        // this.addSampleItems(); // Add sample items for testing
 
         // Initialize health display
         this.view.updateHealth(player.getHealth(), player.getEffectiveMaxHealth());
@@ -373,8 +384,17 @@ export class GameController {
      * Handle game over
      */
     private gameOver(): void {
-        this.stopGame();
-        this.screenSwitcher.switchToScreen({ type: "menu" });
+        this.stopGameLoop();
+        const currentWave = this.levelManager.currentWave;
+        if (currentWave) {
+            currentWave.forEachEffect((effect) => {
+                effect.destroy()
+            });
+        }
+        this.paused = true;
+        this.view.clearEffectVisuals();
+        this.view.clearEnemyVisuals();
+        this.view.showGameOverMenu();
     }
 
     // ---------- Input Handling ----------

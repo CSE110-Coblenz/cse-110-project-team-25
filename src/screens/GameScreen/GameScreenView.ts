@@ -6,6 +6,7 @@ import Effect from "../../objects/Effect.ts"
 import Shot from "../../objects/Effects/Shot.ts";
 import Explosion from "../../objects/Effects/Explosion.ts";
 import PauseMenuView from "../PauseMenuScreen/PauseMenuView.ts";
+import GameOverMenuView from "../GameOverScreen/GameOverMenuView.ts";
 import { InventoryUI } from "../../ui/InventoryUI.ts";
 import { UpgradeUI } from "../../ui/UpgradeUI.ts";
 
@@ -21,6 +22,7 @@ export default class GameScreenView implements View {
   effectContainer: Konva.Group;
   private hudContainer: Konva.Group;
   private pauseMenuView: PauseMenuView;
+  private gameOverMenuView: GameOverMenuView;
   enemies = new Map<number, Enemy>();
   effects = new Map<number, Effect>();
   private targetedId: number | null = null;
@@ -97,6 +99,14 @@ export default class GameScreenView implements View {
     );
     this.group.add(this.pauseMenuView.getGroup());
     this.pauseMenuView.hide();
+
+    // Initialize gameOver menu (hidden by default)
+    this.gameOverMenuView = new GameOverMenuView(
+      () => {}, // Quit callback - will be set by gamecontroller
+    );
+    this.group.add(this.gameOverMenuView.getGroup());
+    this.gameOverMenuView.hide();
+
     // Initialize player UI components
     this.inventoryUI = new InventoryUI();
     this.upgradeUI = new UpgradeUI();
@@ -120,6 +130,20 @@ export default class GameScreenView implements View {
     this.effects.set(Ef.id, Ef);
     this.group.getLayer()?.draw();
     return Ef.id;
+  }
+
+  clearEffectVisuals(): void {
+    // this.effectContainer
+    this.effects.forEach((value, key) => {
+      value.destroy()
+    })
+  }
+
+
+  clearEnemyVisuals(): void {
+    this.enemies.forEach((value, key) => {
+      value.destroy()
+    })
   }
 
   updateEffects(dt: number, nextLetter: string): void {
@@ -405,6 +429,24 @@ export default class GameScreenView implements View {
     this.pauseMenuView = new PauseMenuView(onResume, onQuit);
     this.group.add(this.pauseMenuView.getGroup());
     this.pauseMenuView.hide();
+  }
+
+  showGameOverMenu(): void {
+    this.gameOverMenuView.show();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  hideGameOverMenu(): void {
+    this.gameOverMenuView.hide();
+    this.group.getLayer()?.batchDraw();
+  }
+
+  setGameOverMenuCallbacks(onQuit: () => void): void {
+    // Recreate  menu with new callbacks
+    this.gameOverMenuView.getGroup().destroy();
+    this.gameOverMenuView = new GameOverMenuView(onQuit);
+    this.group.add(this.gameOverMenuView.getGroup());
+    this.gameOverMenuView.hide();
   }
   /**
    * Update inventory UI to reflect Player's current inventory
