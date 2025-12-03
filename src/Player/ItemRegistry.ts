@@ -1,5 +1,5 @@
 import { Item } from "./Item.ts";
-import { ItemType, type ItemData } from "./ItemTypes.ts";
+import { ItemType, ItemRarity, type ItemData } from "./ItemTypes.ts";
 
 /**
  * Central registry of all items in the game
@@ -33,6 +33,7 @@ class ItemRegistry {
       description: "Restores 1 health",
       iconColor: "#FF6B6B", // Red
       type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.COMMON,
       stackable: true,
       maxStack: 5,
       modifiers: { healAmount: 1 },
@@ -55,6 +56,7 @@ class ItemRegistry {
       description: "Restores 2 health",
       iconColor: "#FF4444", // Dark Red
       type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.RARE,
       stackable: true,
       maxStack: 3,
       modifiers: { healAmount: 2 },
@@ -76,6 +78,7 @@ class ItemRegistry {
       description: "Gain 100 coins instantly",
       iconColor: "#FFD700", // Gold
       type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.COMMON,
       stackable: true,
       maxStack: 10,
       modifiers: { instantMoney: 100 },
@@ -90,13 +93,14 @@ class ItemRegistry {
       frameHeight: 240,
     });
 
-    // Heart Container - Permanently increases max health
+    // Time Freeze - Enemies stop moving for 5 seconds
     this.registerItem({
-      id: "heart_container",
-      name: "Heart Container",
-      description: "Permanently +1 Max Health",
-      iconColor: "#FF69B4", // Hot Pink
+      id: "time_freeze",
+      name: "Time Freeze",
+      description: "Enemies stop moving",
+      iconColor: "#00CED1", // Dark Turquoise
       type: ItemType.CONSUMABLE,
+      rarity: ItemRarity.RARE,
       stackable: true,
       maxStack: 5,
       modifiers: { maxHealthBonus: 1 },
@@ -120,6 +124,7 @@ class ItemRegistry {
       description: "+1 Max Health",
       iconColor: "#FF1493", // Deep Pink
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.COMMON,
       stackable: false,
       maxStack: 1,
       modifiers: { maxHealthBonus: 1 },
@@ -162,6 +167,7 @@ class ItemRegistry {
       description: "Deal 2x damage",
       iconColor: "#DC143C", // Crimson
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.RARE,
       stackable: false,
       maxStack: 1,
       modifiers: { damageMultiplier: 2.0 },
@@ -183,6 +189,7 @@ class ItemRegistry {
       description: "Earn 50% more money",
       iconColor: "#DAA520", // Goldenrod
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.UNCOMMON,
       stackable: false,
       maxStack: 1,
       modifiers: { moneyMultiplier: 1.5 },
@@ -204,6 +211,7 @@ class ItemRegistry {
       description: "Enemies have 20% less health",
       iconColor: "#8B00FF", // Violet
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.RARE,
       stackable: false,
       maxStack: 1,
       modifiers: { enemyHealthMultiplier: 0.8 },
@@ -225,6 +233,7 @@ class ItemRegistry {
       description: "Enemies move 25% slower",
       iconColor: "#4169E1", // Royal Blue
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.EPIC,
       stackable: false,
       maxStack: 1,
       modifiers: { enemySpeedMultiplier: 0.75 },
@@ -309,6 +318,7 @@ class ItemRegistry {
       description: "2x damage, 2x money, enemies 50% slower",
       iconColor: "#9400D3", // Dark Violet
       type: ItemType.UPGRADE,
+      rarity: ItemRarity.LEGENDARY,
       stackable: false,
       maxStack: 1,
       modifiers: {
@@ -326,6 +336,64 @@ class ItemRegistry {
       frameWidth: 240,
       frameHeight: 240,
     });
+
+    // Triple Damage - 3x damage
+    this.registerItem({
+      id: "triple_damage",
+      name: "Triple Damage",
+      description: "Deal 3x damage",
+      iconColor: "#8B0000", // Dark Red
+      type: ItemType.UPGRADE,
+      rarity: ItemRarity.EPIC,
+      stackable: false,
+      maxStack: 1,
+      modifiers: { damageMultiplier: 3.0 },
+      price: 800,
+    });
+
+    // Golden Touch - 2x money
+    this.registerItem({
+      id: "golden_touch",
+      name: "Golden Touch",
+      description: "Earn 2x money",
+      iconColor: "#FFD700", // Gold
+      type: ItemType.UPGRADE,
+      rarity: ItemRarity.RARE,
+      stackable: false,
+      maxStack: 1,
+      modifiers: { moneyMultiplier: 2.0 },
+      price: 600,
+    });
+
+    // Fortified Armor - +2 Max Health
+    this.registerItem({
+      id: "fortified_armor",
+      name: "Fortified Armor",
+      description: "+2 Max Health",
+      iconColor: "#708090", // Slate Gray
+      type: ItemType.UPGRADE,
+      rarity: ItemRarity.EPIC,
+      stackable: false,
+      maxStack: 1,
+      modifiers: { maxHealthBonus: 2 },
+      price: 700,
+    });
+
+    // Chrono Crystal - Enemies move 40% slower
+    this.registerItem({
+      id: "chrono_crystal",
+      name: "Chrono Crystal",
+      description: "Enemies move 40% slower",
+      iconColor: "#00CED1", // Dark Turquoise
+      type: ItemType.UPGRADE,
+      rarity: ItemRarity.LEGENDARY,
+      stackable: false,
+      maxStack: 1,
+      modifiers: { enemySpeedMultiplier: 0.6 },
+      price: 1200,
+      spriteSheet: "./item_textures/time_crystal.png",
+    });
+
   }
 
   /**

@@ -9,7 +9,7 @@ lerna-debug.log*
 include/
 
 node_modules
-dist
+dist/
 dist-ssr
 *.local
 
@@ -33,5 +33,7 @@ bin64/
 # Debug/test screens (not for production)
 src/screens/debug-screen/
 
-# Claude Code documentation
+# Claude Code documentation and settings
 CLAUDE.md
+.claude/
+settings.local.json

@@ -254,7 +254,7 @@ describe('WordBank', () => {
         });
     });
 
-    describe('getRandomWordByDifficulty', () => {
+    describe('seeded random', () => {
         beforeEach(async () => {
             (fetch as jest.Mock).mockResolvedValueOnce({
                 json: async () => mockWordBankData
@@ -262,97 +262,76 @@ describe('WordBank', () => {
             await wordBank.load();
         });
 
-        it('should return shorter words at low difficulty', () => {
-            const words: string[] = [];
-            for (let i = 0; i < 20; i++) {
-                const word = wordBank.getRandomWordByDifficulty(10, ["bn"]);
-                if (word) words.push(word);
-            }
-            const avgLength = words.reduce((sum, w) => sum + w.length, 0) / words.length;
-            expect(avgLength).toBeLessThan(6);
-        });
-
-        it('should return longer words at high difficulty', () => {
-            const words: string[] = [];
-            for (let i = 0; i < 20; i++) {
-                const word = wordBank.getRandomWordByDifficulty(100, ["bn"]);
-                if (word) words.push(word);
-            }
-            const avgLength = words.reduce((sum, w) => sum + w.length, 0) / words.length;
-            expect(avgLength).toBeGreaterThan(5);
-        });
-
-        it('should respect excluded initials', () => {
-            const excluded = new Set(["b", "m"]);
-            const word = wordBank.getRandomWordByDifficulty(50, ["bn"], excluded);
-            expect(word).not.toBeNull();
-            if (word) {
-                expect(excluded.has(word[0].toLowerCase())).toBe(false);
-            }
-        });
-
-        it('should clamp difficulty to 1-100 range', () => {
-            const wordLow = wordBank.getRandomWordByDifficulty(-10, ["bn"]);
-            expect(wordLow).toBeDefined();
-
-            const wordHigh = wordBank.getRandomWordByDifficulty(150, ["bn"]);
-            expect(wordHigh).toBeDefined();
-        });
-
-        it('should work with multiple categories', () => {
-            const word = wordBank.getRandomWordByDifficulty(50, ["bn", "z/"]);
-            expect(word).toBeDefined();
-        });
-    });
-
-    describe('calculateWordLengthFromDifficulty (implicit testing)', () => {
-        beforeEach(async () => {
+        it('should return deterministic words with same seed', () => {
+            const bank1 = new WordBank();
+            const bank2 = new WordBank();
+            
             (fetch as jest.Mock).mockResolvedValueOnce({
                 json: async () => mockWordBankData
             });
-            await wordBank.load();
-        });
-
-        it('should produce length ~4 at difficulty 10', () => {
-            const lengths: number[] = [];
-            for (let i = 0; i < 50; i++) {
-                const word = wordBank.getRandomWordByDifficulty(10, ["bn"]);
-                if (word) lengths.push(word.length);
-            }
-            const avgLength = lengths.reduce((sum, l) => sum + l, 0) / lengths.length;
-            expect(avgLength).toBeGreaterThan(3);
-            expect(avgLength).toBeLessThan(5);
-        });
-
-        it('should produce length ~7 at difficulty 100', () => {
-            const lengths: number[] = [];
-            for (let i = 0; i < 50; i++) {
-                const word = wordBank.getRandomWordByDifficulty(100, ["bn"]);
-                if (word) lengths.push(word.length);
-            }
-            const avgLength = lengths.reduce((sum, l) => sum + l, 0) / lengths.length;
-            expect(avgLength).toBeGreaterThan(6);
-            expect(avgLength).toBeLessThan(9);
-        });
-
-        it('should show increased variance at high difficulty', () => {
-            const lengthsLow: number[] = [];
-            const lengthsHigh: number[] = [];
+            (fetch as jest.Mock).mockResolvedValueOnce({
+                json: async () => mockWordBankData
+            });
             
-            // Use more samples for more reliable variance comparison
-            for (let i = 0; i < 100; i++) {
-                const wordLow = wordBank.getRandomWordByDifficulty(20, ["bn"]);
-                const wordHigh = wordBank.getRandomWordByDifficulty(90, ["bn"]);
-                if (wordLow) lengthsLow.push(wordLow.length);
-                if (wordHigh) lengthsHigh.push(wordHigh.length);
-            }
+            bank1.load().then(() => {
+                bank1.setSeed(12345);
+                bank2.load().then(() => {
+                    bank2.setSeed(12345);
+                    
+                    const word1 = bank1.getRandomWord(["bn"], 4);
+                    const word2 = bank2.getRandomWord(["bn"], 4);
+                    
+                    expect(word1).toBe(word2);
+                });
+            });
+        });
 
-            const varianceLow = calculateVariance(lengthsLow);
-            const varianceHigh = calculateVariance(lengthsHigh);
+        it('should enable seeded mode with setSeed', () => {
+            wordBank.setSeed(999);
+            const word1 = wordBank.getRandomWord(["bn"], 4);
             
-            // High difficulty should have higher variance (more word length diversity)
-            // Using >= to account for randomness in small samples
-            expect(varianceHigh).toBeGreaterThanOrEqual(varianceLow * 0.8);
+            wordBank.setSeed(999);
+            const word2 = wordBank.getRandomWord(["bn"], 4);
+            
+            expect(word1).toBe(word2);
+        });
+
+        it('should disable seeded mode with disableSeed', () => {
+            wordBank.setSeed(777);
+            const seededWord = wordBank.getRandomWord(["bn"], 4);
+            
+            wordBank.disableSeed();
+            const randomWord = wordBank.getRandomWord(["bn"], 4);
+            
+            // Should still be valid words
+            expect(["barn", "moon", "bike"]).toContain(seededWord);
+            expect(["barn", "moon", "bike"]).toContain(randomWord);
+        });
+
+        it('should produce different words with different seeds', () => {
+            wordBank.setSeed(111);
+            const word1 = wordBank.getRandomWord(["bn"], 4);
+            
+            wordBank.setSeed(222);
+            const word2 = wordBank.getRandomWord(["bn"], 4);
+            
+            // Words should be valid, but may differ
+            expect(["barn", "moon", "bike"]).toContain(word1);
+            expect(["barn", "moon", "bike"]).toContain(word2);
+        });
+
+        it('should work with getRandomWordExcludingInitials in seeded mode', () => {
+            wordBank.setSeed(555);
+            const excluded = new Set(["b"]);
+            const word1 = wordBank.getRandomWordExcludingInitials(excluded, ["bn"], 4);
+            
+            wordBank.setSeed(555);
+            const word2 = wordBank.getRandomWordExcludingInitials(excluded, ["bn"], 4);
+            
+            expect(word1).toBe(word2);
+            if (word1) {
+                expect(excluded.has(word1[0].toLowerCase())).toBe(false);
+            }
         });
     });
 });

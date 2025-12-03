@@ -31,6 +31,8 @@ export interface WaveConfig {
 export interface LevelConfig {
 	levelNumber?: number;            // Optional level number (defaults to 1)
 	difficulty?: number;             // Optional difficulty multiplier for speed/health
+	seed?: number;                   // Optional random seed for wave generation
+	waveCount?: number;              // Optional total number of waves
 	waves: WaveConfig[];             // Array of wave configurations
 }
 
@@ -44,15 +46,18 @@ export interface View {
  * Screen types for navigation
  *
  * - "menu": Main menu screen
- * - "levelSelect": Level selection screen
- * - "game": Gameplay screen with optional levelNumber
+ * - "planetSelect": Planet selection screen
+ * - "levelSelect": Level selection screen (with planet type)
+ * - "game": Gameplay screen with optional levelNumber and isTutorial flag
+ * - "shop": Shop screen for purchasing items
  */
 export type Screen =
 	| { type: "menu" }
 	| { type: "planetSelect" }
 	| { type: "levelSelect"; planetType: planetName }
 	| { type: planetName }
-	| { type: "game"; levelNumber?: number, isTutorial: boolean | undefined };
+	| { type: "game"; levelNumber?: number, isTutorial: boolean | null}
+	| { type: "shop" };
 	// | { type: "debug" }; // DEBUG: Commented out for production
 
 export abstract class ScreenController {

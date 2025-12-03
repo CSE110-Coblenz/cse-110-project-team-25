@@ -78,18 +78,6 @@ export class Player {
     return this.maxHealth;
   }
 
-  toggleInvincibility(): void {
-    if (this.invincible === false) {
-      this.invincible = true;
-    } else {
-      this.invincible = false;
-    }
-  }
-
-  invincibleStatus(): boolean {
-    return this.invincible;
-  }
-
   /**
    * Get max health with upgrade bonuses applied
    */
@@ -109,6 +97,20 @@ export class Player {
     if (wasFull) {
       this.health = this.maxHealth;
     }
+  }
+
+  /**
+   * Toggle invincibility state
+   */
+  toggleInvincibility(): void {
+    this.invincible = !this.invincible;
+  }
+
+  /**
+   * Check if player is invincible
+   */
+  invincibleStatus(): boolean {
+    return this.invincible;
   }
 
   /**
@@ -206,7 +208,7 @@ export class Player {
    * Remove consumable from specific slot
    */
   removeConsumable(slotIndex: number): Item | null {
-    return this.consumableInventory.removeItem(slotIndex);
+    return this.consumableInventory.removeHotbarItem(slotIndex);
   }
 
   /**

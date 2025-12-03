@@ -9,6 +9,19 @@ export const ItemType = {
 export type ItemType = typeof ItemType[keyof typeof ItemType];
 
 /**
+ * Item rarity determines base price and shop availability
+ */
+export const ItemRarity = {
+  COMMON: 0,      // Base price: 300
+  UNCOMMON: 1,    // Base price: 600
+  RARE: 2,        // Base price: 1000
+  EPIC: 3,        // Base price: 2000
+  LEGENDARY: 4    // Base price: 5000
+} as const;
+
+export type ItemRarity = typeof ItemRarity[keyof typeof ItemRarity];
+
+/**
  * Modifiers that items can apply to player or game state
  * Multipliers stack multiplicatively (1.5 * 1.5 = 2.25x)
  */
@@ -45,6 +58,7 @@ export interface ItemData {
   description: string;
   iconColor: string;              // Hex color for placeholder icon (fallback)
   type: ItemType;
+  rarity: ItemRarity;             // Item rarity (affects shop price and availability)
   stackable: boolean;
   maxStack: number;
   modifiers: ItemModifiers;

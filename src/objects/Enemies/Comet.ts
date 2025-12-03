@@ -38,7 +38,6 @@ class Comet extends Enemy {
                 frameRate: 1,
                 frameIndex: 0
             });
-            console.log(Math.acos(y / x))
             comet.start();
             enemyGroup.add(comet);
             enemyGroup.getLayer()?.batchDraw?.();

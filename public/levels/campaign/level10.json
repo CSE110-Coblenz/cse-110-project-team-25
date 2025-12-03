@@ -1,0 +1,48 @@
+{
+  "levelNumber": 10,
+  "difficulty": 53,
+  "waveCount": 5,
+  "seed": 463829,
+  "waves": [
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["engine"],
+      "x": [500]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["weapon"],
+      "x": [700]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["nebula"],
+      "x": [600]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["fusion"],
+      "x": [800]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["quasar"],
+      "x": [450]
+    }
+  ]
+}
