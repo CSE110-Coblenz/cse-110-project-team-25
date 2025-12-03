@@ -32,15 +32,6 @@ class LevelManager {
         this.screenSwitcher = screenSwitcher;
     }
 
-    /** If isEndless, game will continue indefinitely and not use _waveLevels */
-    // set isEndless(value: boolean) {
-    //     this._isEndless = value;
-    // }
-
-    // get isEndless(): boolean {
-    //     return this._isEndless;
-    // }
-
     /** Returns the current level (for UI purposes) */
     get currentLevel(): number {
         return this._currentLevel;
@@ -86,6 +77,14 @@ class LevelManager {
         this._currentLevel = level;
     }
 
+    setSeed(seed: number): void {
+        this._difficultyUtil.seed = seed;
+    }
+
+    getSeed(): number {
+        return this._difficultyUtil.seed;
+    }
+
     /**
      * Adds a wave to the waves queue
      */
@@ -120,7 +119,7 @@ class LevelManager {
      * Generate a new set of random waves for the current level (endless mode)
      */
     private generateRandomLevel(): void {
-        const wavesPerLevel = 3; // Number of waves per level
+        const wavesPerLevel = Math.floor(Math.random() * 3) + 1; // Number of waves per level
         this._totalWavesInLevel = wavesPerLevel;
         this._completedWavesInLevel = 0;
 
@@ -157,7 +156,7 @@ class LevelManager {
         if (this._isTutorial) {
             await this.loadLevelFromJSON(`./levels/tutorial/level${this.currentLevel}.json`)
         } else {
-            await this.loadLevelFromJSON(`./levels/campaign/level${this.currentLevel}.json`)
+            await this.loadRandLevelJSON(`./levels/campaign/level${this.currentLevel}.json`)
         }
     }
 
@@ -178,12 +177,10 @@ class LevelManager {
             this._isTransitioning = true;
             try {
                 const newLevel = await this.popNextWave();
-                if (newLevel && this._isTutorial
-) {
+                if (newLevel && this._isTutorial === true) {
                     this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "tutorial_planet"});
                 }
-                else if (newLevel && this._isTutorial
- === false) {
+                else if (newLevel && this._isTutorial === false) {
                     this.screenSwitcher.switchToScreen({ type: "levelSelect", planetType: "campaign_planet"});
                 }
                 else if (this._currentWave) {
@@ -201,8 +198,12 @@ class LevelManager {
      */
     async initializeLevel(isTutorial: boolean | null): Promise<void> {
         if (isTutorial === null) {
+            const seed = Math.floor(Math.random() * 100000);
+            this._difficultyUtil.seed = seed;
+            this.enemyFactory.setWordBankSeed(seed);
             this._isEndless = true;
         } else {
+            this.enemyFactory.disableWordBankSeed();
             this._isEndless = false;
         }
         this._isTutorial = isTutorial;
@@ -388,6 +389,19 @@ class LevelManager {
         }
     }
 
+    async loadRandLevelJSON(url: string): Promise<void> {
+        if (url) {
+            try {
+                const waves = await this.enemyFactory.loadRandLevelFromJSON(url, this);
+                this._waves = waves;
+                this._totalWavesInLevel = waves.length;
+                this._completedWavesInLevel = 0;
+                return;
+            } catch (error) {
+                throw new Error(`Failed to load random level from ${url}: ${error}`);
+            }
+        } 
+    }
 }
-
+    
 export default LevelManager;

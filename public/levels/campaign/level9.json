@@ -1,0 +1,48 @@
+{
+  "levelNumber": 9,
+  "difficulty": 48,
+  "waveCount": 5,
+  "seed": 729183,
+  "waves": [
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["solar"],
+      "x": [500]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["lunar"],
+      "x": [650]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["radar"],
+      "x": [750]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["pulse"],
+      "x": [550]
+    },
+    {
+      "types": {"1": "ufo"},
+      "health": [1],
+      "speed": [5],
+      "distance": [40],
+      "words": ["combat"],
+      "x": [850]
+    }
+  ]
+}

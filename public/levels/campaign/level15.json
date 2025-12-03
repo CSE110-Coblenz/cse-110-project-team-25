@@ -1,0 +1,35 @@
+{
+  "levelNumber": 15,
+  "difficulty": 78,
+  "waveCount": 6,
+  "seed": 945372,
+  "waves": [
+    {
+      "types": {"1": "amiiba", "2": "amiiba"},
+      "health": [3, 3],
+      "speed": [4, 4],
+      "distance": [50, 55],
+      "words": ["slimy", "blimey"],
+      "x": [450, 850]
+    },
+    {
+      "types": {"1": "shooter", "2": "shooter"},
+      "health": [2, 2],
+      "speed": [4, 4],
+      "distance": [45, 50],
+      "words": ["enemy", "warrior"],
+      "x": [550, 750]
+    },
+    {},
+    {},
+    {},
+    {
+      "types": {"1": "shooter", "2": "shooter", "3": "amiiba"},
+      "health": [2, 2, 3],
+      "speed": [4, 4, 4],
+      "distance": [45, 50, 55],
+      "words": ["legion", "attack", "wormhole"],
+      "x": [450, 850, 650]
+    }
+  ]
+}

@@ -24,9 +24,36 @@ const SPEED_HIGH_DIFFICULTY_REF = 100;
 
 export default class DifficultyUtil {
     private _difficulty: number; // Between 1-100
+    private _seed: number = 42;
+    private _rngState: number;
+
+    set seed(value: number) {
+        this._seed = value;
+        this._rngState = value;
+    }
+
+    get seed(): number {
+        return this._seed;
+    }
     
-    constructor(initialDifficulty: number = 1) {
+    constructor(initialDifficulty: number = 1, seed: number = 42) {
         this._difficulty = initialDifficulty;
+        this._seed = seed;
+        this._rngState = seed;
+    }
+
+    /**
+     * Seeded pseudo-random number generator using a simple LCG algorithm
+     * Returns a number between 0 and 1
+     */
+    private seededRandom(): number {
+        // Linear Congruential Generator (LCG) constants
+        const a = 1664525;
+        const c = 1013904223;
+        const m = Math.pow(2, 32);
+        
+        this._rngState = (a * this._rngState + c) % m;
+        return this._rngState / m;
     }
 
     get difficulty(): number {
@@ -93,7 +120,7 @@ export default class DifficultyUtil {
         
         // Select length based on weighted random selection
         const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
-        let random = Math.random() * totalWeight;
+        let random = this.seededRandom() * totalWeight;
         
         for (const [lengthStr, weight] of Object.entries(weights)) {
             random -= weight;
@@ -134,7 +161,7 @@ export default class DifficultyUtil {
         
         // Generate random speed multiplier within the calculated range
         const multiplierRange = maxMultiplier - minMultiplier;
-        const randomMultiplier = minMultiplier + Math.random() * multiplierRange;
+        const randomMultiplier = minMultiplier + this.seededRandom() * multiplierRange;
         
         return randomMultiplier;
     }
@@ -188,7 +215,7 @@ export default class DifficultyUtil {
 
         // Select count based on weighted random selection
         const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
-        let random = Math.random() * totalWeight;
+        let random = this.seededRandom() * totalWeight;
 
         for (const [countStr, weight] of Object.entries(weights)) {
             random -= weight;
@@ -219,7 +246,7 @@ export default class DifficultyUtil {
      */
     randEnemyType(): "amiiba" | "meteor" | "ufo" | "shooter" | "comet" {
         // Generate random number between 0-2
-        const baseRandom = Math.random() * 1.3;
+        const baseRandom = this.seededRandom() * 1.3;
         
         // Multiply by difficulty / 1.5 to get scaled value
         const scaledValue = baseRandom * (this._difficulty / 1.3);
@@ -242,7 +269,7 @@ export default class DifficultyUtil {
     }
 
     increaseDifficulty(levels: number): void {
-        const increment = Math.floor(Math.min(1, Math.random() * 3));
+        const increment = Math.floor(Math.min(1, this.seededRandom() * 3));
         this.difficulty += Math.floor(levels / 1.5) + increment;
     }
 }

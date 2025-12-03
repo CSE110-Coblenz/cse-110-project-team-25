@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowImportingTsExtensions": true,
-    "module": "commonjs",
+    "module": "ES2022",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": false,
     "skipLibCheck": true,
