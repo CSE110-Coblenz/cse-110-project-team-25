@@ -118,12 +118,8 @@ class LevelManager {
 
         for (let i = 0; i < wavesPerLevel; i++) {
             // Use difficulty-based enemy count if available, otherwise use level scaling
-            const speedMultiplier = this._difficultyUtil
-                ? this._difficultyUtil.randSpeedMultiplier()
-                : 1 + (this._currentLevel * 0.2);
-            const enemyCount = this._difficultyUtil
-                ? this._difficultyUtil.randEnemyCount()
-                : 3;
+            const speedMultiplier = this._difficultyUtil.randSpeedMultiplier();
+            const enemyCount = this._difficultyUtil.randEnemyCount();
             const wave = this.enemyFactory.generateRandomWave(
                 enemyCount,
                 speedMultiplier,
