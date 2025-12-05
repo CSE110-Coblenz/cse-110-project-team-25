@@ -112,7 +112,7 @@ export abstract class BaseMenuView implements View {
       };
 
       const imageObj = new Image();
-      imageObj.src = "/titleBase.png";
+      imageObj.src = "./titleBase.png";
       imageObj.onload = function() {
           const scale = 1;
           const shot = new Konva.Sprite({
@@ -134,7 +134,7 @@ export abstract class BaseMenuView implements View {
           shot.moveToBottom();
       }
       const imageObjGlow = new Image();
-      imageObjGlow.src = "/titleGlow.png";
+      imageObjGlow.src = "./titleGlow.png";
       imageObjGlow.onload = function() {
           const scale = 1;
           const shot = new Konva.Sprite({
